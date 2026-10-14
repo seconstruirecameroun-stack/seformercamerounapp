@@ -227,7 +227,7 @@ export default function ChildHome() {
           </Link>
         ) : (
           <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
-            <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
+            <Illustration cle="repos" forme="objet" alt="" className="mx-auto h-28 w-28" />
             <h1 className="mt-3 text-kid-lg font-extrabold">Rien à faire</h1>
             <p className="mt-1 text-kid-sm text-muted">Demande à un parent.</p>
           </section>

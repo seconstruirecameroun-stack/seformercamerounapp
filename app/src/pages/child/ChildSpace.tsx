@@ -123,7 +123,7 @@ function Mission({
   if (etapes.length === 0) {
     return (
       <div className="rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
-        <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
+        <Illustration cle="repos" forme="objet" alt="" className="mx-auto h-28 w-28" />
         <h2 className="mt-3 text-kid-lg font-extrabold">Rien à réviser</h2>
         <p className="mt-1 text-kid-sm text-muted">Reviens demain !</p>
       </div>
@@ -134,7 +134,7 @@ function Mission({
     return (
       <div className="monte overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm text-center shadow-[var(--shadow-card)]">
         <div className="bg-gold/25 px-6 py-7">
-          <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
+          <Illustration cle="medaille" forme="objet" alt="" className="mx-auto h-28 w-28" />
           <h2 className="mt-3 text-kid-2xl font-black">Mission terminée !</h2>
           <p className="mt-1 text-kid font-bold text-ink-2">
             {justes} sur {etapes.length} · +{gagnes} points

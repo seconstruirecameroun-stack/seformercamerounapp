@@ -83,8 +83,14 @@ Trois emplois, trois formats :
 
 **Le poids est une contrainte de design, pas une optimisation.** Les sources
 font 1,3 à 2 Mo ; `scripts/illustrations.mjs` les ramène à du WebP, soit
-110 ko pour les onze illustrations livrées. Une leçon illustrée doit coûter
+153 ko pour les quinze illustrations livrées. Une leçon illustrée doit coûter
 moins qu'une photo.
+
+**Aucune illustration ne sert à deux endroits.** La roue-mémoire a longtemps
+bouché trois trous — l'écran de fin, l'état vide, la septième notion. Deux
+cases identiques dans la collection, et aucun indice sur ce qu'il fallait
+retenir. Chaque emploi a maintenant son image : médaille, chat endormi, et les
+trois objets alignés dans l'ordre des époques.
 
 Le champ `illustration` accepte une clé livrée avec l'app
 (`prehistoire-grotte`) ou une URL de stockage : les leçons générées à partir

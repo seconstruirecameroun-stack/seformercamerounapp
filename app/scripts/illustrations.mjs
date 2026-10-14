@@ -40,6 +40,12 @@ const PLAN = {
   'hache-ble': { src: '43ff82', forme: 'objet' },
   'metaux': { src: '903ca4', forme: 'objet' },
   'tablette-ecriture': { src: 'a988b7', forme: 'objet' },
+  'trois-epoques': { src: 'e21f749f', forme: 'objet' },
+
+  // Récompense et repos : elles remplacent la roue-mémoire, qui servait
+  // partout à défaut de mieux.
+  'medaille': { src: '3d6a0df8', forme: 'objet' },
+  'repos': { src: '2b149718', forme: 'objet' },
 
   // Le guide qui accompagne l'enfant.
   'guide': { src: '8ae114', forme: 'portrait' },
