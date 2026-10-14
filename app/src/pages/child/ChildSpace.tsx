@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
@@ -19,6 +19,7 @@ type LessonBundle = {
   summary: string | null;
   lang: string;
   illustration: string | null;
+  subjects: { label: string } | null;
   notions: Array<NotionRow & { explanations: ExplanationRow[] }>;
   videos: VideoRow[];
 };
@@ -122,6 +123,7 @@ function Mission({
   lessonId: string;
 }) {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [verrouille, setVerrouille] = useState(false);
   const [juste, setJuste] = useState(false);
@@ -170,7 +172,8 @@ function Mission({
               ? 'Tout juste. Les notions reviendront dans quelques jours pour vérifier.'
               : 'Les notions ratées reviendront demain, avec une autre explication.'}
           </p>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <GrosBouton onClick={() => navigate(`/enfant/${childId}`)}>Mes leçons</GrosBouton>
             <GrosBouton
               variante="douce"
               onClick={() => {
@@ -214,6 +217,7 @@ function Mission({
       setGagnes(gagnes + bilan.points);
       if (reponse.correct) setJustes(justes + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
+      qc.invalidateQueries({ queryKey: ['tableau', childId] });
     } catch (err) {
       setErreur(err);
       setMessage(null);
@@ -286,7 +290,7 @@ function Mission({
 }
 
 export default function ChildSpace() {
-  const { childId } = useParams<{ childId: string }>();
+  const { childId, lessonId } = useParams<{ childId: string; lessonId: string }>();
   const [onglet, setOnglet] = useState<'mission' | 'lecon'>('mission');
 
   // L'identifiant du parent vient de la session déjà en mémoire. Passer par
@@ -310,19 +314,18 @@ export default function ChildSpace() {
   });
 
   const lesson = useQuery({
-    queryKey: ['lesson-bundle'],
+    queryKey: ['lesson-bundle', lessonId],
+    enabled: Boolean(lessonId),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('lessons')
         .select(
-          'id, title, summary, lang, illustration, ' +
+          'id, title, summary, lang, illustration, subjects(label), ' +
             'notions(id, kind, statement, sort_order, illustration, parent_id, lesson_id, status, created_at, ' +
             'explanations(id, register, body, notion_id, parent_id, status, created_at)), ' +
             'videos(id, external_url, poster_url, duration_s, status, lesson_id, parent_id, manifest, voice_preset, storage_path, created_at)',
         )
-        .eq('status', 'approved')
-        .order('sort_order')
-        .limit(1)
+        .eq('id', lessonId!)
         .maybeSingle();
       if (error) throw error;
       return data as unknown as LessonBundle | null;
@@ -350,20 +353,17 @@ export default function ChildSpace() {
     .filter((n) => n.status === 'approved')
     .sort((a, b) => a.sort_order - b.sort_order);
   const video = bundle?.videos?.[0];
-  const prenom = child.data?.first_name ?? '';
 
   return (
     <main className="ciel min-h-screen pb-12">
       <div className="mx-auto max-w-2xl px-4 pt-4 sm:px-6">
         <header className="flex items-center justify-between gap-3">
           <Link
-            to="/"
-            className="flex items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-4 pl-1.5 text-kid-sm font-bold"
+            to={`/enfant/${childId}`}
+            className="tuile flex items-center gap-2 rounded-full bg-white-warm/80 py-2 pr-4 pl-3 text-kid-sm font-bold"
           >
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-lilac text-base">
-              {child.data?.avatar ?? prenom.slice(0, 1).toUpperCase()}
-            </span>
-            {prenom}
+            <span aria-hidden="true">←</span>
+            Mes leçons
           </Link>
           <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
             <span aria-hidden="true">★</span>
@@ -390,7 +390,7 @@ export default function ChildSpace() {
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/35 to-transparent px-5 pt-12 pb-4">
                 <p className="text-xs font-black tracking-widest text-gold uppercase">
-                  Ta mission du jour
+                  {bundle.subjects?.label ?? 'Leçon'}
                 </p>
                 <h1 className="text-kid-2xl leading-tight font-black text-white-warm text-balance">
                   {bundle.title}

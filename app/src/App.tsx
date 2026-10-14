@@ -6,6 +6,7 @@ import ProfilePicker from './pages/ProfilePicker';
 import ParentSpace from './pages/parent/ParentSpace';
 import PinGate from './components/PinGate';
 import ChildSpace from './pages/child/ChildSpace';
+import ChildHome from './pages/child/ChildHome';
 
 function RequireParent({ children }: { children: React.ReactNode }) {
   const { session, ready } = useSession();
@@ -39,6 +40,14 @@ export default function App() {
         />
         <Route
           path="/enfant/:childId"
+          element={
+            <RequireParent>
+              <ChildHome />
+            </RequireParent>
+          }
+        />
+        <Route
+          path="/enfant/:childId/lecon/:lessonId"
           element={
             <RequireParent>
               <ChildSpace />
