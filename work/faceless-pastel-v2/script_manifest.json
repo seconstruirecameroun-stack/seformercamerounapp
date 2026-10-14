@@ -1,0 +1,42 @@
+{
+  "title": "Voyage dans la Préhistoire",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "duration_seconds": 60,
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Une roue-mémoire se complète puis devient une tablette d’argile gravée.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Qu’est-ce que la Préhistoire ? Elle va des premiers hommes à l’écriture, vers trois mille ans avant Jésus-Christ."
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "La première époque est le Paléolithique où l’homme taille la pierre et transforme les éclats en outils tranchants."
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Au Paléolithique les hommes vivent de pêche de chasse et de cueillette, retiens bien ces trois images."
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "Au Néolithique la pierre devient lisse le feu brille et l’agriculture commence durant cette deuxième grande époque."
+    },
+    {
+      "n": 5,
+      "block_kind": "narration",
+      "vo_line": "Troisième époque l’âge des métaux où l’artisan chauffe cuivre bronze et fer pour fabriquer bijoux et outils."
+    },
+    {
+      "n": 6,
+      "block_kind": "narration",
+      "vo_line": "Puis une main grave des signes sur l’argile et l’écriture est inventée, voilà comment la Préhistoire se termine."
+    }
+  ]
+}
