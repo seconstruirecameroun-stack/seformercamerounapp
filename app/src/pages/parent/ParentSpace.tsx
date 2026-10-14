@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { Button, Card, ErrorNote, Field, Loading, Pill } from '../../components/ui';
 import ImportCourse from './ImportCourse';
 import Validation from './Validation';
+import Illustrations from './Illustrations';
 import { verrouiller } from '../../components/PinGate';
 import type { ClassRow } from '../../types/db';
 
@@ -477,6 +478,7 @@ export default function ParentSpace() {
       <ImportCourse enfants={children.data ?? []} />
       <Documents />
       <Validation />
+      <Illustrations />
       <Library />
       <PinSetup />
     </main>

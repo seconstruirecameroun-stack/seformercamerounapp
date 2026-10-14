@@ -30,6 +30,20 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+/**
+ * Le style maison, identique à celui de la chaîne vidéo.
+ *
+ * Deux exigences non négociables dans chaque consigne :
+ *  - aucun texte dans l'image : les mots-clés sont superposés par l'app, ce
+ *    qui permet de corriger un mot sans repayer une génération, et de servir
+ *    un cours en français comme en anglais avec la même image ;
+ *  - aucun personnage reconnaissable ni marque.
+ */
+const STYLE =
+  'Pastel flat 2D children illustration, soft gradient sky, sand, mint and ' +
+  'lilac palette, no black outlines, rounded friendly shapes, gentle shading, ' +
+  'no text, no letters, no numbers, no watermark, no real person, no brand.';
+
 const Extraction = z.object({
   langue: z.enum(['fr', 'en']).describe('Langue du cours, telle qu’elle est écrite.'),
   lisibilite: z.enum(['bonne', 'moyenne', 'mauvaise']),
@@ -39,11 +53,24 @@ const Extraction = z.object({
     .string()
     .describe('Intitulé de la matière tel qu’il apparaît sur le document.'),
   resume: z.string().describe('Le résumé à retenir, en trois à six phrases.'),
+  illustration_scene: z
+    .string()
+    .describe(
+      'Consigne d’image en anglais pour la scène d’ouverture de la leçon, ' +
+        'format 16:9, sans texte. Décrit un lieu ou une situation, pas un concept.',
+    ),
   notions: z
     .array(
       z.object({
         type: z.enum(['definition', 'date', 'liste', 'relation']),
         enonce: z.string().describe('Une seule chose à savoir, en une phrase.'),
+        illustration: z
+          .string()
+          .describe(
+            'Consigne d’image en anglais pour une vignette carrée illustrant ' +
+              'cette notion : un objet ou un petit groupe d’objets sur fond ' +
+              'uni, sans texte.',
+          ),
       }),
     )
     .describe('Entre 3 et 10 notions, dans l’ordre du cours.'),
@@ -66,7 +93,13 @@ Une notion est une seule chose à savoir, formulée en une phrase, telle qu'un �
 - liste : des éléments à retenir ensemble
 - relation : un ordre, une cause, une conséquence
 
-Les pages sont fournies dans l'ordre et forment un seul cours.`;
+Les pages sont fournies dans l'ordre et forment un seul cours.
+
+Pour chaque notion, écris aussi une consigne d'image en anglais. Elle doit
+décrire une chose concrète et montrable, jamais une idée abstraite : pour
+« l'écriture marque la fin de la Préhistoire », décris une tablette d'argile
+gravée et un stylet, pas « la fin d'une époque ». Aucune image ne contient de
+texte : les mots sont posés par l'application par-dessus.`;
 
 function base64(bytes: Uint8Array): string {
   let binaire = '';
@@ -207,6 +240,7 @@ Deno.serve(async (req) => {
         subject_id: subjectId,
         title: extrait.titre.slice(0, 200),
         summary: extrait.resume,
+        illustration_prompt: STYLE + ' ' + extrait.illustration_scene,
         lang: extrait.langue,
         chapter: extrait.chapitre || null,
         status: 'pending',
@@ -221,6 +255,7 @@ Deno.serve(async (req) => {
         lesson_id: lecon.id,
         kind: n.type,
         statement: n.enonce,
+        illustration_prompt: STYLE + ' ' + n.illustration,
         sort_order: i + 1,
         status: 'pending',
       })),
