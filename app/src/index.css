@@ -115,11 +115,48 @@ body {
   animation: gain 1100ms var(--ease-out-quint) both;
 }
 
+/* Une vignette gagnée se révèle : elle quitte le gris pour la couleur.
+   Pas de rebond, pas d'élastique — une seule poussée qui s'amortit. */
+@keyframes revele {
+  from {
+    opacity: 0.35;
+    filter: grayscale(1);
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    filter: grayscale(0);
+    transform: scale(1);
+  }
+}
+.revele {
+  animation: revele 700ms var(--ease-out-quint) both;
+}
+
+@keyframes halo {
+  from {
+    box-shadow: 0 0 0 0 var(--color-gold);
+  }
+  to {
+    box-shadow: 0 0 0 16px transparent;
+  }
+}
+.halo {
+  animation: halo 900ms var(--ease-out-quint) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .monte,
   .gain,
+  .revele,
+  .halo,
   .tuile {
     animation: none;
     transition: none;
+  }
+  /* Sans animation, la vignette doit quand même arriver en couleur. */
+  .revele {
+    opacity: 1;
+    filter: none;
   }
 }

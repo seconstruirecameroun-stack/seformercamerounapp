@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
 import { construireMission } from '../../lib/mission';
+import { NIVEAU_ACQUIS } from '../../lib/dashboard';
 import type { EtapeMission } from '../../lib/mission';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
@@ -131,6 +132,9 @@ function Mission({
   const [dernierGain, setDernierGain] = useState(0);
   const [gagnes, setGagnes] = useState(0);
   const [justes, setJustes] = useState(0);
+  // Les notions qui viennent de franchir le seuil de maîtrise pendant cette
+  // séance : ce sont elles qui se révéleront sur l'écran de fin.
+  const [revelees, setRevelees] = useState<Array<{ id: string; illustration: string | null; statement: string }>>([]);
   const [erreur, setErreur] = useState<unknown>(null);
 
   const mission = useQuery({
@@ -166,6 +170,35 @@ function Mission({
             {justes} sur {etapes.length} · +{gagnes} points
           </p>
         </div>
+        {revelees.length > 0 ? (
+          <div className="border-b border-line px-6 py-5">
+            <p className="text-xs font-black tracking-widest text-clay-dark uppercase">
+              {revelees.length > 1
+                ? `${revelees.length} images gagnées`
+                : 'Une image gagnée'}
+            </p>
+            <ul className="mt-3 flex flex-wrap justify-center gap-3">
+              {revelees.map((r, i) => (
+                <li key={r.id} className="w-24">
+                  <div
+                    className="halo revele overflow-hidden rounded-2xl border-2 border-gold"
+                    style={{ animationDelay: `${i * 220}ms` }}
+                  >
+                    <Illustration
+                      cle={r.illustration}
+                      forme="objet"
+                      alt={r.statement}
+                      className="h-24 w-24 object-cover"
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-kid-sm text-muted">
+              {revelees.length > 1 ? 'Elles rejoignent ta collection.' : 'Elle rejoint ta collection.'}
+            </p>
+          </div>
+        ) : null}
         <div className="px-6 py-5">
           <p className="text-kid-sm text-muted">
             {justes === etapes.length
@@ -182,6 +215,7 @@ function Mission({
                 setMessage(null);
                 setGagnes(0);
                 setJustes(0);
+                setRevelees([]);
                 mission.refetch();
               }}
             >
@@ -215,6 +249,16 @@ function Mission({
       setMessage(bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'));
       setDernierGain(bilan.points);
       setGagnes(gagnes + bilan.points);
+      if (bilan.previousLevel < NIVEAU_ACQUIS && bilan.level >= NIVEAU_ACQUIS) {
+        setRevelees((d) => [
+          ...d,
+          {
+            id: etape.notion.id,
+            illustration: etape.notion.illustration,
+            statement: etape.notion.statement,
+          },
+        ]);
+      }
       if (reponse.correct) setJustes(justes + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
       qc.invalidateQueries({ queryKey: ['tableau', childId] });

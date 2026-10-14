@@ -133,11 +133,10 @@ function Collection({ autocollants }: { autocollants: Autocollant[] }) {
                 }
               />
               {!a.acquis ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 grid place-items-center text-lg text-muted"
-                >
-                  ?
+                <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white-warm/90 text-sm font-black text-ink-2">
+                    ?
+                  </span>
                 </span>
               ) : null}
             </div>

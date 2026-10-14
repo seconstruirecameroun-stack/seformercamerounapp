@@ -28,13 +28,22 @@ export type EtapeMission = {
   due: boolean;
 };
 
-/** Le niveau demandé, ou le plus proche en dessous, ou le plus bas existant. */
+/**
+ * L'item posé à l'enfant pour cette notion.
+ *
+ * Au niveau de l'enfant ou en dessous, on prend le plus haut disponible : il
+ * est prêt pour celui-là. Si la notion n'a aucun item à sa portée, on prend le
+ * plus bas qui existe, jamais le plus haut — lui servir un défi avant même
+ * l'entraînement n'apprend rien et décourage.
+ */
 export function choisirItem(items: ItemRow[], niveau: number): ItemRow | null {
   if (items.length === 0) return null;
-  const candidats = items.filter((i) => i.level <= niveau);
-  const pool = candidats.length > 0 ? candidats : items;
-  const meilleur = Math.max(...pool.map((i) => i.level));
-  const auNiveau = pool.filter((i) => i.level === meilleur);
+  const aSaPortee = items.filter((i) => i.level <= niveau);
+  const niveauVise =
+    aSaPortee.length > 0
+      ? Math.max(...aSaPortee.map((i) => i.level))
+      : Math.min(...items.map((i) => i.level));
+  const auNiveau = items.filter((i) => i.level === niveauVise);
   return auNiveau[Math.floor(Math.random() * auNiveau.length)];
 }
 
