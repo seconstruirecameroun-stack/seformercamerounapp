@@ -1,52 +1,46 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { recordAttempt } from '../../lib/progress';
+import { construireMission, TAILLE_MISSION } from '../../lib/mission';
+import type { EtapeMission } from '../../lib/mission';
+import ItemPlayer from '../../components/items/ItemPlayer';
+import type { Reponse } from '../../components/items/ItemPlayer';
 import { Button, Card, ErrorNote, Loading, Pill } from '../../components/ui';
-import type { ExplanationRow, ItemRow, NotionRow, VideoRow } from '../../types/db';
+import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
 
 type LessonBundle = {
   id: string;
   title: string;
   summary: string | null;
   lang: string;
-  notions: Array<NotionRow & { explanations: ExplanationRow[]; items: ItemRow[] }>;
+  notions: Array<NotionRow & { explanations: ExplanationRow[] }>;
   videos: VideoRow[];
 };
 
-type QcmPayload = { question: string; options: string[] };
-
-function isQcm(item: ItemRow): item is ItemRow & { payload: QcmPayload } {
-  const p = item.payload as Partial<QcmPayload> | null;
-  return item.kind === 'qcm' && Array.isArray(p?.options) && typeof p?.question === 'string';
-}
-
-function answerIndex(item: ItemRow): number | null {
-  const a = item.answer as { index?: number } | null;
-  return typeof a?.index === 'number' ? a.index : null;
-}
+const NIVEAUX = ['Découverte', 'Entraînement', 'Maîtrise', 'Défi'];
 
 /** Fait tourner les registres d’explication : c’est « Explique autrement ». */
 function NotionCard({ notion }: { notion: LessonBundle['notions'][number] }) {
-  const [shown, setShown] = useState(0);
-  const explanations = notion.explanations;
-  const current = explanations[shown % Math.max(explanations.length, 1)];
+  const [montre, setMontre] = useState(0);
+  const explications = notion.explanations ?? [];
+  const courante = explications.length > 0 ? explications[montre % explications.length] : null;
 
   return (
     <article className="rounded-2xl border border-line bg-white-warm p-5">
       <Pill>{notion.kind}</Pill>
       <h3 className="mt-2 font-bold">{notion.statement}</h3>
-      {current ? (
+      {courante ? (
         <>
-          <p className="mt-3 text-sm text-ink-2">{current.body}</p>
-          {explanations.length > 1 ? (
+          <p className="mt-3 text-sm text-ink-2">{courante.body}</p>
+          {explications.length > 1 ? (
             <button
               type="button"
               className="mt-3 text-sm font-semibold text-clay underline"
-              onClick={() => setShown(shown + 1)}
+              onClick={() => setMontre(montre + 1)}
             >
-              Explique autrement ({(shown % explanations.length) + 1}/{explanations.length})
+              Explique autrement ({(montre % explications.length) + 1}/{explications.length})
             </button>
           ) : null}
         </>
@@ -57,127 +51,141 @@ function NotionCard({ notion }: { notion: LessonBundle['notions'][number] }) {
   );
 }
 
-function Games({
-  items,
-  parentId,
-  childId,
-}: {
-  items: ItemRow[];
-  parentId: string;
-  childId: string;
-}) {
+/**
+ * La séance du jour.
+ *
+ * Une question par notion, au niveau de maîtrise de l'enfant, les notions
+ * dues en premier. Chaque réponse est journalisée et met à jour la maîtrise ;
+ * c'est elle qui décide de la séance du lendemain.
+ */
+function Mission({ parentId, childId, lessonId }: { parentId: string; childId: string; lessonId: string }) {
   const qc = useQueryClient();
   const [index, setIndex] = useState(0);
-  const [picked, setPicked] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<unknown>(null);
+  const [verrouille, setVerrouille] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [gagnes, setGagnes] = useState(0);
+  const [justes, setJustes] = useState(0);
+  const [erreur, setErreur] = useState<unknown>(null);
 
-  const playable = useMemo(() => items.filter(isQcm), [items]);
-  const item = playable[index];
+  const mission = useQuery({
+    queryKey: ['mission', childId, lessonId],
+    queryFn: () => construireMission(childId, lessonId),
+    staleTime: 0,
+  });
 
-  if (playable.length === 0) {
+  if (mission.isLoading) return <Loading label="Préparation de ta mission…" />;
+  if (mission.error) return <ErrorNote error={mission.error} />;
+
+  const etapes = (mission.data ?? []) as EtapeMission[];
+
+  if (etapes.length === 0) {
     return (
       <Card>
-        <p className="text-sm text-muted">
-          Aucun jeu disponible pour cette leçon. Le moteur complet arrive au lot 3.
+        <h3 className="text-xl font-bold">Rien à réviser pour l’instant</h3>
+        <p className="mt-2 text-sm text-muted">
+          Cette leçon n’a pas encore de questions validées. Reviens quand un parent en aura publié.
         </p>
       </Card>
     );
   }
 
-  if (!item) {
+  if (index >= etapes.length) {
     return (
       <Card className="text-center">
-        <h3 className="text-xl font-bold">C’est terminé pour aujourd’hui.</h3>
-        <p className="mt-2 text-sm text-muted">Ta progression est enregistrée.</p>
+        <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gold/30 text-3xl">
+          ★
+        </div>
+        <h3 className="mt-3 text-2xl font-black">Mission terminée !</h3>
+        <p className="mt-2 text-ink-2">
+          {justes} bonne{justes > 1 ? 's' : ''} réponse{justes > 1 ? 's' : ''} sur {etapes.length} ·{' '}
+          <strong>+{gagnes} points</strong>
+        </p>
+        <p className="mt-2 text-sm text-muted">
+          Ta progression est enregistrée. Les notions ratées reviendront demain.
+        </p>
         <Button
           className="mt-4"
           variant="secondary"
           onClick={() => {
             setIndex(0);
-            setPicked(null);
-            setFeedback(null);
+            setVerrouille(false);
+            setMessage(null);
+            setGagnes(0);
+            setJustes(0);
+            mission.refetch();
           }}
         >
-          Recommencer
+          Rejouer une séance
         </Button>
       </Card>
     );
   }
 
-  const correctIndex = answerIndex(item);
+  const etape = etapes[index];
 
-  async function choose(option: number) {
-    if (picked !== null || busy) return;
-    setPicked(option);
-    setBusy(true);
-    setError(null);
-    const correct = option === correctIndex;
+  async function repondre(reponse: Reponse) {
+    if (verrouille) return;
+    setVerrouille(true);
+    setErreur(null);
     try {
-      const outcome = await recordAttempt({
+      const bilan = await recordAttempt({
         parentId,
         childId,
-        item,
-        answer: { index: option },
-        correct,
+        item: etape.item,
+        answer: reponse.donnee,
+        correct: reponse.correct,
       });
-      const bits: string[] = [];
-      bits.push(correct ? 'Bravo !' : 'À retenir :');
-      if (item.explain) bits.push(item.explain);
-      if (outcome.points > 0) bits.push('+' + outcome.points + ' points');
-      if (outcome.leveledUp) bits.push('Tu passes au niveau ' + outcome.level + ' !');
-      if (outcome.leveledDown) bits.push('On reprend plus doucement, lis une autre explication.');
-      setFeedback(bits.join(' '));
+      const bouts: string[] = [reponse.correct ? 'Bravo !' : 'À retenir :'];
+      if (etape.item.explain) bouts.push(etape.item.explain);
+      if (bilan.points > 0) bouts.push(`+${bilan.points} points`);
+      if (bilan.leveledUp) bouts.push(`Tu passes en « ${NIVEAUX[bilan.level - 1]} » !`);
+      if (bilan.leveledDown) bouts.push('On reprend plus doucement : relis l’explication.');
+      setMessage(bouts.join(' '));
+      setGagnes(gagnes + bilan.points);
+      if (reponse.correct) setJustes(justes + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
     } catch (err) {
-      setError(err);
-    } finally {
-      setBusy(false);
+      setErreur(err);
+      setMessage(null);
     }
   }
 
   return (
     <Card>
-      <p className="text-xs font-bold tracking-wide text-muted uppercase">
-        Question {index + 1} sur {playable.length} · niveau {item.level}
-      </p>
-      <h3 className="mt-2 text-xl font-bold">{(item.payload as QcmPayload).question}</h3>
-
-      <div className="mt-4 grid gap-2">
-        {(item.payload as QcmPayload).options.map((option, i) => {
-          const isAnswer = i === correctIndex;
-          const chosen = picked === i;
-          let look = 'border-line bg-white-warm hover:border-ink-2';
-          if (picked !== null && isAnswer) look = 'border-leaf bg-leaf/15';
-          else if (chosen) look = 'border-clay bg-clay/10';
-          return (
-            <button
-              key={i}
-              type="button"
-              disabled={picked !== null}
-              onClick={() => choose(i)}
-              className={'rounded-2xl border px-4 py-3 text-left transition ' + look}
-            >
-              {option}
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs font-bold tracking-wide text-muted uppercase">
+          Question {index + 1} sur {etapes.length}
+        </p>
+        <Pill>{NIVEAUX[etape.item.level - 1] ?? 'Niveau ' + etape.item.level}</Pill>
+      </div>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-line">
+        <div
+          className="h-full rounded-full bg-gold transition-all"
+          style={{ width: `${(index / etapes.length) * 100}%` }}
+        />
       </div>
 
-      {error ? <div className="mt-3"><ErrorNote error={error} /></div> : null}
-      {feedback ? <p className="mt-4 text-sm font-semibold text-ink-2">{feedback}</p> : null}
+      <div className="mt-5">
+        <ItemPlayer item={etape.item} onRepondre={repondre} verrouille={verrouille} />
+      </div>
 
-      {picked !== null ? (
+      {erreur ? (
+        <div className="mt-3">
+          <ErrorNote error={erreur} />
+        </div>
+      ) : null}
+      {message ? <p className="mt-4 text-sm font-semibold text-ink-2">{message}</p> : null}
+
+      {verrouille ? (
         <Button
           className="mt-4"
           onClick={() => {
             setIndex(index + 1);
-            setPicked(null);
-            setFeedback(null);
+            setVerrouille(false);
+            setMessage(null);
           }}
         >
-          {index + 1 === playable.length ? 'Voir le résultat' : 'Question suivante'}
+          {index + 1 === etapes.length ? 'Voir mon résultat' : 'Question suivante'}
         </Button>
       ) : null}
     </Card>
@@ -186,7 +194,7 @@ function Games({
 
 export default function ChildSpace() {
   const { childId } = useParams<{ childId: string }>();
-  const [tab, setTab] = useState<'lecon' | 'jeux'>('lecon');
+  const [onglet, setOnglet] = useState<'mission' | 'lecon'>('mission');
 
   const me = useQuery({
     queryKey: ['me'],
@@ -218,8 +226,7 @@ export default function ChildSpace() {
         .select(
           'id, title, summary, lang, ' +
             'notions(id, kind, statement, sort_order, parent_id, lesson_id, status, created_at, ' +
-            'explanations(id, register, body, notion_id, parent_id, status, created_at), ' +
-            'items(id, kind, level, payload, answer, explain, notion_id, parent_id, status, created_at)), ' +
+            'explanations(id, register, body, notion_id, parent_id, status, created_at)), ' +
             'videos(id, external_url, poster_url, duration_s, status, lesson_id, parent_id, manifest, voice_preset, storage_path, created_at)',
         )
         .eq('status', 'approved')
@@ -240,7 +247,7 @@ export default function ChildSpace() {
         .select('value')
         .eq('child_id', childId!);
       if (error) throw error;
-      return (data ?? []).reduce((sum, row) => sum + (row.value ?? 0), 0);
+      return (data ?? []).reduce((somme, r) => somme + (r.value ?? 0), 0);
     },
   });
 
@@ -248,8 +255,9 @@ export default function ChildSpace() {
   if (lesson.error) return <ErrorNote error={lesson.error} />;
 
   const bundle = lesson.data;
-  const notions = (bundle?.notions ?? []).slice().sort((a, b) => a.sort_order - b.sort_order);
-  const items = notions.flatMap((n) => n.items ?? []).sort((a, b) => a.level - b.level);
+  const notions = [...(bundle?.notions ?? [])]
+    .filter((n) => n.status === 'approved')
+    .sort((a, b) => a.sort_order - b.sort_order);
   const video = bundle?.videos?.[0];
 
   return (
@@ -272,22 +280,34 @@ export default function ChildSpace() {
       {!bundle ? (
         <Card>
           <p className="text-sm text-muted">
-            Aucune leçon publiée pour l’instant. Un parent peut en charger une depuis l’espace
+            Aucune leçon publiée pour l’instant. Un parent peut en publier une depuis l’espace
             parent.
           </p>
         </Card>
       ) : (
         <>
           <nav className="mb-4 flex gap-2">
-            <Button variant={tab === 'lecon' ? 'primary' : 'secondary'} onClick={() => setTab('lecon')}>
-              Ma leçon
+            <Button
+              variant={onglet === 'mission' ? 'primary' : 'secondary'}
+              onClick={() => setOnglet('mission')}
+            >
+              Ma mission du jour
             </Button>
-            <Button variant={tab === 'jeux' ? 'primary' : 'secondary'} onClick={() => setTab('jeux')}>
-              Mes jeux
+            <Button
+              variant={onglet === 'lecon' ? 'primary' : 'secondary'}
+              onClick={() => setOnglet('lecon')}
+            >
+              Ma leçon
             </Button>
           </nav>
 
-          {tab === 'lecon' ? (
+          {onglet === 'mission' ? (
+            me.data && childId ? (
+              <Mission parentId={me.data} childId={childId} lessonId={bundle.id} />
+            ) : (
+              <Loading />
+            )
+          ) : (
             <div className="grid gap-4">
               {video?.external_url ? (
                 <Card>
@@ -317,11 +337,11 @@ export default function ChildSpace() {
                   <NotionCard key={notion.id} notion={notion} />
                 ))}
               </div>
+
+              <p className="text-center text-xs text-muted">
+                Ta mission du jour pose {TAILLE_MISSION} questions au maximum, une par notion.
+              </p>
             </div>
-          ) : me.data && childId ? (
-            <Games items={items} parentId={me.data} childId={childId} />
-          ) : (
-            <Loading />
           )}
         </>
       )}
