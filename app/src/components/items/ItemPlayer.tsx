@@ -6,15 +6,32 @@ import { Button } from '../ui';
  * Un item, quel que soit son type, se joue de la même façon :
  * l'enfant répond, on dit si c'est juste, on passe.
  *
- * Chaque type a sa forme de payload et de réponse. Les gardes ci-dessous
- * refusent de jouer un item mal formé plutôt que de planter l'écran : un
- * contenu généré peut toujours arriver de travers, et l'enfant n'a pas à en
- * faire les frais.
+ * Tout est dimensionné pour un doigt sur un téléphone partagé : cibles d'au
+ * moins 60 px de haut, texte large, et aucun glisser-déposer.
  */
 
 export type Reponse = { correct: boolean; donnee: unknown };
 
-type Props = { item: ItemRow; onRepondre: (r: Reponse) => void; verrouille: boolean };
+type Props = {
+  item: ItemRow;
+  onRepondre: (r: Reponse) => void;
+  verrouille: boolean;
+  /** Vignette de la notion, posée contre l'énoncé et non contre l'exercice :
+      les réponses gardent ainsi toute la largeur, ce qui compte sur un
+      téléphone où une option sur deux lignes devient pénible à viser. */
+  visuel?: React.ReactNode;
+};
+
+function Enonce({ visuel, children }: { visuel?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-3">
+      {visuel}
+      <h2 className="flex-1 text-kid-xl leading-snug font-extrabold text-balance">{children}</h2>
+    </div>
+  );
+}
+
+const LETTRES = ['A', 'B', 'C', 'D', 'E'];
 
 /** Comparaison indulgente : la casse, les accents et les espaces ne comptent pas. */
 export function memeMot(a: string, b: string) {
@@ -28,31 +45,52 @@ export function memeMot(a: string, b: string) {
   return net(a) === net(b);
 }
 
-function Qcm({ item, onRepondre, verrouille }: Props) {
+function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
   const payload = item.payload as { question: string; options: string[] };
   const bonne = (item.answer as { index: number }).index;
   const [choisi, setChoisi] = useState<number | null>(null);
 
   return (
     <>
-      <h3 className="text-xl font-bold">{payload.question}</h3>
-      <div className="mt-4 grid gap-2">
+      <Enonce visuel={visuel}>{payload.question}</Enonce>
+      <div className="mt-5 grid gap-3">
         {payload.options.map((option, i) => {
-          let look = 'border-line bg-white-warm hover:border-ink-2';
-          if (verrouille && i === bonne) look = 'border-leaf bg-leaf/15';
-          else if (verrouille && i === choisi) look = 'border-clay bg-clay/10';
+          const estBonne = verrouille && i === bonne;
+          const estRate = verrouille && i === choisi && i !== bonne;
           return (
             <button
               key={i}
               type="button"
               disabled={verrouille}
-              className={'rounded-2xl border px-4 py-3 text-left transition ' + look}
               onClick={() => {
                 setChoisi(i);
                 onRepondre({ correct: i === bonne, donnee: { index: i } });
               }}
+              className={
+                'tuile flex min-h-[60px] items-center gap-3 rounded-[var(--radius-tile)] border-2 px-4 py-3 text-left text-kid shadow-[var(--shadow-tile)] ' +
+                (estBonne
+                  ? 'border-leaf bg-leaf/15'
+                  : estRate
+                    ? 'border-clay bg-clay/12'
+                    : verrouille
+                      ? 'border-line bg-white-warm opacity-55'
+                      : 'border-line bg-white-warm hover:border-ink-2')
+              }
             >
-              {option}
+              <span
+                aria-hidden="true"
+                className={
+                  'grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-black ' +
+                  (estBonne
+                    ? 'bg-leaf text-white-warm'
+                    : estRate
+                      ? 'bg-clay text-white-warm'
+                      : 'bg-sand text-ink')
+                }
+              >
+                {estBonne ? '✓' : estRate ? '✗' : LETTRES[i]}
+              </span>
+              <span className="flex-1">{option}</span>
             </button>
           );
         })}
@@ -61,7 +99,7 @@ function Qcm({ item, onRepondre, verrouille }: Props) {
   );
 }
 
-function Chronologie({ item, onRepondre, verrouille }: Props) {
+function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
   const payload = item.payload as { question: string; tokens: string[] };
   const ordre = (item.answer as { order: number[] }).order;
   const [choisis, setChoisis] = useState<number[]>([]);
@@ -72,17 +110,16 @@ function Chronologie({ item, onRepondre, verrouille }: Props) {
     const suite = [...choisis, i];
     setChoisis(suite);
     if (suite.length === payload.tokens.length) {
-      const correct = suite.every((val, pos) => val === ordre[pos]);
-      onRepondre({ correct, donnee: { order: suite } });
+      onRepondre({ correct: suite.every((v, pos) => v === ordre[pos]), donnee: { order: suite } });
     }
   }
 
   return (
     <>
-      <h3 className="text-xl font-bold">{payload.question}</h3>
-      <p className="mt-1 text-sm text-muted">Touche les étiquettes dans le bon ordre.</p>
+      <Enonce visuel={visuel}>{payload.question}</Enonce>
+      <p className="mt-1 text-kid-sm text-muted">Touche les étiquettes dans le bon ordre.</p>
 
-      <ol className="mt-4 grid gap-2">
+      <ol className="mt-5 grid gap-2">
         {payload.tokens.map((_, position) => {
           const rempli = choisis[position];
           const juste = verrouille && rempli === ordre[position];
@@ -91,23 +128,23 @@ function Chronologie({ item, onRepondre, verrouille }: Props) {
             <li
               key={position}
               className={
-                'flex items-center gap-3 rounded-2xl border px-4 py-3 ' +
+                'flex min-h-[56px] items-center gap-3 rounded-[var(--radius-tile)] border-2 px-4 py-3 text-kid ' +
                 (juste
                   ? 'border-leaf bg-leaf/15'
                   : faux
-                    ? 'border-clay bg-clay/10'
-                    : 'border-dashed border-line')
+                    ? 'border-clay bg-clay/12'
+                    : 'border-dashed border-line bg-white-warm/60')
               }
             >
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-gold/30 text-sm font-bold">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sand text-sm font-black">
                 {position + 1}
               </span>
-              <span className={rempli === undefined ? 'text-muted' : ''}>
+              <span className={rempli === undefined ? 'text-muted' : 'font-semibold'}>
                 {rempli === undefined ? 'à compléter' : payload.tokens[rempli]}
               </span>
               {faux ? (
-                <span className="ml-auto text-xs text-clay-dark">
-                  → {payload.tokens[ordre[position]]}
+                <span className="ml-auto text-right text-kid-sm text-clay-dark">
+                  {payload.tokens[ordre[position]]}
                 </span>
               ) : null}
             </li>
@@ -121,7 +158,7 @@ function Chronologie({ item, onRepondre, verrouille }: Props) {
             <button
               key={i}
               type="button"
-              className="rounded-full border border-line bg-white-warm px-4 py-2 text-sm hover:border-ink-2"
+              className="tuile min-h-[48px] rounded-full border-2 border-line bg-white-warm px-5 text-kid font-semibold shadow-[var(--shadow-tile)] hover:border-ink-2"
               onClick={() => ajouter(i)}
             >
               {payload.tokens[i]}
@@ -133,7 +170,7 @@ function Chronologie({ item, onRepondre, verrouille }: Props) {
       {!verrouille && choisis.length > 0 ? (
         <button
           type="button"
-          className="mt-3 text-sm font-semibold text-clay underline"
+          className="mt-3 text-kid-sm font-bold text-clay underline"
           onClick={() => setChoisis([])}
         >
           Recommencer
@@ -143,7 +180,7 @@ function Chronologie({ item, onRepondre, verrouille }: Props) {
   );
 }
 
-function TexteATrous({ item, onRepondre, verrouille }: Props) {
+function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
   const payload = item.payload as { text: string; blanks: number };
   const attendues = (item.answer as { values: string[] }).values;
   const [saisies, setSaisies] = useState<string[]>(() => attendues.map(() => ''));
@@ -151,27 +188,23 @@ function TexteATrous({ item, onRepondre, verrouille }: Props) {
   const morceaux = payload.text.split(/\{\{\d+\}\}/);
   const complet = saisies.every((s) => s.trim() !== '');
 
-  function valider() {
-    const correct = saisies.every((s, i) => memeMot(s, attendues[i] ?? ''));
-    onRepondre({ correct, donnee: { values: saisies } });
-  }
-
   return (
     <>
-      <h3 className="text-xl font-bold">Complète la phrase</h3>
-      <p className="mt-4 text-lg leading-relaxed">
+      <Enonce visuel={visuel}>Complète la phrase</Enonce>
+      <p className="mt-5 text-kid-lg leading-loose">
         {morceaux.map((morceau, i) => (
           <span key={i}>
             {morceau}
             {i < saisies.length ? (
               <input
+                aria-label={`Mot ${i + 1}`}
                 className={
-                  'mx-1 inline-block w-32 rounded-xl border-b-2 bg-transparent px-2 py-1 text-center outline-none ' +
+                  'mx-1 inline-block w-36 rounded-xl border-b-[3px] bg-white-warm px-2 py-1 text-center font-bold outline-none ' +
                   (verrouille
                     ? memeMot(saisies[i], attendues[i] ?? '')
                       ? 'border-leaf text-leaf'
-                      : 'border-clay text-clay-dark line-through'
-                    : 'border-line focus:border-ink-2')
+                      : 'border-clay text-clay-dark'
+                    : 'border-line focus:border-clay')
                 }
                 value={saisies[i]}
                 disabled={verrouille}
@@ -187,11 +220,20 @@ function TexteATrous({ item, onRepondre, verrouille }: Props) {
       </p>
 
       {verrouille ? (
-        <p className="mt-3 text-sm text-ink-2">
+        <p className="mt-4 text-kid-sm text-ink-2">
           Réponse : <strong>{attendues.join(' · ')}</strong>
         </p>
       ) : (
-        <Button className="mt-4" onClick={valider} disabled={!complet}>
+        <Button
+          className="mt-5"
+          onClick={() =>
+            onRepondre({
+              correct: saisies.every((s, i) => memeMot(s, attendues[i] ?? '')),
+              donnee: { values: saisies },
+            })
+          }
+          disabled={!complet}
+        >
           Vérifier
         </Button>
       )}
@@ -245,7 +287,7 @@ export default function ItemPlayer(props: Props) {
 
   if (!estJouable(item)) {
     return (
-      <p className="text-sm text-muted">
+      <p className="text-kid-sm text-muted">
         Cette question n’est pas encore jouable ici ({item.kind}). Elle reste en base, rien n’est
         perdu.
       </p>

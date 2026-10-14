@@ -63,6 +63,7 @@ export interface LessonRow {
   lang: string;
   chapter: string | null;
   sort_order: number;
+  illustration: string | null;
   status: ContentStatus;
   created_at: string;
 }
@@ -74,6 +75,7 @@ export interface NotionRow {
   kind: NotionKind;
   statement: string;
   sort_order: number;
+  illustration: string | null;
   status: ContentStatus;
   created_at: string;
 }

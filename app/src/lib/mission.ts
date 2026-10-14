@@ -42,7 +42,7 @@ export async function construireMission(childId: string, lessonId: string) {
   const { data, error } = await supabase
     .from('notions')
     .select(
-      'id, lesson_id, kind, statement, sort_order, parent_id, status, created_at, ' +
+      'id, lesson_id, kind, statement, sort_order, illustration, parent_id, status, created_at, ' +
         'items(id, notion_id, kind, level, payload, answer, explain, parent_id, status, created_at)',
     )
     .eq('lesson_id', lessonId)

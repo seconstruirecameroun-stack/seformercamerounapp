@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
+import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
-import { construireMission, TAILLE_MISSION } from '../../lib/mission';
+import { construireMission } from '../../lib/mission';
 import type { EtapeMission } from '../../lib/mission';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
-import { Button, Card, ErrorNote, Loading, Pill } from '../../components/ui';
+import Illustration from '../../components/Illustration';
+import Guide from '../../components/Guide';
+import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
 
 type LessonBundle = {
@@ -15,54 +18,115 @@ type LessonBundle = {
   title: string;
   summary: string | null;
   lang: string;
+  illustration: string | null;
   notions: Array<NotionRow & { explanations: ExplanationRow[] }>;
   videos: VideoRow[];
 };
 
 const NIVEAUX = ['Découverte', 'Entraînement', 'Maîtrise', 'Défi'];
 
-/** Fait tourner les registres d’explication : c’est « Explique autrement ». */
-function NotionCard({ notion }: { notion: LessonBundle['notions'][number] }) {
+/** Bouton rond et large : la cible principale de l'espace enfant. */
+function GrosBouton({
+  children,
+  onClick,
+  variante = 'clay',
+  type = 'button',
+  disabled,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  variante?: 'clay' | 'douce';
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+}) {
+  const look =
+    variante === 'clay'
+      ? 'bg-clay text-white-warm shadow-[0_3px_0_var(--color-clay-dark)]'
+      : 'bg-white-warm text-ink border-2 border-line shadow-[var(--shadow-tile)]';
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={
+        'tuile inline-flex min-h-[54px] items-center justify-center gap-2 rounded-full px-7 text-kid font-extrabold disabled:opacity-45 ' +
+        look
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Les étapes franchies, en galets. Une barre de progression ne dit rien à
+    un enfant qui ne sait pas encore lire les pourcentages. */
+function Galets({ total, faits }: { total: number; faits: number }) {
+  return (
+    <div className="flex items-center gap-1.5" aria-label={`${faits} sur ${total}`}>
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={
+            'h-2.5 rounded-full transition-all duration-300 ' +
+            (i < faits ? 'w-7 bg-gold' : i === faits ? 'w-7 bg-gold/35' : 'w-2.5 bg-line')
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+function CarteNotion({ notion }: { notion: LessonBundle['notions'][number] }) {
   const [montre, setMontre] = useState(0);
   const explications = notion.explanations ?? [];
   const courante = explications.length > 0 ? explications[montre % explications.length] : null;
 
   return (
-    <article className="rounded-2xl border border-line bg-white-warm p-5">
-      <Pill>{notion.kind}</Pill>
-      <h3 className="mt-2 font-bold">{notion.statement}</h3>
-      {courante ? (
-        <>
-          <p className="mt-3 text-sm text-ink-2">{courante.body}</p>
-          {explications.length > 1 ? (
-            <button
-              type="button"
-              className="mt-3 text-sm font-semibold text-clay underline"
-              onClick={() => setMontre(montre + 1)}
-            >
-              Explique autrement ({(montre % explications.length) + 1}/{explications.length})
-            </button>
-          ) : null}
-        </>
-      ) : (
-        <p className="mt-3 text-sm text-muted">Pas encore d’explication pour cette notion.</p>
-      )}
+    <article className="flex gap-4 rounded-[var(--radius-card)] border border-line bg-white-warm p-4">
+      {notion.illustration ? (
+        <Illustration
+          cle={notion.illustration}
+          forme="objet"
+          alt=""
+          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+        />
+      ) : null}
+      <div className="min-w-0">
+        <h3 className="text-kid font-extrabold">{notion.statement}</h3>
+        {courante ? (
+          <>
+            <p className="mt-2 text-kid-sm leading-relaxed text-ink-2">{courante.body}</p>
+            {explications.length > 1 ? (
+              <button
+                type="button"
+                className="mt-2 text-kid-sm font-bold text-clay underline"
+                onClick={() => setMontre(montre + 1)}
+              >
+                Explique autrement
+              </button>
+            ) : null}
+          </>
+        ) : null}
+      </div>
     </article>
   );
 }
 
-/**
- * La séance du jour.
- *
- * Une question par notion, au niveau de maîtrise de l'enfant, les notions
- * dues en premier. Chaque réponse est journalisée et met à jour la maîtrise ;
- * c'est elle qui décide de la séance du lendemain.
- */
-function Mission({ parentId, childId, lessonId }: { parentId: string; childId: string; lessonId: string }) {
+function Mission({
+  parentId,
+  childId,
+  lessonId,
+}: {
+  parentId: string;
+  childId: string;
+  lessonId: string;
+}) {
   const qc = useQueryClient();
   const [index, setIndex] = useState(0);
   const [verrouille, setVerrouille] = useState(false);
+  const [juste, setJuste] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [dernierGain, setDernierGain] = useState(0);
   const [gagnes, setGagnes] = useState(0);
   const [justes, setJustes] = useState(0);
   const [erreur, setErreur] = useState<unknown>(null);
@@ -73,51 +137,56 @@ function Mission({ parentId, childId, lessonId }: { parentId: string; childId: s
     staleTime: 0,
   });
 
-  if (mission.isLoading) return <Loading label="Préparation de ta mission…" />;
+  if (mission.isLoading) return <Loading label="Je prépare ta mission…" />;
   if (mission.error) return <ErrorNote error={mission.error} />;
 
   const etapes = (mission.data ?? []) as EtapeMission[];
 
   if (etapes.length === 0) {
     return (
-      <Card>
-        <h3 className="text-xl font-bold">Rien à réviser pour l’instant</h3>
-        <p className="mt-2 text-sm text-muted">
-          Cette leçon n’a pas encore de questions validées. Reviens quand un parent en aura publié.
+      <div className="rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
+        <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
+        <h2 className="mt-3 text-kid-lg font-extrabold">Rien à réviser aujourd’hui</h2>
+        <p className="mt-1 text-kid-sm text-muted">
+          Reviens quand un parent aura publié une leçon.
         </p>
-      </Card>
+      </div>
     );
   }
 
   if (index >= etapes.length) {
     return (
-      <Card className="text-center">
-        <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gold/30 text-3xl">
-          ★
+      <div className="monte overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm text-center shadow-[var(--shadow-card)]">
+        <div className="bg-gold/25 px-6 py-7">
+          <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
+          <h2 className="mt-3 text-kid-2xl font-black">Mission terminée !</h2>
+          <p className="mt-1 text-kid font-bold text-ink-2">
+            {justes} sur {etapes.length} · +{gagnes} points
+          </p>
         </div>
-        <h3 className="mt-3 text-2xl font-black">Mission terminée !</h3>
-        <p className="mt-2 text-ink-2">
-          {justes} bonne{justes > 1 ? 's' : ''} réponse{justes > 1 ? 's' : ''} sur {etapes.length} ·{' '}
-          <strong>+{gagnes} points</strong>
-        </p>
-        <p className="mt-2 text-sm text-muted">
-          Ta progression est enregistrée. Les notions ratées reviendront demain.
-        </p>
-        <Button
-          className="mt-4"
-          variant="secondary"
-          onClick={() => {
-            setIndex(0);
-            setVerrouille(false);
-            setMessage(null);
-            setGagnes(0);
-            setJustes(0);
-            mission.refetch();
-          }}
-        >
-          Rejouer une séance
-        </Button>
-      </Card>
+        <div className="px-6 py-5">
+          <p className="text-kid-sm text-muted">
+            {justes === etapes.length
+              ? 'Tout juste. Les notions reviendront dans quelques jours pour vérifier.'
+              : 'Les notions ratées reviendront demain, avec une autre explication.'}
+          </p>
+          <div className="mt-4">
+            <GrosBouton
+              variante="douce"
+              onClick={() => {
+                setIndex(0);
+                setVerrouille(false);
+                setMessage(null);
+                setGagnes(0);
+                setJustes(0);
+                mission.refetch();
+              }}
+            >
+              Rejouer
+            </GrosBouton>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -126,6 +195,7 @@ function Mission({ parentId, childId, lessonId }: { parentId: string; childId: s
   async function repondre(reponse: Reponse) {
     if (verrouille) return;
     setVerrouille(true);
+    setJuste(reponse.correct);
     setErreur(null);
     try {
       const bilan = await recordAttempt({
@@ -135,12 +205,12 @@ function Mission({ parentId, childId, lessonId }: { parentId: string; childId: s
         answer: reponse.donnee,
         correct: reponse.correct,
       });
-      const bouts: string[] = [reponse.correct ? 'Bravo !' : 'À retenir :'];
+      const bouts: string[] = [];
       if (etape.item.explain) bouts.push(etape.item.explain);
-      if (bilan.points > 0) bouts.push(`+${bilan.points} points`);
       if (bilan.leveledUp) bouts.push(`Tu passes en « ${NIVEAUX[bilan.level - 1]} » !`);
       if (bilan.leveledDown) bouts.push('On reprend plus doucement : relis l’explication.');
-      setMessage(bouts.join(' '));
+      setMessage(bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'));
+      setDernierGain(bilan.points);
       setGagnes(gagnes + bilan.points);
       if (reponse.correct) setJustes(justes + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
@@ -151,44 +221,67 @@ function Mission({ parentId, childId, lessonId }: { parentId: string; childId: s
   }
 
   return (
-    <Card>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-bold tracking-wide text-muted uppercase">
-          Question {index + 1} sur {etapes.length}
-        </p>
-        <Pill>{NIVEAUX[etape.item.level - 1] ?? 'Niveau ' + etape.item.level}</Pill>
-      </div>
-      <div className="mt-2 h-2 overflow-hidden rounded-full bg-line">
-        <div
-          className="h-full rounded-full bg-gold transition-all"
-          style={{ width: `${(index / etapes.length) * 100}%` }}
-        />
+    <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <Galets total={etapes.length} faits={index} />
+        <span className="rounded-full bg-sand px-3 py-1 text-xs font-black tracking-wide uppercase">
+          {NIVEAUX[etape.item.level - 1] ?? 'Niveau ' + etape.item.level}
+        </span>
       </div>
 
       <div className="mt-5">
-        <ItemPlayer item={etape.item} onRepondre={repondre} verrouille={verrouille} />
+        <ItemPlayer
+          item={etape.item}
+          onRepondre={repondre}
+          verrouille={verrouille}
+          visuel={
+            etape.notion.illustration ? (
+              <Illustration
+                cle={etape.notion.illustration}
+                forme="objet"
+                alt=""
+                priorite
+                className="h-14 w-14 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20"
+              />
+            ) : null
+          }
+        />
       </div>
 
       {erreur ? (
-        <div className="mt-3">
+        <div className="mt-4">
           <ErrorNote error={erreur} />
         </div>
       ) : null}
-      {message ? <p className="mt-4 text-sm font-semibold text-ink-2">{message}</p> : null}
+
+      {message ? (
+        <Guide ton={juste ? 'juste' : 'faux'}>
+          <strong className="block">{juste ? 'Bravo !' : 'À retenir'}</strong>
+          {message}
+          {dernierGain > 0 ? (
+            <span className="gain absolute -top-6 right-3 text-kid font-black text-gold">
+              +{dernierGain}
+            </span>
+          ) : null}
+        </Guide>
+      ) : null}
 
       {verrouille ? (
-        <Button
-          className="mt-4"
-          onClick={() => {
-            setIndex(index + 1);
-            setVerrouille(false);
-            setMessage(null);
-          }}
-        >
-          {index + 1 === etapes.length ? 'Voir mon résultat' : 'Question suivante'}
-        </Button>
+        <div className="mt-5">
+          <GrosBouton
+            onClick={() => {
+              setIndex(index + 1);
+              setVerrouille(false);
+              setMessage(null);
+              setDernierGain(0);
+            }}
+          >
+            {index + 1 === etapes.length ? 'Voir mon résultat' : 'Question suivante'}
+            <span aria-hidden="true">→</span>
+          </GrosBouton>
+        </div>
       ) : null}
-    </Card>
+    </section>
   );
 }
 
@@ -196,13 +289,11 @@ export default function ChildSpace() {
   const { childId } = useParams<{ childId: string }>();
   const [onglet, setOnglet] = useState<'mission' | 'lecon'>('mission');
 
-  const me = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user?.id ?? null;
-    },
-  });
+  // L'identifiant du parent vient de la session déjà en mémoire. Passer par
+  // auth.getUser() ajoutait un aller-retour réseau avant le premier affichage,
+  // et l'enfant restait devant un écran vide le temps de la réponse.
+  const { session } = useSession();
+  const parentId = session?.user.id ?? null;
 
   const child = useQuery({
     queryKey: ['child', childId],
@@ -224,8 +315,8 @@ export default function ChildSpace() {
       const { data, error } = await supabase
         .from('lessons')
         .select(
-          'id, title, summary, lang, ' +
-            'notions(id, kind, statement, sort_order, parent_id, lesson_id, status, created_at, ' +
+          'id, title, summary, lang, illustration, ' +
+            'notions(id, kind, statement, sort_order, illustration, parent_id, lesson_id, status, created_at, ' +
             'explanations(id, register, body, notion_id, parent_id, status, created_at)), ' +
             'videos(id, external_url, poster_url, duration_s, status, lesson_id, parent_id, manifest, voice_preset, storage_path, created_at)',
         )
@@ -259,92 +350,117 @@ export default function ChildSpace() {
     .filter((n) => n.status === 'approved')
     .sort((a, b) => a.sort_order - b.sort_order);
   const video = bundle?.videos?.[0];
+  const prenom = child.data?.first_name ?? '';
 
   return (
-    <main className="mx-auto max-w-3xl p-6">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Pill>Bonjour {child.data?.first_name ?? ''}</Pill>
-          <h1 className="mt-2 text-2xl font-black">{bundle?.title ?? 'Pas encore de leçon'}</h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="rounded-full bg-gold/30 px-4 py-2 text-sm font-bold">
-            {points.data ?? 0} points
-          </span>
-          <Link to="/">
-            <Button variant="secondary">Changer de profil</Button>
+    <main className="ciel min-h-screen pb-12">
+      <div className="mx-auto max-w-2xl px-4 pt-4 sm:px-6">
+        <header className="flex items-center justify-between gap-3">
+          <Link
+            to="/"
+            className="flex items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-4 pl-1.5 text-kid-sm font-bold"
+          >
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-lilac text-base">
+              {child.data?.avatar ?? prenom.slice(0, 1).toUpperCase()}
+            </span>
+            {prenom}
           </Link>
-        </div>
-      </header>
+          <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
+            <span aria-hidden="true">★</span>
+            {points.data ?? 0}
+          </span>
+        </header>
 
-      {!bundle ? (
-        <Card>
-          <p className="text-sm text-muted">
-            Aucune leçon publiée pour l’instant. Un parent peut en publier une depuis l’espace
-            parent.
-          </p>
-        </Card>
-      ) : (
-        <>
-          <nav className="mb-4 flex gap-2">
-            <Button
-              variant={onglet === 'mission' ? 'primary' : 'secondary'}
-              onClick={() => setOnglet('mission')}
-            >
-              Ma mission du jour
-            </Button>
-            <Button
-              variant={onglet === 'lecon' ? 'primary' : 'secondary'}
-              onClick={() => setOnglet('lecon')}
-            >
-              Ma leçon
-            </Button>
-          </nav>
-
-          {onglet === 'mission' ? (
-            me.data && childId ? (
-              <Mission parentId={me.data} childId={childId} lessonId={bundle.id} />
-            ) : (
-              <Loading />
-            )
-          ) : (
-            <div className="grid gap-4">
-              {video?.external_url ? (
-                <Card>
-                  <video
-                    controls
-                    playsInline
-                    preload="metadata"
-                    poster={video.poster_url ?? undefined}
-                    src={video.external_url}
-                    className="w-full rounded-2xl"
-                  />
-                  <p className="mt-3 text-xs text-muted">
-                    Film animé · {video.duration_s ?? 0} secondes
-                  </p>
-                </Card>
-              ) : null}
-
-              {bundle.summary ? (
-                <Card>
-                  <h2 className="text-lg font-bold">Le résumé à retenir</h2>
-                  <p className="mt-2 text-ink-2">{bundle.summary}</p>
-                </Card>
-              ) : null}
-
-              <div className="grid gap-3">
-                {notions.map((notion) => (
-                  <NotionCard key={notion.id} notion={notion} />
-                ))}
+        {!bundle ? (
+          <div className="mt-8 rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
+            <h1 className="text-kid-lg font-extrabold">Pas encore de leçon</h1>
+            <p className="mt-2 text-kid-sm text-muted">
+              Un parent doit d’abord en publier une depuis l’espace parent.
+            </p>
+          </div>
+        ) : (
+          <>
+            <section className="relative mt-4 overflow-hidden rounded-[var(--radius-card)] shadow-[var(--shadow-card)]">
+              <Illustration
+                cle={bundle.illustration}
+                forme="scene"
+                alt=""
+                priorite
+                className="h-40 w-full object-cover sm:h-52"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/35 to-transparent px-5 pt-12 pb-4">
+                <p className="text-xs font-black tracking-widest text-gold uppercase">
+                  Ta mission du jour
+                </p>
+                <h1 className="text-kid-2xl leading-tight font-black text-white-warm text-balance">
+                  {bundle.title}
+                </h1>
               </div>
+            </section>
 
-              <p className="text-center text-xs text-muted">
-                Ta mission du jour pose {TAILLE_MISSION} questions au maximum, une par notion.
-              </p>
+            <nav className="mt-4 flex gap-2" aria-label="Sections">
+              {(
+                [
+                  ['mission', 'Jouer'],
+                  ['lecon', 'Apprendre'],
+                ] as const
+              ).map(([cle, libelle]) => (
+                <button
+                  key={cle}
+                  type="button"
+                  onClick={() => setOnglet(cle)}
+                  className={
+                    'tuile min-h-[46px] flex-1 rounded-full px-4 text-kid font-extrabold ' +
+                    (onglet === cle
+                      ? 'bg-ink text-white-warm'
+                      : 'border-2 border-line bg-white-warm/70 text-ink-2')
+                  }
+                >
+                  {libelle}
+                </button>
+              ))}
+            </nav>
+
+            <div className="mt-4">
+              {onglet === 'mission' ? (
+                parentId && childId ? (
+                  <Mission parentId={parentId} childId={childId} lessonId={bundle.id} />
+                ) : (
+                  <Loading />
+                )
+              ) : (
+                <div className="grid gap-3">
+                  {video?.external_url ? (
+                    <div className="overflow-hidden rounded-[var(--radius-card)] shadow-[var(--shadow-card)]">
+                      <video
+                        controls
+                        playsInline
+                        preload="none"
+                        poster={video.poster_url ?? undefined}
+                        src={video.external_url}
+                        className="w-full"
+                      />
+                    </div>
+                  ) : null}
+
+                  {bundle.summary ? (
+                    <section className="rounded-[var(--radius-card)] border-2 border-dashed border-gold/60 bg-sand/60 p-5">
+                      <h2 className="text-xs font-black tracking-widest text-clay-dark uppercase">
+                        À retenir
+                      </h2>
+                      <p className="mt-2 text-kid leading-relaxed">{bundle.summary}</p>
+                    </section>
+                  ) : null}
+
+                  {notions.map((notion) => (
+                    <CarteNotion key={notion.id} notion={notion} />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </>
-      )}
+          </>
+        )}
+      </div>
     </main>
   );
 }
