@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
@@ -6,11 +6,12 @@ import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
 import { construireMission } from '../../lib/mission';
 import { NIVEAU_ACQUIS } from '../../lib/dashboard';
+import { lire, peutParler, stopper } from '../../lib/voix';
 import type { EtapeMission } from '../../lib/mission';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
 import Illustration from '../../components/Illustration';
-import Guide from '../../components/Guide';
+import Popup from '../../components/Popup';
 import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
 
@@ -26,6 +27,28 @@ type LessonBundle = {
 };
 
 const NIVEAUX = ['Découverte', 'Entraînement', 'Maîtrise', 'Défi'];
+
+/** Ce que promet chaque registre d'explication, dit à l'enfant. */
+const REGISTRES: Record<string, string> = {
+  simple: 'En deux mots',
+  analogie: 'C’est comme…',
+  histoire: 'Une petite histoire',
+  visuel: 'À imaginer',
+  pas_a_pas: 'Pas à pas',
+};
+
+function BoutonEcouter({ texte, langue }: { texte: string; langue: string }) {
+  if (!peutParler()) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => lire(texte, langue)}
+      className="tuile inline-flex min-h-[40px] items-center gap-1.5 rounded-full border-2 border-line bg-white-warm px-4 text-kid-sm font-bold"
+    >
+      <span aria-hidden="true">🔊</span> Écouter
+    </button>
+  );
+}
 
 /** Bouton rond et large : la cible principale de l'espace enfant. */
 function GrosBouton({
@@ -78,37 +101,74 @@ function Galets({ total, faits }: { total: number; faits: number }) {
   );
 }
 
-function CarteNotion({ notion }: { notion: LessonBundle['notions'][number] }) {
+function CarteNotion({
+  notion,
+  rang,
+  langue,
+  niveau,
+}: {
+  notion: LessonBundle['notions'][number];
+  rang: number;
+  langue: string;
+  niveau: number;
+}) {
   const [montre, setMontre] = useState(0);
   const explications = notion.explanations ?? [];
   const courante = explications.length > 0 ? explications[montre % explications.length] : null;
+  const acquise = niveau >= NIVEAU_ACQUIS;
 
   return (
-    <article className="flex gap-4 rounded-[var(--radius-card)] border border-line bg-white-warm p-4">
-      {notion.illustration ? (
-        <Illustration
-          cle={notion.illustration}
-          forme="objet"
-          alt=""
-          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
-        />
-      ) : null}
-      <div className="min-w-0">
-        <h3 className="text-kid font-extrabold">{notion.statement}</h3>
-        {courante ? (
-          <>
-            <p className="mt-2 text-kid-sm leading-relaxed text-ink-2">{courante.body}</p>
-            {explications.length > 1 ? (
-              <button
-                type="button"
-                className="mt-2 text-kid-sm font-bold text-clay underline"
-                onClick={() => setMontre(montre + 1)}
-              >
-                Explique autrement
-              </button>
-            ) : null}
-          </>
+    <article className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm">
+      <div className="flex items-center gap-3 bg-sand/50 px-4 py-3">
+        <span
+          className={
+            'grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-black ' +
+            (acquise ? 'bg-gold text-ink' : 'bg-white-warm text-muted')
+          }
+        >
+          {acquise ? '★' : rang}
+        </span>
+        <h3 className="flex-1 text-kid font-extrabold">{notion.statement}</h3>
+      </div>
+
+      <div className="flex gap-4 p-4">
+        {notion.illustration ? (
+          <Illustration
+            cle={notion.illustration}
+            forme="objet"
+            alt=""
+            className={
+              'h-24 w-24 shrink-0 rounded-2xl object-cover ' + (acquise ? '' : 'opacity-90')
+            }
+          />
         ) : null}
+        <div className="min-w-0 flex-1">
+          {courante ? (
+            <>
+              <p className="text-xs font-black tracking-wide text-clay-dark uppercase">
+                {REGISTRES[courante.register] ?? 'Explication'}
+              </p>
+              <p className="mt-1 text-kid-sm leading-relaxed text-ink-2">{courante.body}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <BoutonEcouter texte={notion.statement + '. ' + courante.body} langue={langue} />
+                {explications.length > 1 ? (
+                  <button
+                    type="button"
+                    className="tuile inline-flex min-h-[40px] items-center rounded-full bg-clay/12 px-4 text-kid-sm font-bold text-clay-dark"
+                    onClick={() => {
+                      stopper();
+                      setMontre(montre + 1);
+                    }}
+                  >
+                    Explique autrement ({(montre % explications.length) + 1}/{explications.length})
+                  </button>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            <p className="text-kid-sm text-muted">Pas encore d’explication pour cette notion.</p>
+          )}
+        </div>
       </div>
     </article>
   );
@@ -127,9 +187,15 @@ function Mission({
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [verrouille, setVerrouille] = useState(false);
-  const [juste, setJuste] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [dernierGain, setDernierGain] = useState(0);
+  // Le retour de la dernière réponse : tant qu'il est posé, la fenêtre est
+  // ouverte et c'est elle qui porte le passage à la question suivante.
+  const [retour, setRetour] = useState<{
+    ton: 'juste' | 'faux' | 'fete';
+    titre: string;
+    texte: string;
+    points: number;
+    vignette: string | null;
+  } | null>(null);
   const [gagnes, setGagnes] = useState(0);
   const [justes, setJustes] = useState(0);
   // Les notions qui viennent de franchir le seuil de maîtrise pendant cette
@@ -212,10 +278,10 @@ function Mission({
               onClick={() => {
                 setIndex(0);
                 setVerrouille(false);
-                setMessage(null);
                 setGagnes(0);
                 setJustes(0);
                 setRevelees([]);
+                setRetour(null);
                 mission.refetch();
               }}
             >
@@ -232,7 +298,6 @@ function Mission({
   async function repondre(reponse: Reponse) {
     if (verrouille) return;
     setVerrouille(true);
-    setJuste(reponse.correct);
     setErreur(null);
     try {
       const bilan = await recordAttempt({
@@ -242,14 +307,23 @@ function Mission({
         answer: reponse.donnee,
         correct: reponse.correct,
       });
+      const acquise = bilan.previousLevel < NIVEAU_ACQUIS && bilan.level >= NIVEAU_ACQUIS;
+
       const bouts: string[] = [];
       if (etape.item.explain) bouts.push(etape.item.explain);
-      if (bilan.leveledUp) bouts.push(`Tu passes en « ${NIVEAUX[bilan.level - 1]} » !`);
+      if (acquise) bouts.push('Cette image rejoint ta collection.');
+      else if (bilan.leveledUp) bouts.push(`Tu passes en « ${NIVEAUX[bilan.level - 1]} » !`);
       if (bilan.leveledDown) bouts.push('On reprend plus doucement : relis l’explication.');
-      setMessage(bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'));
-      setDernierGain(bilan.points);
+
+      setRetour({
+        ton: acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
+        titre: acquise ? 'Image gagnée !' : reponse.correct ? 'Bravo !' : 'Presque…',
+        texte: bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'),
+        points: bilan.points,
+        vignette: acquise ? etape.notion.illustration : null,
+      });
       setGagnes(gagnes + bilan.points);
-      if (bilan.previousLevel < NIVEAU_ACQUIS && bilan.level >= NIVEAU_ACQUIS) {
+      if (acquise) {
         setRevelees((d) => [
           ...d,
           {
@@ -264,8 +338,15 @@ function Mission({
       qc.invalidateQueries({ queryKey: ['tableau', childId] });
     } catch (err) {
       setErreur(err);
-      setMessage(null);
+      setRetour(null);
+      setVerrouille(false);
     }
+  }
+
+  function questionSuivante() {
+    setRetour(null);
+    setIndex(index + 1);
+    setVerrouille(false);
   }
 
   return (
@@ -302,32 +383,32 @@ function Mission({
         </div>
       ) : null}
 
-      {message ? (
-        <Guide ton={juste ? 'juste' : 'faux'}>
-          <strong className="block">{juste ? 'Bravo !' : 'À retenir'}</strong>
-          {message}
-          {dernierGain > 0 ? (
-            <span className="gain absolute -top-6 right-3 text-kid font-black text-gold">
-              +{dernierGain}
+      {retour ? (
+        <Popup
+          ton={retour.ton}
+          titre={retour.titre}
+          action={index + 1 === etapes.length ? 'Voir mon résultat' : 'Question suivante'}
+          onFermer={questionSuivante}
+          vignette={
+            retour.vignette ? (
+              <Illustration
+                cle={retour.vignette}
+                forme="objet"
+                alt=""
+                className="h-28 w-28 object-cover"
+              />
+            ) : (
+              <Illustration cle="guide" forme="portrait" alt="" className="h-28 w-auto" />
+            )
+          }
+        >
+          {retour.texte}
+          {retour.points > 0 ? (
+            <span className="mt-3 block text-kid-lg font-black text-gold">
+              +{retour.points} points
             </span>
           ) : null}
-        </Guide>
-      ) : null}
-
-      {verrouille ? (
-        <div className="mt-5">
-          <GrosBouton
-            onClick={() => {
-              setIndex(index + 1);
-              setVerrouille(false);
-              setMessage(null);
-              setDernierGain(0);
-            }}
-          >
-            {index + 1 === etapes.length ? 'Voir mon résultat' : 'Question suivante'}
-            <span aria-hidden="true">→</span>
-          </GrosBouton>
-        </div>
+        </Popup>
       ) : null}
     </section>
   );
@@ -336,6 +417,9 @@ function Mission({
 export default function ChildSpace() {
   const { childId, lessonId } = useParams<{ childId: string; lessonId: string }>();
   const [onglet, setOnglet] = useState<'mission' | 'lecon'>('mission');
+
+  // La voix ne doit pas poursuivre l'enfant d'un écran à l'autre.
+  useEffect(() => stopper, []);
 
   // L'identifiant du parent vient de la session déjà en mémoire. Passer par
   // auth.getUser() ajoutait un aller-retour réseau avant le premier affichage,
@@ -373,6 +457,19 @@ export default function ChildSpace() {
         .maybeSingle();
       if (error) throw error;
       return data as unknown as LessonBundle | null;
+    },
+  });
+
+  const maitrise = useQuery({
+    queryKey: ['maitrise', childId, lessonId],
+    enabled: Boolean(childId && lessonId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('mastery')
+        .select('notion_id, level')
+        .eq('child_id', childId!);
+      if (error) throw error;
+      return new Map((data ?? []).map((m) => [m.notion_id as string, m.level as number]));
     },
   });
 
@@ -493,11 +590,24 @@ export default function ChildSpace() {
                         À retenir
                       </h2>
                       <p className="mt-2 text-kid leading-relaxed">{bundle.summary}</p>
+                      <div className="mt-3">
+                        <BoutonEcouter texte={bundle.summary} langue={bundle.lang} />
+                      </div>
                     </section>
                   ) : null}
 
-                  {notions.map((notion) => (
-                    <CarteNotion key={notion.id} notion={notion} />
+                  <p className="mt-1 text-kid-sm font-bold text-muted">
+                    {notions.length} chose{notions.length > 1 ? 's' : ''} à savoir
+                  </p>
+
+                  {notions.map((notion, i) => (
+                    <CarteNotion
+                      key={notion.id}
+                      notion={notion}
+                      rang={i + 1}
+                      langue={bundle.lang}
+                      niveau={maitrise.data?.get(notion.id) ?? 1}
+                    />
                   ))}
                 </div>
               )}

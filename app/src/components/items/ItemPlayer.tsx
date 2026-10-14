@@ -191,7 +191,7 @@ function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
   return (
     <>
       <Enonce visuel={visuel}>Complète la phrase</Enonce>
-      <p className="mt-5 text-kid-lg leading-loose">
+      <p className="mt-5 text-kid leading-[2.3]">
         {morceaux.map((morceau, i) => (
           <span key={i}>
             {morceau}
@@ -199,7 +199,7 @@ function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
               <input
                 aria-label={`Mot ${i + 1}`}
                 className={
-                  'mx-1 inline-block w-36 rounded-xl border-b-[3px] bg-white-warm px-2 py-1 text-center font-bold outline-none ' +
+                  'mx-1 inline-block w-28 max-w-[42vw] rounded-xl border-b-[3px] bg-sand/50 px-2 py-1 text-center font-bold outline-none ' +
                   (verrouille
                     ? memeMot(saisies[i], attendues[i] ?? '')
                       ? 'border-leaf text-leaf'

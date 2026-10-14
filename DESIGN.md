@@ -65,6 +65,30 @@ d'un cours importé utiliseront la seconde forme.
 tuile s'enfonce sous le doigt, le retour du guide monte de dix pixels, les
 points gagnés s'élèvent et s'effacent. `prefers-reduced-motion` coupe tout.
 
+## Le retour se fait en fenêtre
+
+Après chaque réponse, une fenêtre s'ouvre par-dessus l'écran : bandeau coloré
+selon le résultat, le guide ou la vignette gagnée, l'explication, les points,
+et un seul gros bouton sous le pouce. Elle se ferme aussi au clic sur le fond,
+à Échap et à Entrée.
+
+C'est la convention du jeu, et elle vaut mieux ici qu'un message en bas de
+page : un texte posé sous la question se lit distraitement, une fenêtre qui
+s'ouvre se regarde. Le bandeau tient le résultat, le bouton tient la suite,
+et il n'y a jamais de choix à faire.
+
+Cela déroge au principe « le modal n'est pas la première réponse » posé pour
+l'espace parent. La dérogation est assumée et limitée à l'espace enfant : là,
+le retour *est* la récompense.
+
+## Lecture à voix haute
+
+Le résumé et chaque explication portent un bouton « Écouter », servi par la
+synthèse du navigateur. Un enfant de primaire lit lentement, et un cours peut
+arriver dans une langue qui n'est pas celle parlée à la maison. Cela ne coûte
+ni octet ni génération, et fonctionne hors-ligne. La voix s'arrête quand on
+change d'explication ou d'écran : elle ne poursuit pas l'enfant.
+
 ## Règles tenues
 
 - **Les galets, pas la barre de progression.** Un enfant qui ne lit pas encore
@@ -75,6 +99,11 @@ points gagnés s'élèvent et s'effacent. `prefers-reduced-motion` coupe tout.
   sinon les réponses perdent la largeur et passent sur deux lignes.
 - **Le ton suit le fond.** On ne félicite pas une erreur avec une couleur de
   réussite.
+- **Le registre d'explication est nommé** à l'enfant : « En deux mots »,
+  « C'est comme… », « Une petite histoire ». Sans cela, « Explique autrement »
+  ressemble à une roue qu'on tourne au hasard.
+- **Une notion maîtrisée porte une étoile** à la place de son numéro, dans la
+  leçon comme dans la collection.
 
 ## Ce qu'on ne fait pas
 

@@ -145,11 +145,28 @@ body {
   animation: halo 900ms var(--ease-out-quint) both;
 }
 
+/* La fenêtre de retour : elle monte du bas au pouce, et grandit un peu au
+   centre sur grand écran. Pas de rebond : une poussée qui s'amortit. */
+@keyframes surgit {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.surgit {
+  animation: surgit 260ms var(--ease-out-quint) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .monte,
   .gain,
   .revele,
   .halo,
+  .surgit,
   .tuile {
     animation: none;
     transition: none;
