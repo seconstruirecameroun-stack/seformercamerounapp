@@ -89,6 +89,24 @@ arriver dans une langue qui n'est pas celle parlée à la maison. Cela ne coûte
 ni octet ni génération, et fonctionne hors-ligne. La voix s'arrête quand on
 change d'explication ou d'écran : elle ne poursuit pas l'enfant.
 
+## La leçon est un paquet de fiches
+
+Une fiche à l'écran, qu'on fait glisser du doigt ou avec un gros bouton
+« Suivant ». Le film et le résumé sont les deux premières fiches : ce sont des
+fiches comme les autres, elles n'ont pas à vivre dans des blocs empilés
+au-dessus.
+
+La version précédente alignait sept cartes dans une page qui défilait. C'était
+complet et illisible : l'enfant faisait défiler sans rien regarder.
+
+Deux conséquences tenues :
+
+- **Jouer reste à portée.** « Passer et jouer » sous les fiches, et la
+  dernière fiche propose « Jouer maintenant ». Apprendre n'est pas une salle
+  d'attente avant le jeu.
+- **Le bandeau de la leçon rétrécit** pendant la lecture : la fiche a besoin
+  de la place, pas le titre.
+
 ## Règles tenues
 
 - **Les galets, pas la barre de progression.** Un enfant qui ne lit pas encore

@@ -30,6 +30,8 @@ const PLAN = {
   'prehistoire-village': { src: '2f72f6', forme: 'scene' },
   'prehistoire-metaux': { src: 'e5a3d7', forme: 'scene' },
   'prehistoire-ecriture': { src: 'a988b7', forme: 'scene' },
+  // L'affiche du film : 22,8 Mo à la source, montrée avant même qu'on le lance.
+  'prehistoire-film': { src: 'e508850', forme: 'scene' },
 
   // Objets : vignette de notion.
   'roue-memoire': { src: 'ba4191', forme: 'objet' },

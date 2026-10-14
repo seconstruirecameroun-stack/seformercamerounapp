@@ -161,7 +161,24 @@ body {
   animation: surgit 260ms var(--ease-out-quint) both;
 }
 
+/* Une fiche entre par le côté d'où elle vient : la direction dit à l'enfant
+   s'il avance ou s'il revient. */
+@keyframes carteEntre {
+  from {
+    opacity: 0;
+    transform: translateX(var(--sens, 18px));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.carte-entre {
+  animation: carteEntre 240ms var(--ease-out-quint) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .carte-entre,
   .monte,
   .gain,
   .revele,

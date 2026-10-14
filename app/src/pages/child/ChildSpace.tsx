@@ -6,11 +6,12 @@ import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
 import { construireMission } from '../../lib/mission';
 import { NIVEAU_ACQUIS } from '../../lib/dashboard';
-import { lire, peutParler, stopper } from '../../lib/voix';
+import { stopper } from '../../lib/voix';
 import type { EtapeMission } from '../../lib/mission';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
 import Illustration from '../../components/Illustration';
+import Fiches from './Fiches';
 import Popup from '../../components/Popup';
 import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
@@ -27,28 +28,6 @@ type LessonBundle = {
 };
 
 const NIVEAUX = ['Découverte', 'Entraînement', 'Maîtrise', 'Défi'];
-
-/** Ce que promet chaque registre d'explication, dit à l'enfant. */
-const REGISTRES: Record<string, string> = {
-  simple: 'En deux mots',
-  analogie: 'C’est comme…',
-  histoire: 'Une petite histoire',
-  visuel: 'À imaginer',
-  pas_a_pas: 'Pas à pas',
-};
-
-function BoutonEcouter({ texte, langue }: { texte: string; langue: string }) {
-  if (!peutParler()) return null;
-  return (
-    <button
-      type="button"
-      onClick={() => lire(texte, langue)}
-      className="tuile inline-flex min-h-[40px] items-center gap-1.5 rounded-full border-2 border-line bg-white-warm px-4 text-kid-sm font-bold"
-    >
-      <span aria-hidden="true">🔊</span> Écouter
-    </button>
-  );
-}
 
 /** Bouton rond et large : la cible principale de l'espace enfant. */
 function GrosBouton({
@@ -98,79 +77,6 @@ function Galets({ total, faits }: { total: number; faits: number }) {
         />
       ))}
     </div>
-  );
-}
-
-function CarteNotion({
-  notion,
-  rang,
-  langue,
-  niveau,
-}: {
-  notion: LessonBundle['notions'][number];
-  rang: number;
-  langue: string;
-  niveau: number;
-}) {
-  const [montre, setMontre] = useState(0);
-  const explications = notion.explanations ?? [];
-  const courante = explications.length > 0 ? explications[montre % explications.length] : null;
-  const acquise = niveau >= NIVEAU_ACQUIS;
-
-  return (
-    <article className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm">
-      <div className="flex items-center gap-3 bg-sand/50 px-4 py-3">
-        <span
-          className={
-            'grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-black ' +
-            (acquise ? 'bg-gold text-ink' : 'bg-white-warm text-muted')
-          }
-        >
-          {acquise ? '★' : rang}
-        </span>
-        <h3 className="flex-1 text-kid font-extrabold">{notion.statement}</h3>
-      </div>
-
-      <div className="flex gap-4 p-4">
-        {notion.illustration ? (
-          <Illustration
-            cle={notion.illustration}
-            forme="objet"
-            alt=""
-            className={
-              'h-24 w-24 shrink-0 rounded-2xl object-cover ' + (acquise ? '' : 'opacity-90')
-            }
-          />
-        ) : null}
-        <div className="min-w-0 flex-1">
-          {courante ? (
-            <>
-              <p className="text-xs font-black tracking-wide text-clay-dark uppercase">
-                {REGISTRES[courante.register] ?? 'Explication'}
-              </p>
-              <p className="mt-1 text-kid-sm leading-relaxed text-ink-2">{courante.body}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <BoutonEcouter texte={notion.statement + '. ' + courante.body} langue={langue} />
-                {explications.length > 1 ? (
-                  <button
-                    type="button"
-                    className="tuile inline-flex min-h-[40px] items-center rounded-full bg-clay/12 px-4 text-kid-sm font-bold text-clay-dark"
-                    onClick={() => {
-                      stopper();
-                      setMontre(montre + 1);
-                    }}
-                  >
-                    Explique autrement ({(montre % explications.length) + 1}/{explications.length})
-                  </button>
-                ) : null}
-              </div>
-            </>
-          ) : (
-            <p className="text-kid-sm text-muted">Pas encore d’explication pour cette notion.</p>
-          )}
-        </div>
-      </div>
-    </article>
   );
 }
 
@@ -527,13 +433,26 @@ export default function ChildSpace() {
                 forme="scene"
                 alt=""
                 priorite
-                className="h-40 w-full object-cover sm:h-52"
+                className={
+                  'w-full object-cover transition-[height] duration-300 ' +
+                  (onglet === 'lecon' ? 'h-24 sm:h-28' : 'h-40 sm:h-52')
+                }
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/35 to-transparent px-5 pt-12 pb-4">
+              <div
+                className={
+                  'absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/35 to-transparent px-5 pb-3 ' +
+                  (onglet === 'lecon' ? 'pt-6' : 'pt-12 pb-4')
+                }
+              >
                 <p className="text-xs font-black tracking-widest text-gold uppercase">
                   {bundle.subjects?.label ?? 'Leçon'}
                 </p>
-                <h1 className="text-kid-2xl leading-tight font-black text-white-warm text-balance">
+                <h1
+                  className={
+                    'leading-tight font-black text-white-warm text-balance ' +
+                    (onglet === 'lecon' ? 'text-kid-lg' : 'text-kid-2xl')
+                  }
+                >
                   {bundle.title}
                 </h1>
               </div>
@@ -571,44 +490,23 @@ export default function ChildSpace() {
                 )
               ) : (
                 <div className="grid gap-3">
-                  {video?.external_url ? (
-                    <div className="overflow-hidden rounded-[var(--radius-card)] shadow-[var(--shadow-card)]">
-                      <video
-                        controls
-                        playsInline
-                        preload="none"
-                        poster={video.poster_url ?? undefined}
-                        src={video.external_url}
-                        className="w-full"
-                      />
-                    </div>
-                  ) : null}
-
-                  {bundle.summary ? (
-                    <section className="rounded-[var(--radius-card)] border-2 border-dashed border-gold/60 bg-sand/60 p-5">
-                      <h2 className="text-xs font-black tracking-widest text-clay-dark uppercase">
-                        À retenir
-                      </h2>
-                      <p className="mt-2 text-kid leading-relaxed">{bundle.summary}</p>
-                      <div className="mt-3">
-                        <BoutonEcouter texte={bundle.summary} langue={bundle.lang} />
-                      </div>
-                    </section>
-                  ) : null}
-
-                  <p className="mt-1 text-kid-sm font-bold text-muted">
-                    {notions.length} chose{notions.length > 1 ? 's' : ''} à savoir
-                  </p>
-
-                  {notions.map((notion, i) => (
-                    <CarteNotion
-                      key={notion.id}
-                      notion={notion}
-                      rang={i + 1}
-                      langue={bundle.lang}
-                      niveau={maitrise.data?.get(notion.id) ?? 1}
-                    />
-                  ))}
+                  <Fiches
+                    film={
+                      video?.external_url
+                        ? {
+                            url: video.external_url,
+                            poster: video.poster_url,
+                            duree: video.duration_s,
+                          }
+                        : null
+                    }
+                    resume={bundle.summary}
+                    illustration={bundle.illustration}
+                    notions={notions}
+                    langue={bundle.lang}
+                    niveaux={maitrise.data ?? new Map()}
+                    onJouer={() => setOnglet('mission')}
+                  />
                 </div>
               )}
             </div>

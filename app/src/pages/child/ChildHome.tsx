@@ -237,7 +237,9 @@ export default function ChildHome() {
 
         <Semaine jours={d.jours} serie={d.serie} />
 
-        {d.lecons.length > 0 ? (
+        {/* Avec une seule leçon, cette liste répéterait la carte du dessus.
+            Elle n'apparaît qu'à partir de la deuxième. */}
+        {d.lecons.length > 1 ? (
           <section>
             <h2 className="text-kid-lg font-extrabold">Mes leçons</h2>
             <div className="mt-2 grid gap-2">
