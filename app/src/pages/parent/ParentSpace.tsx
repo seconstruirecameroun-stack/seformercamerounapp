@@ -1,10 +1,20 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { Button, Card, ErrorNote, Field, Loading, Pill } from '../../components/ui';
+import ImportCourse from './ImportCourse';
+import { verrouiller } from '../../components/PinGate';
 import type { ClassRow } from '../../types/db';
+
+const ETAPES: Record<string, string> = {
+  importe: 'Importé',
+  en_lecture: 'Lecture en cours',
+  a_valider: 'À valider',
+  publie: 'Publié',
+  echec: 'Échec',
+};
 
 type ChildWithClass = {
   id: string;
@@ -233,7 +243,104 @@ function Library() {
   );
 }
 
+/**
+ * Les documents importés, regroupés par envoi.
+ *
+ * Un envoi (batch_id) correspond à ce que le parent a photographié d'un coup.
+ * C'est le candidat naturel pour « une leçon », mais rien n'est figé : le
+ * découpage réel se décide à l'extraction, puis se corrige à la validation.
+ */
+function Documents() {
+  const docs = useQuery({
+    queryKey: ['documents'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('documents')
+        .select(
+          'id, batch_id, page_no, original_name, kind, stage, stage_error, lang, created_at, ' +
+            'children(first_name), subjects(label)',
+        )
+        .order('created_at', { ascending: false })
+        .order('page_no');
+      if (error) throw error;
+      return data as unknown as Array<{
+        id: string;
+        batch_id: string | null;
+        page_no: number;
+        original_name: string | null;
+        kind: string;
+        stage: string;
+        stage_error: string | null;
+        lang: string | null;
+        created_at: string;
+        children: { first_name: string } | null;
+        subjects: { label: string } | null;
+      }>;
+    },
+  });
+
+  const envois = new Map<string, NonNullable<typeof docs.data>>();
+  for (const d of docs.data ?? []) {
+    const cle = d.batch_id ?? d.id;
+    if (!envois.has(cle)) envois.set(cle, []);
+    envois.get(cle)!.push(d);
+  }
+
+  return (
+    <Card>
+      <h2 className="text-xl font-bold">Documents importés</h2>
+      {docs.isLoading ? <Loading /> : null}
+      {docs.error ? <ErrorNote error={docs.error} /> : null}
+
+      {envois.size === 0 && !docs.isLoading ? (
+        <p className="mt-3 text-sm text-muted">
+          Rien d’importé pour l’instant. Les photos envoyées apparaîtront ici avec leur état
+          d’avancement.
+        </p>
+      ) : null}
+
+      <ul className="mt-4 grid gap-3">
+        {[...envois.values()].map((pages) => {
+          const tete = pages[0];
+          const enEchec = pages.find((p) => p.stage === 'echec');
+          return (
+            <li key={tete.batch_id ?? tete.id} className="rounded-2xl border border-line px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <strong>{tete.subjects?.label ?? 'Matière à définir'}</strong>
+                  <small className="ml-2 text-muted">
+                    {tete.children?.first_name ?? 'Enfant supprimé'} · {tete.kind} · {pages.length}{' '}
+                    page{pages.length > 1 ? 's' : ''}
+                    {tete.lang ? ' · ' + tete.lang.toUpperCase() : ''}
+                  </small>
+                </div>
+                <Pill>{ETAPES[tete.stage] ?? tete.stage}</Pill>
+              </div>
+              <ol className="mt-2 grid gap-1 text-xs text-muted">
+                {pages.map((p) => (
+                  <li key={p.id}>
+                    {p.page_no}. {p.original_name ?? 'sans nom'}
+                  </li>
+                ))}
+              </ol>
+              {enEchec?.stage_error ? (
+                <p className="mt-2 text-xs text-clay-dark">{enEchec.stage_error}</p>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className="mt-4 text-xs text-muted">
+        La lecture automatique des photos arrive avec la fonction d’extraction : les documents
+        restent à l’état « Importé » tant qu’elle n’est pas branchée.
+      </p>
+    </Card>
+  );
+}
+
 export default function ParentSpace() {
+  const navigate = useNavigate();
   const classes = useQuery({
     queryKey: ['classes'],
     queryFn: async () => {
@@ -263,10 +370,24 @@ export default function ParentSpace() {
           <h1 className="mt-2 text-3xl font-black">Mes enfants et leurs cours</h1>
         </div>
         <div className="flex gap-2">
-          <Link to="/">
-            <Button variant="secondary">Espace enfant</Button>
-          </Link>
-          <Button variant="ghost" onClick={() => supabase.auth.signOut()}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              // Quitter l'espace parent le referme : sinon le verrou ne
+              // protegerait que la premiere visite de l'onglet.
+              verrouiller();
+              navigate('/');
+            }}
+          >
+            Espace enfant
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              verrouiller();
+              supabase.auth.signOut();
+            }}
+          >
             Se déconnecter
           </Button>
         </div>
@@ -300,6 +421,8 @@ export default function ParentSpace() {
       </Card>
 
       {classes.data ? <AddChild classes={classes.data} /> : null}
+      <ImportCourse enfants={children.data ?? []} />
+      <Documents />
       <Library />
       <PinSetup />
     </main>

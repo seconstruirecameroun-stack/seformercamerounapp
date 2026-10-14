@@ -1,66 +1,8 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { setCurrentChildId } from '../lib/childSession';
-import { Button, Card, ErrorNote, Field, Loading, Pill } from '../components/ui';
-
-/**
- * Le verrou de l’espace parent.
- *
- * Quatre chiffres ne protègent pas d’un adulte déterminé, et ce n’est pas le
- * but : il s’agit d’empêcher l’enfant d’aller lire les réponses ou de modifier
- * sa progression. La vérification se fait en base, le hash ne descend jamais
- * jusqu’au navigateur.
- */
-function PinDialog({ onClose }: { onClose: () => void }) {
-  const navigate = useNavigate();
-  const [pin, setPin] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    setBusy(true);
-    setError(null);
-    const { data, error: rpcError } = await supabase.rpc('verify_parent_pin', { candidate: pin });
-    setBusy(false);
-    if (rpcError) {
-      setError(rpcError.message);
-      return;
-    }
-    if (data === true) navigate('/parent');
-    else setError('Code incorrect.');
-  }
-
-  return (
-    <div className="fixed inset-0 grid place-items-center bg-ink/40 p-6">
-      <Card className="w-full max-w-sm">
-        <form onSubmit={submit} className="grid gap-4">
-          <h2 className="text-xl font-bold">Code parent</h2>
-          <Field
-            label="Quatre chiffres"
-            inputMode="numeric"
-            maxLength={4}
-            autoFocus
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-          />
-          {error ? <ErrorNote error={new Error(error)} /> : null}
-          <div className="flex gap-2">
-            <Button type="submit" disabled={busy || pin.length !== 4}>
-              Entrer
-            </Button>
-            <Button type="button" variant="secondary" onClick={onClose}>
-              Annuler
-            </Button>
-          </div>
-        </form>
-      </Card>
-    </div>
-  );
-}
+import { Button, Card, ErrorNote, Loading, Pill } from '../components/ui';
 
 type ChildCard = {
   id: string;
@@ -71,7 +13,6 @@ type ChildCard = {
 
 export default function ProfilePicker() {
   const navigate = useNavigate();
-  const [askPin, setAskPin] = useState(false);
 
   const children = useQuery({
     queryKey: ['children'],
@@ -84,12 +25,6 @@ export default function ProfilePicker() {
       return data as unknown as ChildCard[];
     },
   });
-
-  async function openParentSpace() {
-    const { data } = await supabase.rpc('parent_pin_is_set');
-    if (data === true) setAskPin(true);
-    else navigate('/parent');
-  }
 
   if (children.isLoading) return <Loading />;
   if (children.error) return <ErrorNote error={children.error} />;
@@ -132,12 +67,10 @@ export default function ProfilePicker() {
       )}
 
       <div className="mt-8 text-center">
-        <Button variant="secondary" onClick={openParentSpace}>
+        <Button variant="secondary" onClick={() => navigate('/parent')}>
           Espace parent
         </Button>
       </div>
-
-      {askPin ? <PinDialog onClose={() => setAskPin(false)} /> : null}
     </main>
   );
 }

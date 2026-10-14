@@ -4,6 +4,7 @@ import { Loading } from './components/ui';
 import LoginPage from './pages/Login';
 import ProfilePicker from './pages/ProfilePicker';
 import ParentSpace from './pages/parent/ParentSpace';
+import PinGate from './components/PinGate';
 import ChildSpace from './pages/child/ChildSpace';
 
 function RequireParent({ children }: { children: React.ReactNode }) {
@@ -30,7 +31,9 @@ export default function App() {
           path="/parent"
           element={
             <RequireParent>
-              <ParentSpace />
+              <PinGate>
+                <ParentSpace />
+              </PinGate>
             </RequireParent>
           }
         />
