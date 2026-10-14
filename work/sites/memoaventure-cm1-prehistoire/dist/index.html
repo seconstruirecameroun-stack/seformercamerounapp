@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#173f46">
+  <meta name="description" content="MémoAventure transforme les cours photographiés en révisions illustrées et interrogations progressives pour le CM1.">
+  <title>MémoAventure CM1 — La Préhistoire</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navigation principale">
+      <a class="brand" href="#accueil" data-route="accueil" aria-label="MémoAventure, accueil">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <span><strong>MémoAventure</strong><small>Apprendre devient une quête</small></span>
+      </a>
+
+      <nav class="side-nav">
+        <button class="nav-item active" data-route="accueil"><span>⌂</span> Accueil</button>
+        <button class="nav-item" data-route="lecon"><span>◫</span> Ma leçon</button>
+        <button class="nav-item" data-route="jeux"><span>✦</span> Mes jeux</button>
+        <button class="nav-item" data-route="interro"><span>✓</span> Interrogation</button>
+      </nav>
+
+      <button class="parent-entry" data-route="parent">
+        <span class="parent-avatar">P</span>
+        <span><strong>Espace parent</strong><small>Sources et validation</small></span>
+        <span aria-hidden="true">›</span>
+      </button>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CM1 · HISTOIRE</p>
+          <h1 id="page-title">Bonjour, jeune explorateur !</h1>
+        </div>
+        <div class="top-actions">
+          <div class="streak" title="Série de révision"><span aria-hidden="true">☀</span><strong>1 jour</strong></div>
+          <button class="avatar" data-route="parent" aria-label="Ouvrir l'espace parent">P</button>
+        </div>
+      </header>
+
+      <section class="view active" id="accueil" data-title="Bonjour, jeune explorateur !">
+        <article class="hero-card">
+          <div class="hero-copy">
+            <span class="pill light">MISSION DU JOUR</span>
+            <h2>Voyage au temps de la Préhistoire</h2>
+            <p>Découvre comment vivaient les premiers humains, puis gagne tes trois fragments de connaissance.</p>
+            <div class="hero-actions">
+              <button class="primary light-button" data-route="lecon">Commencer l’aventure <span>→</span></button>
+              <button class="hero-film-button" data-route="lecon" data-scroll-target="film-prehistoire"><span aria-hidden="true">▶</span> Voir le film animé</button>
+            </div>
+          </div>
+          <div class="hero-visual" aria-label="Illustration d'une exploratrice devant une grotte préhistorique">
+            <svg viewBox="0 0 360 260" role="img" aria-hidden="true">
+              <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffd88c"/><stop offset="1" stop-color="#f39b6d"/></linearGradient>
+              </defs>
+              <circle cx="260" cy="64" r="34" fill="#ffe6a9" opacity=".9"/>
+              <path d="M5 204L80 95l52 76 70-118 71 116 57-67 31 103z" fill="#224e52" opacity=".7"/>
+              <path d="M0 208c60-30 109-22 167 1s124 15 193-5v56H0z" fill="#f6c278"/>
+              <path d="M118 214c0-70 21-111 72-111s74 43 74 111z" fill="#3b3230"/>
+              <path d="M145 214c0-49 15-78 47-78 34 0 48 30 48 78z" fill="#171c1d"/>
+              <circle cx="92" cy="131" r="22" fill="#7e3f2b"/>
+              <path d="M73 121c9-27 31-29 43 2-14-8-28-8-43-2z" fill="#263b38"/>
+              <path d="M82 151l23 0 13 55H67z" fill="#f7c966"/>
+              <path d="M73 165l-26 26M111 164l24 20M77 205l-9 36M106 205l10 36" stroke="#7e3f2b" stroke-width="9" stroke-linecap="round"/>
+              <path d="M43 190l-11 38M31 229l12-5M135 184l21-25" stroke="#263b38" stroke-width="4" stroke-linecap="round"/>
+              <path d="M158 159l-4-10 11 3z" fill="#263b38"/>
+              <path d="M281 211c13-24 23-30 31-42-2 20 0 29 18 42z" fill="#db623f"/>
+              <path d="M295 211c7-13 13-16 17-23-1 11 0 16 10 23z" fill="#ffd85f"/>
+            </svg>
+          </div>
+        </article>
+
+        <div class="section-heading">
+          <div><p class="eyebrow dark">TON PARCOURS</p><h2>4 étapes pour être prêt</h2></div>
+          <span id="home-progress-label">0 sur 4 terminées</span>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="home-progress-bar"></span></div>
+
+        <div class="path-grid">
+          <button class="path-card" data-route="lecon">
+            <span class="path-icon clay">◫</span>
+            <span><small>ÉTAPE 1 · 5 MIN</small><strong>Découvrir la leçon</strong><em>Une frise illustrée et les mots importants.</em></span>
+            <span class="path-status" id="status-lesson">À faire</span>
+          </button>
+          <button class="path-card" data-route="jeux">
+            <span class="path-icon gold">✦</span>
+            <span><small>ÉTAPE 2 · 6 MIN</small><strong>Jouer pour comprendre</strong><em>Classe, associe et complète.</em></span>
+            <span class="path-status" id="status-games">À faire</span>
+          </button>
+          <button class="path-card" data-route="interro">
+            <span class="path-icon blue">?</span>
+            <span><small>ÉTAPE 3 · 4 MIN</small><strong>Répondre sans indice</strong><em>5 questions comme à l’école.</em></span>
+            <span class="path-status" id="status-quiz">À faire</span>
+          </button>
+          <button class="path-card" data-route="interro">
+            <span class="path-icon green">✓</span>
+            <span><small>ÉTAPE 4</small><strong>Corriger mes erreurs</strong><em>Une explication adaptée à chaque réponse.</em></span>
+            <span class="path-status" id="status-review">Bloqué</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="view" id="lecon" data-title="Ma leçon illustrée">
+        <div class="view-intro">
+          <div><span class="pill warm">LA PRÉHISTOIRE</span><h2>Remontons le temps</h2><p>Observe la frise. Chaque étape raconte une nouvelle manière de vivre.</p></div>
+          <button class="audio-button" id="listen-lesson"><span aria-hidden="true">♪</span> Écouter la leçon</button>
+        </div>
+
+        <article class="lesson-film" id="film-prehistoire">
+          <div class="film-player">
+            <video controls playsinline preload="metadata" poster="https://d8j0ntlcm91z4.cloudfront.net/user_3KZBSjYUBpq6aChUVJxyOvBy5SO/hf_20261014_202123_e5088508-c610-465e-b0a3-a12e80dd970e.png">
+              <source src="https://d2ol7oe51mr4n9.cloudfront.net/user_3KZBSjYUBpq6aChUVJxyOvBy5SO/896e4518-870a-4c57-a4b8-66b365d30176.mp4" type="video/mp4">
+              Ton navigateur ne peut pas lire cette vidéo.
+            </video>
+          </div>
+          <div class="film-copy">
+            <span class="pill film-pill">FILM ANIMÉ · 1 MIN</span>
+            <h3>Voyage dans la Préhistoire</h3>
+            <p>Écoute une voix française et repère les mots-clés du cahier : Paléolithique, Néolithique, pêche, chasse, cueillette, agriculture, artisanat et métaux.</p>
+            <ul>
+              <li><span>1</span> Observe les trois symboles de la roue.</li>
+              <li><span>2</span> Répète les mots-clés affichés à voix haute.</li>
+              <li><span>3</span> Lance ensuite les petits défis.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="definition-card">
+          <div class="big-letter">P</div>
+          <div><p class="eyebrow dark">DÉFINITION À RETENIR</p><p>La <strong>Préhistoire</strong> commence avec l’apparition des premiers humains et se termine avec l’invention de l’écriture, vers <strong>3 000 avant J.-C.</strong></p></div>
+        </article>
+
+        <div class="timeline" aria-label="Les trois périodes étudiées">
+          <article class="era-card">
+            <div class="era-number">1</div>
+            <div class="era-art stone-art" aria-hidden="true">
+              <svg viewBox="0 0 220 120"><path d="M20 99L56 27l42 61 42-75 60 86z" fill="#7fa1a0"/><path d="M49 97c15-29 28-36 47-36s36 13 45 36" fill="#2f4b4a"/><path d="M153 87l27-38 11 41z" fill="#d78150"/><path d="M169 79l8-14 5 17z" fill="#ffd66d"/><circle cx="108" cy="51" r="10" fill="#503e33"/><path d="M102 61l14 0 7 27H95z" fill="#e2ad5d"/></svg>
+            </div>
+            <span class="era-tag">PIERRE TAILLÉE</span>
+            <h3>Le Paléolithique</h3>
+            <p>Les humains taillent la pierre pour fabriquer des outils. Ils vivent de la <strong>chasse</strong>, de la <strong>pêche</strong> et de la <strong>cueillette</strong>.</p>
+          </article>
+          <article class="era-card featured">
+            <div class="era-number">2</div>
+            <div class="era-art field-art" aria-hidden="true">
+              <svg viewBox="0 0 220 120"><circle cx="169" cy="32" r="19" fill="#ffd264"/><path d="M0 82c49-29 102-21 220-4v42H0z" fill="#a4bd6c"/><path d="M0 96c65-21 126-15 220-4v28H0z" fill="#e8bd61"/><path d="M89 84l31-39 30 39z" fill="#cc704b"/><rect x="103" y="75" width="31" height="26" fill="#f3d99b"/><path d="M36 105V65m0 13l-10-10m10 19l13-13M181 105V69m0 12l-11-10m11 19l12-13" stroke="#486b3b" stroke-width="4"/></svg>
+            </div>
+            <span class="era-tag">PIERRE POLIE</span>
+            <h3>Le Néolithique</h3>
+            <p>Les humains polissent leurs outils. Ils commencent à pratiquer <strong>l’agriculture</strong> et s’installent plus durablement.</p>
+          </article>
+          <article class="era-card">
+            <div class="era-number">3</div>
+            <div class="era-art metal-art" aria-hidden="true">
+              <svg viewBox="0 0 220 120"><path d="M20 107h180L170 49H55z" fill="#c98354"/><path d="M55 55h115l-14-28H70z" fill="#734438"/><path d="M79 31l17-20 17 20M120 31l15-18 17 18" fill="none" stroke="#d7ad63" stroke-width="7"/><path d="M96 63l-19 29M77 63l19 29" stroke="#334948" stroke-width="7"/><path d="M127 63h39M146 46v55" stroke="#334948" stroke-width="7"/></svg>
+            </div>
+            <span class="era-tag">CUIVRE ET BRONZE</span>
+            <h3>L’âge des métaux</h3>
+            <p>Les humains développent <strong>l’artisanat</strong> et fabriquent des <strong>outils</strong> et des <strong>bijoux</strong> en métal.</p>
+          </article>
+        </div>
+
+        <article class="memory-card">
+          <div><span aria-hidden="true">💡</span><p><strong>L’astuce de Mémo</strong>Retiens : <b>tailler → polir → fabriquer en métal</b>.</p></div>
+          <button class="primary" id="lesson-done">J’ai compris la leçon <span>✓</span></button>
+        </article>
+      </section>
+
+      <section class="view" id="jeux" data-title="Mes jeux de mémoire">
+        <div class="view-intro">
+          <div><span class="pill warm">3 PETITS DÉFIS</span><h2>Joue avec la chronologie</h2><p>Tu peux recommencer autant de fois que tu veux.</p></div>
+          <div class="score-bubble"><strong id="game-score">0</strong><small>/ 3 gagnés</small></div>
+        </div>
+
+        <div class="game-grid">
+          <article class="game-card" data-game="0">
+            <span class="game-kicker">DÉFI 1 · CHRONOLOGIE</span>
+            <h3>Quelle période vient en premier ?</h3>
+            <div class="choice-stack">
+              <button data-correct="true">Le Paléolithique</button>
+              <button>L’âge des métaux</button>
+              <button>Le Néolithique</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+          <article class="game-card" data-game="1">
+            <span class="game-kicker">DÉFI 2 · ASSOCIATION</span>
+            <h3>Qui commence à pratiquer l’agriculture ?</h3>
+            <div class="choice-stack">
+              <button>Les humains du Paléolithique</button>
+              <button data-correct="true">Les humains du Néolithique</button>
+              <button>Les humains de l’âge des métaux</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+          <article class="game-card" data-game="2">
+            <span class="game-kicker">DÉFI 3 · MOT SECRET</span>
+            <h3>L’invention de l’_____ marque la fin de la Préhistoire.</h3>
+            <div class="choice-stack">
+              <button>agriculture</button>
+              <button>métallurgie</button>
+              <button data-correct="true">écriture</button>
+            </div>
+            <p class="feedback" aria-live="polite"></p>
+          </article>
+        </div>
+        <div class="center-action"><button class="primary" id="go-quiz" data-route="interro">Passer l’interrogation <span>→</span></button></div>
+      </section>
+
+      <section class="view" id="interro" data-title="Mon interrogation">
+        <div class="quiz-shell">
+          <div class="quiz-head">
+            <div><span class="pill warm">MODE ÉCOLE · 5 QUESTIONS</span><h2 id="quiz-heading">Prêt à montrer ce que tu sais ?</h2></div>
+            <button class="audio-button" id="read-question"><span aria-hidden="true">♪</span> Lire la question</button>
+          </div>
+          <div class="quiz-progress"><span id="quiz-progress-bar"></span></div>
+
+          <div id="quiz-start" class="quiz-panel active">
+            <div class="quiz-mascot" aria-hidden="true">✦</div>
+            <h3>Respire, prends ton temps.</h3>
+            <p>Aucun piège : toutes les réponses se trouvent dans ta leçon.</p>
+            <button class="primary" id="start-quiz">Commencer les 5 questions</button>
+          </div>
+
+          <div id="quiz-question" class="quiz-panel">
+            <p class="question-count" id="question-count"></p>
+            <h3 id="question-text"></h3>
+            <div class="quiz-options" id="quiz-options"></div>
+            <p class="feedback large" id="quiz-feedback" aria-live="polite"></p>
+            <button class="primary hidden" id="next-question">Question suivante <span>→</span></button>
+          </div>
+
+          <div id="quiz-result" class="quiz-panel">
+            <div class="result-medal" aria-hidden="true">★</div>
+            <p class="eyebrow dark">MISSION TERMINÉE</p>
+            <h3 id="result-title">Bravo !</h3>
+            <p id="result-score"></p>
+            <div id="result-review" class="result-review"></div>
+            <div class="result-actions">
+              <button class="secondary" id="retry-quiz">Recommencer</button>
+              <button class="primary" data-route="accueil">Voir mon parcours</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="parent" data-title="Espace parent">
+        <div class="parent-header">
+          <div><span class="pill parent-pill">ESPACE PARENT</span><h2>Le cours avant publication</h2><p>Vérifiez la transcription et les éléments pédagogiques avant de les proposer à l’enfant.</p></div>
+          <div class="verified-badge"><span>✓</span><strong>2 photos analysées</strong></div>
+        </div>
+
+        <div class="parent-layout">
+          <div class="parent-main">
+            <article class="source-card">
+              <div class="card-title"><div><p class="eyebrow dark">SOURCE IMPORTÉE</p><h3>Histoire · La Préhistoire</h3></div><button class="text-button" id="edit-transcript">Modifier</button></div>
+              <div class="source-meta"><span>CM1</span><span>2 pages</span><span>Lecture : bonne</span></div>
+              <div id="transcript-display" class="transcript">
+                <p>La Préhistoire est la période comprise entre l’apparition des premiers humains et l’invention de l’écriture, vers 3 000 avant J.-C.</p>
+                <ol>
+                  <li><strong>Paléolithique :</strong> pierre taillée, chasse, pêche et cueillette.</li>
+                  <li><strong>Néolithique :</strong> pierre polie et début de l’agriculture.</li>
+                  <li><strong>Âge des métaux :</strong> artisanat, cuivre, bronze, outils et bijoux.</li>
+                </ol>
+              </div>
+              <textarea id="transcript-editor" class="hidden" rows="9" aria-label="Texte du cours">La Préhistoire est la période comprise entre l’apparition des premiers humains et l’invention de l’écriture, vers 3 000 avant J.-C.
+
+1. Paléolithique : pierre taillée, chasse, pêche et cueillette.
+2. Néolithique : pierre polie et début de l’agriculture.
+3. Âge des métaux : artisanat, cuivre, bronze, outils et bijoux.</textarea>
+            </article>
+
+            <article class="alert-card">
+              <span class="alert-icon">!</span>
+              <div><p class="eyebrow alert">POINT À VÉRIFIER</p><h3>La place de la maîtrise du feu</h3><p>Le cahier semble rattacher la découverte du feu au Néolithique. Elle est généralement étudiée avec le Paléolithique. L’information reste en attente de votre validation.</p></div>
+              <div class="alert-actions"><button class="secondary small" id="keep-source">Garder le cours</button><button class="primary small" id="approve-correction">Valider la correction</button></div>
+            </article>
+
+            <article class="upload-card">
+              <input type="file" id="course-upload" accept="image/*,.pdf" multiple hidden>
+              <div class="upload-icon">＋</div>
+              <div><h3>Ajouter un autre cours</h3><p>Photos du cahier ou document PDF · aperçu local uniquement dans ce prototype</p></div>
+              <button class="secondary" id="upload-button">Choisir les fichiers</button>
+              <p id="upload-status" aria-live="polite"></p>
+            </article>
+          </div>
+
+          <aside class="parent-summary">
+            <p class="eyebrow dark">CONTENU GÉNÉRÉ</p>
+            <ul>
+              <li><span>✓</span><div><strong>1 leçon illustrée</strong><small>3 périodes et une frise</small></div></li>
+              <li><span>✓</span><div><strong>1 film animé</strong><small>62 secondes avec narration</small></div></li>
+              <li><span>✓</span><div><strong>3 jeux pédagogiques</strong><small>Chronologie et vocabulaire</small></div></li>
+              <li><span>✓</span><div><strong>5 questions</strong><small>Niveau interrogation CM1</small></div></li>
+              <li><span>✓</span><div><strong>Lecture audio</strong><small>Leçon et questions</small></div></li>
+            </ul>
+            <button class="primary wide" data-route="accueil">Ouvrir l’espace enfant</button>
+            <p class="privacy-note">🔒 Les données de ce prototype restent dans ce navigateur.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Navigation mobile">
+    <button class="active" data-route="accueil"><span>⌂</span>Accueil</button>
+    <button data-route="lecon"><span>◫</span>Leçon</button>
+    <button data-route="jeux"><span>✦</span>Jeux</button>
+    <button data-route="interro"><span>✓</span>Interro</button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

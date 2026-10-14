@@ -1,0 +1,16 @@
+# Médias de production : trop lourds pour l'historique git.
+# Le film et la couverture sont servis depuis CloudFront et seront
+# déplacés vers Supabase Storage.
+outputs/*.mp4
+outputs/*.png
+outputs/*.zip
+
+# Secrets / configuration locale
+.env
+.env.*
+!.env.example
+
+# Système
+Thumbs.db
+desktop.ini
+.DS_Store
