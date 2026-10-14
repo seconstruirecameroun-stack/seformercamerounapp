@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* Palette reprise du prototype : on change de socle technique, pas d'identité. */
+@theme {
+  --color-ink: #183f43;
+  --color-ink-2: #31585b;
+  --color-paper: #f7f3ea;
+  --color-white-warm: #fffdf8;
+  --color-clay: #d66d4d;
+  --color-clay-dark: #a94b35;
+  --color-gold: #edb94f;
+  --color-leaf: #6f9a76;
+  --color-sky: #5c8a9b;
+  --color-line: #dfddd3;
+  --color-muted: #6f7b78;
+
+  --radius-card: 24px;
+  --shadow-card: 0 18px 45px rgba(28, 52, 51, 0.11);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

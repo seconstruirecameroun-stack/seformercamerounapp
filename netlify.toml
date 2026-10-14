@@ -1,0 +1,18 @@
+# Les variables VITE_SUPABASE_URL et VITE_SUPABASE_PUBLISHABLE_KEY se
+# renseignent dans Netlify : Site configuration > Environment variables.
+# La cle service_role n'a rien a faire ici.
+
+[build]
+  base = "app"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Application monopage : toute URL inconnue doit rendre index.html, sinon un
+# rafraichissement sur /parent renvoie une 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
