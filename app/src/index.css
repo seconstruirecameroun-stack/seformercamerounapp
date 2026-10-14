@@ -1,6 +1,36 @@
 @import "tailwindcss";
 
 /**
+ * Fredoka, servie depuis l'app et non depuis un tiers : 33 ko une fois, mise
+ * en cache, et disponible hors-ligne. Licence SIL OFL, jointe dans
+ * public/fonts.
+ *
+ * Elle ne sert que l'espace enfant. Les formes rondes donnent le ton qu'aucune
+ * police système n'a, mais l'espace parent reste en police système : il sert
+ * une tâche, pas une humeur.
+ */
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/fredoka-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/fredoka-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/**
  * Deux espaces, deux registres.
  *
  * L'espace parent est sobre : il sert une tâche. L'espace enfant est engagé :
@@ -32,13 +62,19 @@
   --color-mint: oklch(0.89 0.055 165);
   --color-lilac: oklch(0.88 0.05 300);
 
-  /* Échelle fixe, un cran plus grande côté enfant : on lit au doigt,
-     à bout de bras, parfois au soleil. */
-  --text-kid-sm: 0.95rem;
-  --text-kid: 1.0625rem;
-  --text-kid-lg: 1.3rem;
-  --text-kid-xl: 1.65rem;
-  --text-kid-2xl: 2.1rem;
+  /* Échelle de l'espace enfant.
+     Plancher à 17 px : rien, jamais, ne descend en dessous. Un enfant de neuf
+     ans lit à bout de bras, souvent au soleil, sur un téléphone partagé. Les
+     petites capitales de 12 px des interfaces d'adultes n'ont pas leur place
+     ici — elles existaient, elles sont parties. */
+  --text-kid-xs: 1.0625rem;
+  --text-kid-sm: 1.125rem;
+  --text-kid: 1.3125rem;
+  --text-kid-lg: 1.625rem;
+  --text-kid-xl: 2rem;
+  --text-kid-2xl: 2.5rem;
+
+  --font-kid: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   --radius-card: 24px;
   --radius-tile: 18px;
@@ -59,6 +95,12 @@ body {
   color: var(--color-ink);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* L'espace enfant parle avec sa propre voix typographique. */
+.enfant {
+  font-family: var(--font-kid);
+  letter-spacing: 0.005em;
 }
 
 /* Le fond de l'espace enfant : un lever de jour, pas un document blanc. */

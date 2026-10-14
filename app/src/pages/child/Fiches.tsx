@@ -161,7 +161,7 @@ export default function Fiches({
               </h2>
               {courante ? (
                 <>
-                  <p className="mt-3 text-xs font-black tracking-wide text-clay-dark uppercase">
+                  <p className="mt-3 text-kid-xs font-black tracking-wide text-clay-dark uppercase">
                     {REGISTRES[courante.register] ?? 'Explication'}
                   </p>
                   <p className="mt-1 text-kid leading-relaxed text-ink-2">{courante.body}</p>
@@ -178,7 +178,7 @@ export default function Fiches({
               className="h-36 w-full object-cover"
             />
             <div className="px-5 py-5">
-              <p className="text-xs font-black tracking-widest text-clay-dark uppercase">
+              <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
                 À retenir
               </p>
               <p className="mt-2 text-kid leading-relaxed">{resume}</p>

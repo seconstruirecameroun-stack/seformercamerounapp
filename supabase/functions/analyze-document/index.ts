@@ -52,7 +52,11 @@ const Extraction = z.object({
   matiere_suggeree: z
     .string()
     .describe('Intitulé de la matière tel qu’il apparaît sur le document.'),
-  resume: z.string().describe('Le résumé à retenir, en trois à six phrases.'),
+  resume: z
+    .string()
+    .describe(
+      'Le résumé à retenir, en deux ou trois phrases courtes. 300 caractères au maximum.',
+    ),
   illustration_scene: z
     .string()
     .describe(
@@ -63,7 +67,9 @@ const Extraction = z.object({
     .array(
       z.object({
         type: z.enum(['definition', 'date', 'liste', 'relation']),
-        enonce: z.string().describe('Une seule chose à savoir, en une phrase.'),
+        enonce: z
+          .string()
+          .describe('Une seule chose à savoir, en une phrase courte. 110 caractères au maximum.'),
         illustration: z
           .string()
           .describe(
@@ -92,6 +98,11 @@ Une notion est une seule chose à savoir, formulée en une phrase, telle qu'un �
 - date : un repère chronologique
 - liste : des éléments à retenir ensemble
 - relation : un ordre, une cause, une conséquence
+
+Écris court. Le lecteur a entre six et onze ans, lit lentement, et saute tout
+paragraphe. Une phrase qu'il lit vaut mieux qu'un paragraphe exact qu'il
+ignore. Pas de subordonnées empilées, pas de mot savant sans le dire
+autrement, pas de phrase de plus de vingt mots.
 
 Les pages sont fournies dans l'ordre et forment un seul cours.
 

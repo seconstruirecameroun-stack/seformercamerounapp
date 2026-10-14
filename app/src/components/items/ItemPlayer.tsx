@@ -80,7 +80,7 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
               <span
                 aria-hidden="true"
                 className={
-                  'grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-black ' +
+                  'grid h-9 w-9 shrink-0 place-items-center rounded-full text-kid-sm font-black ' +
                   (estBonne
                     ? 'bg-leaf text-white-warm'
                     : estRate
@@ -136,7 +136,7 @@ function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
                     : 'border-dashed border-line bg-white-warm/60')
               }
             >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sand text-sm font-black">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sand text-kid-sm font-black">
                 {position + 1}
               </span>
               <span className={rempli === undefined ? 'text-muted' : 'font-semibold'}>

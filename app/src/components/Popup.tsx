@@ -50,7 +50,7 @@ export default function Popup({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/55 p-4 sm:items-center"
+      className="enfant fixed inset-0 z-50 flex items-end justify-center bg-ink/55 p-4 sm:items-center"
       onClick={onFermer}
       role="presentation"
     >

@@ -124,10 +124,8 @@ function Mission({
     return (
       <div className="rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
         <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
-        <h2 className="mt-3 text-kid-lg font-extrabold">Rien à réviser aujourd’hui</h2>
-        <p className="mt-1 text-kid-sm text-muted">
-          Reviens quand un parent aura publié une leçon.
-        </p>
+        <h2 className="mt-3 text-kid-lg font-extrabold">Rien à réviser</h2>
+        <p className="mt-1 text-kid-sm text-muted">Reviens demain !</p>
       </div>
     );
   }
@@ -144,7 +142,7 @@ function Mission({
         </div>
         {revelees.length > 0 ? (
           <div className="border-b border-line px-6 py-5">
-            <p className="text-xs font-black tracking-widest text-clay-dark uppercase">
+            <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
               {revelees.length > 1
                 ? `${revelees.length} images gagnées`
                 : 'Une image gagnée'}
@@ -167,15 +165,15 @@ function Mission({
               ))}
             </ul>
             <p className="mt-3 text-kid-sm text-muted">
-              {revelees.length > 1 ? 'Elles rejoignent ta collection.' : 'Elle rejoint ta collection.'}
+              {revelees.length > 1 ? 'Dans ta collection !' : 'Dans ta collection !'}
             </p>
           </div>
         ) : null}
         <div className="px-6 py-5">
           <p className="text-kid-sm text-muted">
             {justes === etapes.length
-              ? 'Tout juste. Les notions reviendront dans quelques jours pour vérifier.'
-              : 'Les notions ratées reviendront demain, avec une autre explication.'}
+              ? 'Tout juste ! On revérifie dans quelques jours.'
+              : 'On revoit demain ce qui a coincé.'}
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <GrosBouton onClick={() => navigate(`/enfant/${childId}`)}>Mes leçons</GrosBouton>
@@ -217,9 +215,9 @@ function Mission({
 
       const bouts: string[] = [];
       if (etape.item.explain) bouts.push(etape.item.explain);
-      if (acquise) bouts.push('Cette image rejoint ta collection.');
+      if (acquise) bouts.push('Nouvelle image pour ta collection !');
       else if (bilan.leveledUp) bouts.push(`Tu passes en « ${NIVEAUX[bilan.level - 1]} » !`);
-      if (bilan.leveledDown) bouts.push('On reprend plus doucement : relis l’explication.');
+      if (bilan.leveledDown) bouts.push('On reprend plus doucement.');
 
       setRetour({
         ton: acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
@@ -259,7 +257,7 @@ function Mission({
     <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <Galets total={etapes.length} faits={index} />
-        <span className="rounded-full bg-sand px-3 py-1 text-xs font-black tracking-wide uppercase">
+        <span className="rounded-full bg-sand px-3 py-1 text-kid-xs font-black tracking-wide uppercase">
           {NIVEAUX[etape.item.level - 1] ?? 'Niveau ' + etape.item.level}
         </span>
       </div>
@@ -402,7 +400,7 @@ export default function ChildSpace() {
   const video = bundle?.videos?.[0];
 
   return (
-    <main className="ciel min-h-screen pb-12">
+    <main className="enfant ciel min-h-screen pb-12">
       <div className="mx-auto max-w-2xl px-4 pt-4 sm:px-6">
         <header className="flex items-center justify-between gap-3">
           <Link
@@ -444,7 +442,7 @@ export default function ChildSpace() {
                   (onglet === 'lecon' ? 'pt-6' : 'pt-12 pb-4')
                 }
               >
-                <p className="text-xs font-black tracking-widest text-gold uppercase">
+                <p className="text-kid-xs font-black tracking-widest text-gold uppercase">
                   {bundle.subjects?.label ?? 'Leçon'}
                 </p>
                 <h1

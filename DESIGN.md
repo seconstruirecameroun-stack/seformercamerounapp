@@ -35,6 +35,37 @@ souvent lu en plein jour.
 `clay` ne décore jamais : s'il apparaît, c'est qu'il y a quelque chose à
 toucher. `gold` ne signale jamais une action, seulement un gain.
 
+## Typographie
+
+**Fredoka** dans l'espace enfant, servie depuis l'app : 33 ko une fois, en
+cache, et disponible hors-ligne. Licence SIL OFL, jointe dans `public/fonts`.
+Ses formes rondes donnent un ton qu'aucune police système n'a. L'espace parent
+reste en police système : il sert une tâche, pas une humeur.
+
+**Plancher à 17 px. Rien ne descend en dessous**, jamais. Les petites
+capitales de 12 px des interfaces d'adultes ont été supprimées une à une : un
+enfant de neuf ans lit à bout de bras, sur un téléphone partagé, souvent au
+soleil.
+
+| Jeton | Taille | Emploi |
+|---|---|---|
+| `text-kid-xs` | 17 px | étiquettes, le plus petit admis |
+| `text-kid-sm` | 18 px | texte secondaire |
+| `text-kid` | 21 px | texte courant, réponses |
+| `text-kid-lg` | 26 px | énoncé d'une notion |
+| `text-kid-xl` | 32 px | question posée |
+| `text-kid-2xl` | 40 px | titre de leçon |
+
+## Écrire court
+
+Une explication tient en **une phrase courte, deux au maximum**, sous une
+centaine de caractères. Un résumé tient en deux ou trois phrases.
+
+Ce n'est pas une préférence de style : à neuf ans, un paragraphe se saute.
+Une phrase lue vaut mieux qu'un paragraphe exact ignoré. La contrainte est
+écrite dans le schéma d'extraction, pas seulement dans les textes de la
+démonstration — sinon elle ne tiendrait qu'une leçon.
+
 ## Illustration
 
 Style unique, celui de la chaîne vidéo : **Pastel Flat 2D**, sans contour noir,

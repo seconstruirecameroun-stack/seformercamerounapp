@@ -30,7 +30,7 @@ function Semaine({ jours, serie }: { jours: string[]; serie: number }) {
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-kid-sm font-extrabold">Ta semaine</h2>
         <span className="text-kid-sm font-bold text-muted">
-          {serie > 0 ? `${serie} jour${serie > 1 ? 's' : ''} d’affilée` : 'On commence aujourd’hui'}
+          {serie > 0 ? `${serie} jour${serie > 1 ? 's' : ''} !` : 'À toi de jouer'}
         </span>
       </div>
       <ol className="mt-2 flex justify-between gap-1">
@@ -40,7 +40,7 @@ function Semaine({ jours, serie }: { jours: string[]; serie: number }) {
             <li key={jour.cle} className="flex flex-1 flex-col items-center gap-1">
               <span
                 className={
-                  'grid h-9 w-full max-w-11 place-items-center rounded-xl text-sm font-black ' +
+                  'grid h-9 w-full max-w-11 place-items-center rounded-xl text-kid-sm font-black ' +
                   (fait
                     ? 'bg-gold text-ink'
                     : jour.aujourdhui
@@ -72,7 +72,7 @@ function CarteLecon({ lecon, childId }: { lecon: LeconResume; childId: string })
         className="h-20 w-28 shrink-0 rounded-2xl object-cover"
       />
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-black tracking-wide text-muted uppercase">
+        <p className="text-kid-xs font-black tracking-wide text-muted uppercase">
           {lecon.matiere ?? 'Leçon'}
         </p>
         <h3 className="truncate text-kid font-extrabold">{lecon.title}</h3>
@@ -83,13 +83,13 @@ function CarteLecon({ lecon, childId }: { lecon: LeconResume; childId: string })
               style={{ width: `${part}%` }}
             />
           </span>
-          <span className="text-xs font-bold text-muted">
+          <span className="text-kid-xs font-bold text-muted">
             {lecon.acquises}/{lecon.notions}
           </span>
         </div>
       </div>
       {lecon.dues > 0 ? (
-        <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-clay px-2 text-xs font-black text-white-warm">
+        <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-clay px-2 text-kid-xs font-black text-white-warm">
           {lecon.dues}
         </span>
       ) : null}
@@ -111,7 +111,7 @@ function Collection({ autocollants }: { autocollants: Autocollant[] }) {
         </span>
       </div>
       <p className="mt-1 text-kid-sm text-muted">
-        Une image se colore quand tu maîtrises sa notion.
+        Gagne-les en jouant.
       </p>
       <ul className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">
         {avec.map((a) => (
@@ -134,7 +134,7 @@ function Collection({ autocollants }: { autocollants: Autocollant[] }) {
               />
               {!a.acquis ? (
                 <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white-warm/90 text-sm font-black text-ink-2">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white-warm/90 text-kid-sm font-black text-ink-2">
                     ?
                   </span>
                 </span>
@@ -178,7 +178,7 @@ export default function ChildHome() {
   const prochaine = d.lecons.find((l) => l.id === d.prochaineLecon);
 
   return (
-    <main className="ciel min-h-screen pb-12">
+    <main className="enfant ciel min-h-screen pb-12">
       <div className="mx-auto grid max-w-2xl gap-4 px-4 pt-4 sm:px-6">
         <header className="flex items-center justify-between gap-3">
           <Link
@@ -209,7 +209,7 @@ export default function ChildHome() {
               className="h-44 w-full object-cover sm:h-56"
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/45 to-transparent px-5 pt-14 pb-4">
-              <p className="text-xs font-black tracking-widest text-gold uppercase">
+              <p className="text-kid-xs font-black tracking-widest text-gold uppercase">
                 {d.duesTotal > 0 ? 'Ta mission du jour' : 'Tout est à jour'}
               </p>
               <h1 className="text-kid-2xl leading-tight font-black text-white-warm text-balance">
@@ -217,8 +217,8 @@ export default function ChildHome() {
               </h1>
               <p className="mt-1 text-kid-sm font-bold text-white-warm/90">
                 {d.duesTotal > 0
-                  ? `${d.duesTotal} notion${d.duesTotal > 1 ? 's' : ''} à revoir`
-                  : 'Tu peux t’entraîner quand même'}
+                  ? `${d.duesTotal} à revoir`
+                  : 'Rejoue quand tu veux'}
               </p>
             </div>
             <span className="absolute right-4 bottom-4 grid h-12 w-12 place-items-center rounded-full bg-clay text-xl text-white-warm shadow-[0_3px_0_var(--color-clay-dark)]">
@@ -228,10 +228,8 @@ export default function ChildHome() {
         ) : (
           <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
             <Illustration cle="roue-memoire" forme="objet" alt="" className="mx-auto h-24 w-24" />
-            <h1 className="mt-3 text-kid-lg font-extrabold">Pas encore de leçon</h1>
-            <p className="mt-1 text-kid-sm text-muted">
-              Un parent doit d’abord en publier une.
-            </p>
+            <h1 className="mt-3 text-kid-lg font-extrabold">Rien à faire</h1>
+            <p className="mt-1 text-kid-sm text-muted">Demande à un parent.</p>
           </section>
         )}
 
