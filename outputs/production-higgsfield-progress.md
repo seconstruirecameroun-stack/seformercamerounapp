@@ -1,4 +1,4 @@
-# MémoAventure CM1 — production terminée
+# Se Former Cameroun CM1 — production terminée
 
 Date : 14 octobre 2026
 

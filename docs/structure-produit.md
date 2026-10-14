@@ -1,4 +1,4 @@
-# MémoAventure — structure du produit
+# Se Former Cameroun — structure du produit
 
 > Document de travail. Il décrit la cible, pas l'état actuel.
 > État actuel : un prototype statique mono-enfant, mono-leçon, en localStorage,

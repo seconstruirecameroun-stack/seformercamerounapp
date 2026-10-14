@@ -1,4 +1,4 @@
-const state = JSON.parse(localStorage.getItem('memoaventure-progress') || '{}');
+const state = JSON.parse(localStorage.getItem('seformercameroun-progress') || '{}');
 state.lesson = Boolean(state.lesson);
 state.games = Array.isArray(state.games) ? state.games : [];
 state.quiz = Boolean(state.quiz);
@@ -43,7 +43,7 @@ let quizAnswers = [];
 let speech = null;
 
 function saveState() {
-  localStorage.setItem('memoaventure-progress', JSON.stringify(state));
+  localStorage.setItem('seformercameroun-progress', JSON.stringify(state));
   renderProgress();
 }
 
@@ -51,7 +51,7 @@ function routeTo(route) {
   document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.id === route));
   document.querySelectorAll('[data-route]').forEach(button => button.classList.toggle('active', button.dataset.route === route && (button.classList.contains('nav-item') || button.closest('.mobile-nav'))));
   const target = document.getElementById(route);
-  document.getElementById('page-title').textContent = target?.dataset.title || 'MémoAventure';
+  document.getElementById('page-title').textContent = target?.dataset.title || 'Se Former Cameroun';
   history.replaceState(null, '', `#${route}`);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
