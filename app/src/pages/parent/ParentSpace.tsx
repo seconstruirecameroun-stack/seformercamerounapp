@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { Button, Card, ErrorNote, Field, Loading, Pill } from '../../components/ui';
 import ImportCourse from './ImportCourse';
+import Validation from './Validation';
 import { verrouiller } from '../../components/PinGate';
 import type { ClassRow } from '../../types/db';
 
@@ -250,6 +251,54 @@ function Library() {
  * C'est le candidat naturel pour « une leçon », mais rien n'est figé : le
  * découpage réel se décide à l'extraction, puis se corrige à la validation.
  */
+function BoutonLecture({ batchId, stage }: { batchId: string | null; stage: string }) {
+  const qc = useQueryClient();
+  const lire = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('analyze-document', {
+        body: { batch_id: batchId },
+      });
+      if (error) throw error;
+      return data as { notions?: number; avertissements?: string[] };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['documents'] });
+      qc.invalidateQueries({ queryKey: ['validation'] });
+    },
+  });
+
+  if (!batchId) return null;
+
+  return (
+    <div className="mt-2">
+      <Button
+        variant="secondary"
+        onClick={() => lire.mutate()}
+        disabled={lire.isPending || stage === 'en_lecture'}
+      >
+        {lire.isPending ? 'Lecture en cours…' : stage === 'echec' ? 'Relancer la lecture' : 'Lire ce cours'}
+      </Button>
+      {lire.error ? (
+        <div className="mt-2">
+          <ErrorNote error={lire.error} />
+        </div>
+      ) : null}
+      {lire.data ? (
+        <p className="mt-2 text-sm text-leaf">
+          {lire.data.notions} notions extraites. À relire dans « À valider ».
+        </p>
+      ) : null}
+      {lire.data?.avertissements && lire.data.avertissements.length > 0 ? (
+        <ul className="mt-2 rounded-2xl bg-gold/20 px-4 py-3 text-sm">
+          {lire.data.avertissements.map((a, i) => (
+            <li key={i}>⚠ {a}</li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 function Documents() {
   const docs = useQuery({
     queryKey: ['documents'],
@@ -326,14 +375,18 @@ function Documents() {
               {enEchec?.stage_error ? (
                 <p className="mt-2 text-xs text-clay-dark">{enEchec.stage_error}</p>
               ) : null}
+              {tete.stage === 'importe' || tete.stage === 'echec' ? (
+                <BoutonLecture batchId={tete.batch_id} stage={tete.stage} />
+              ) : null}
             </li>
           );
         })}
       </ul>
 
       <p className="mt-4 text-xs text-muted">
-        La lecture automatique des photos arrive avec la fonction d’extraction : les documents
-        restent à l’état « Importé » tant qu’elle n’est pas branchée.
+        La lecture appelle la fonction d’extraction : elle transcrit les pages, en tire un résumé
+        et des notions, puis dépose le tout dans « À valider ». Rien n’atteint l’enfant avant
+        votre relecture.
       </p>
     </Card>
   );
@@ -423,6 +476,7 @@ export default function ParentSpace() {
       {classes.data ? <AddChild classes={classes.data} /> : null}
       <ImportCourse enfants={children.data ?? []} />
       <Documents />
+      <Validation />
       <Library />
       <PinSetup />
     </main>
