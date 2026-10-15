@@ -79,6 +79,20 @@ export function calculerSerie(jours: string[]): number {
 }
 
 export async function chargerTableauDeBord(childId: string): Promise<TableauDeBord> {
+  // La classe de l'enfant commande ce qu'il voit. Sans ce filtre, un CM1
+  // trouvait les leçons de CE1 de son frère dans sa propre liste — et les
+  // comptait dans sa progression.
+  const { data: enfant, error: erreurEnfant } = await supabase
+    .from('children')
+    .select('class_id')
+    .eq('id', childId)
+    .single();
+  if (erreurEnfant) throw erreurEnfant;
+
+  // Une leçon sans classe reste visible par tous : c'est le cas d'un document
+  // importé avant que le parent ait choisi la classe.
+  const classe = (enfant as { class_id: string | null }).class_id;
+
   const [lecons, maitrise, recompenses, tentatives, justes] = await Promise.all([
     supabase
       .from('lessons')
@@ -87,6 +101,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
           'notions(id, statement, illustration, status, items(id, level, status))',
       )
       .eq('status', 'approved')
+      .or(classe ? `class_id.eq.${classe},class_id.is.null` : 'class_id.is.null')
       .order('sort_order'),
     supabase.from('mastery').select('notion_id, level, next_review').eq('child_id', childId),
     supabase.from('rewards').select('value').eq('child_id', childId),

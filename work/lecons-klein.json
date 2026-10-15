@@ -1,0 +1,1560 @@
+[
+ {
+  "matiere": "Éducation morale",
+  "couleur": "#c2708f",
+  "titre": "L’obéissance",
+  "resume": "L’obéissance, c’est exécuter les ordres et les consignes d’un aîné sans discuter. Un enfant obéissant est aimé de tout le monde. Si nous voulons réussir dans la vie, obéissons.",
+  "illustration": "ob-ecoute",
+  "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A child listening attentively to a kind adult who is pointing at a tidy room, both smiling, warm morning light.",
+  "notions": [
+   {
+    "kind": "definition",
+    "statement": "L’obéissance est le fait d’exécuter les ordres et les consignes d’un aîné sans discuter.",
+    "illustration": "ob-consigne",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A grown-up hand gently pointing the way and a small child nodding, simple scene, plain soft background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Obéir, c’est faire ce qu’un aîné demande, tout de suite et sans discuter."
+     },
+     {
+      "register": "analogie",
+      "body": "C’est comme au football : quand l’arbitre siffle, on s’arrête sans discuter."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Obéir, c’est…",
+       "options": [
+        "faire ce qu’un aîné demande",
+        "discuter longtemps",
+        "partir en courant"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Obéir, c’est faire ce qu’on demande."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Quand un aîné donne une consigne, j’obéis…",
+       "options": [
+        "sans discuter",
+        "en discutant",
+        "demain"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Sans discuter."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Qui donne les consignes que l’on doit suivre ?",
+       "options": [
+        "Un aîné",
+        "Un bébé",
+        "Un chat",
+        "Personne"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Un aîné : un plus grand que nous."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Que fait un enfant obéissant ?",
+       "options": [
+        "Il exécute les ordres sans discuter",
+        "Il refuse les ordres",
+        "Il discute chaque consigne",
+        "Il fait semblant d’écouter"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Il exécute sans discuter."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "L’obéissance, c’est exécuter les ordres d’un {{1}} sans {{2}}.",
+       "blanks": 2
+      },
+      "answer": {
+       "values": [
+        "aîné",
+        "discuter"
+       ]
+      },
+      "explain": "D’un aîné, sans discuter."
+     },
+     {
+      "kind": "qcm",
+      "level": 3,
+      "payload": {
+       "question": "Ton grand frère te demande de ranger. Que fais-tu ?",
+       "options": [
+        "Je range tout de suite",
+        "Je discute longtemps",
+        "Je fais autre chose",
+        "Je me cache"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "On exécute la consigne d’un aîné."
+     }
+    ]
+   },
+   {
+    "kind": "relation",
+    "statement": "Un enfant obéissant est aimé de tout le monde.",
+    "illustration": "ob-aime",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A smiling child surrounded by three happy family members, soft hearts floating, plain soft background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Quand tu obéis, les autres sont contents de toi et t’aiment."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Un enfant obéissant est…",
+       "options": [
+        "aimé de tout le monde",
+        "grondé tous les jours",
+        "oublié"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Il est aimé de tout le monde."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Qui aime un enfant obéissant ?",
+       "options": [
+        "Tout le monde",
+        "Personne",
+        "Les animaux seulement"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Tout le monde."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Pourquoi aime-t-on un enfant obéissant ?",
+       "options": [
+        "Il fait ce qu’on lui demande",
+        "Il crie très fort",
+        "Il court très vite",
+        "Il mange beaucoup"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Parce qu’il fait ce qu’on lui demande."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Un enfant obéissant est {{1}} de tout le monde.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "aimé"
+       ]
+      },
+      "explain": "Aimé de tout le monde."
+     }
+    ]
+   },
+   {
+    "kind": "relation",
+    "statement": "Si nous voulons réussir dans la vie, obéissons.",
+    "illustration": "ob-reussir",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A child climbing three soft steps towards a glowing star, simple and encouraging, plain soft background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Obéir aujourd’hui aide à réussir plus tard."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Pour réussir dans la vie, il faut…",
+       "options": [
+        "obéir",
+        "désobéir",
+        "dormir toute la journée"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Il faut obéir."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Que nous apporte l’obéissance ?",
+       "options": [
+        "Elle nous aide à réussir dans la vie",
+        "Elle fait perdre du temps",
+        "Elle fâche les aînés",
+        "Elle rend triste"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Elle aide à réussir."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Si nous voulons {{1}} dans la vie, obéissons.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "réussir"
+       ]
+      },
+      "explain": "Réussir."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "matiere": "Droits et devoirs",
+  "couleur": "#5b8ac2",
+  "titre": "Le droit à l’identité",
+  "resume": "Chaque enfant a droit à une identité. L’identité lui confère un nom et une nationalité.",
+  "illustration": "id-identite",
+  "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A friendly open booklet with a child portrait drawn on it and a small flag beside, plain soft background.",
+  "notions": [
+   {
+    "kind": "definition",
+    "statement": "Chaque enfant a droit à une identité.",
+    "illustration": "id-enfant",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Three children of different looks standing side by side, each with a soft glowing badge on the chest, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Tous les enfants, sans exception, ont droit à une identité."
+     },
+     {
+      "register": "analogie",
+      "body": "C’est comme une étiquette sur ton cartable : elle dit que ce cartable est à toi."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Qui a droit à une identité ?",
+       "options": [
+        "Chaque enfant",
+        "Seulement les grands",
+        "Personne"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Chaque enfant."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Avoir une identité, c’est un…",
+       "options": [
+        "droit",
+        "jeu",
+        "cadeau de fête"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "C’est un droit."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "L’identité est…",
+       "options": [
+        "un droit de chaque enfant",
+        "un cadeau d’anniversaire",
+        "une punition",
+        "un jouet"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Un droit, pour chaque enfant."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Chaque enfant a droit à une {{1}}.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "identité"
+       ]
+      },
+      "explain": "Une identité."
+     }
+    ]
+   },
+   {
+    "kind": "liste",
+    "statement": "L’identité confère un nom et une nationalité.",
+    "illustration": "id-nom-nation",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A name card next to a small waving flag, joined by a soft ribbon, plain soft background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Ton identité te donne deux choses : un nom et une nationalité."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "L’identité donne un nom et une…",
+       "options": [
+        "nationalité",
+        "voiture",
+        "maison"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Un nom et une nationalité."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Mon nom fait partie de…",
+       "options": [
+        "mon identité",
+        "mon école",
+        "mon jeu"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le nom fait partie de l’identité."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Que confère l’identité ?",
+       "options": [
+        "Un nom et une nationalité",
+        "Un nom et une maison",
+        "Une nationalité et un vélo",
+        "Un âge et une taille"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Un nom et une nationalité."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Être camerounais, c’est quelle partie de l’identité ?",
+       "options": [
+        "La nationalité",
+        "Le nom",
+        "L’âge",
+        "La taille"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "C’est la nationalité."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "L’identité confère un {{1}} et une {{2}}.",
+       "blanks": 2
+      },
+      "answer": {
+       "values": [
+        "nom",
+        "nationalité"
+       ]
+      },
+      "explain": "Un nom et une nationalité."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "matiere": "Éducation civique",
+  "couleur": "#3f9d8f",
+  "titre": "L’intégration nationale",
+  "resume": "L’intégration nationale est un mélange des cultures et des traditions au sein d’une population. Au Cameroun, plus de 250 ethnies vivent dans la paix et l’harmonie, à travers les mariages interethniques, la cohabitation des peuples et les affectations des travailleurs.",
+  "illustration": "in-cameroun",
+  "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A joyful crowd of children in varied traditional clothes holding hands in a wide circle, plain soft background.",
+  "notions": [
+   {
+    "kind": "definition",
+    "statement": "L’intégration nationale est un mélange des cultures et des traditions au sein d’une population.",
+    "illustration": "in-melange",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Several coloured ribbons braiding together into one wide ribbon, plain soft background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "C’est quand des cultures et des traditions différentes se mélangent dans un même pays."
+     },
+     {
+      "register": "analogie",
+      "body": "C’est comme un plat de famille : chacun apporte un ingrédient, et on mange ensemble."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "L’intégration nationale, c’est un mélange de…",
+       "options": [
+        "cultures et de traditions",
+        "voitures",
+        "animaux"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Des cultures et des traditions."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "L’intégration nationale concerne…",
+       "options": [
+        "une population",
+        "une seule famille",
+        "un seul enfant"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Toute une population."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Qu’est-ce que l’intégration nationale ?",
+       "options": [
+        "Le mélange des cultures et des traditions d’une population",
+        "Un jeu d’équipe",
+        "Un voyage à l’étranger",
+        "Une fête d’école"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Un mélange des cultures et des traditions."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "L’intégration nationale est un mélange des {{1}} et des {{2}}.",
+       "blanks": 2
+      },
+      "answer": {
+       "values": [
+        "cultures",
+        "traditions"
+       ]
+      },
+      "explain": "Des cultures et des traditions."
+     }
+    ]
+   },
+   {
+    "kind": "relation",
+    "statement": "Au Cameroun, plus de 250 ethnies vivent dans la paix et l’harmonie.",
+    "illustration": "in-ethnies",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A soft map shape of a country filled with many small coloured houses living side by side, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Le Cameroun compte plus de 250 ethnies, et elles vivent en paix."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Au Cameroun, il y a plus de…",
+       "options": [
+        "250 ethnies",
+        "2 ethnies",
+        "10 ethnies"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Plus de 250 ethnies."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Au Cameroun, les ethnies vivent dans…",
+       "options": [
+        "la paix",
+        "la dispute",
+        "la peur"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Dans la paix et l’harmonie."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Combien d’ethnies compte le Cameroun ?",
+       "options": [
+        "Plus de 250",
+        "Moins de 10",
+        "Exactement 50",
+        "Une seule"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Plus de 250."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Au Cameroun, plus de {{1}} ethnies vivent dans la paix.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "250"
+       ]
+      },
+      "explain": "Plus de 250."
+     }
+    ]
+   },
+   {
+    "kind": "liste",
+    "statement": "L’intégration nationale se fait à travers les mariages interethniques, la cohabitation des peuples et les affectations des travailleurs.",
+    "illustration": "in-moyens",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Three simple pictures side by side: two hands with wedding rings, two neighbouring houses, and a travelling bag with a bus, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Trois choses rapprochent les peuples : les mariages entre ethnies, le fait de vivre côte à côte, et les travailleurs envoyés dans d’autres régions."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Quand deux personnes de deux ethnies se marient, cela aide…",
+       "options": [
+        "l’intégration nationale",
+        "la dispute",
+        "personne"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "C’est un mariage interethnique."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Vivre côte à côte avec d’autres peuples, c’est la…",
+       "options": [
+        "cohabitation",
+        "séparation",
+        "dispute"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "C’est la cohabitation."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Lequel n’aide PAS l’intégration nationale ?",
+       "options": [
+        "Refuser les autres ethnies",
+        "Les mariages interethniques",
+        "La cohabitation des peuples",
+        "Les affectations des travailleurs"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Refuser les autres sépare au lieu de rassembler."
+     },
+     {
+      "kind": "chronologie",
+      "level": 3,
+      "payload": {
+       "question": "Remets les trois moyens dans l’ordre du cahier.",
+       "tokens": [
+        "Les mariages interethniques",
+        "La cohabitation des peuples",
+        "Les affectations des travailleurs"
+       ]
+      },
+      "answer": {
+       "order": [
+        0,
+        1,
+        2
+       ]
+      },
+      "explain": "Mariages, cohabitation, affectations."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "La {{1}} des peuples aide l’intégration nationale.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "cohabitation"
+       ]
+      },
+      "explain": "La cohabitation."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "matiere": "Technologies",
+  "couleur": "#d08a3c",
+  "titre": "Les techniques de filtrage de l’eau",
+  "resume": "On peut réaliser un filtre à eau avec une demi-bouteille, du sable, du coton, du charbon et du gravier. L’eau non potable entre par le haut, traverse le gravier, le charbon, le sable puis le coton, et l’eau potable sort en bas.",
+  "illustration": "fi-filtre",
+  "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A half plastic bottle turned upside down as a water filter, layers of gravel, charcoal, sand and cotton, a clean drop falling into a glass below, plain background.",
+  "notions": [
+   {
+    "kind": "liste",
+    "statement": "On peut réaliser un filtre à eau avec une demi-bouteille, du sable, du coton, du charbon et du gravier.",
+    "illustration": "fi-materiel",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Five small piles side by side: a half bottle, sand, cotton, charcoal and gravel, neatly arranged, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Le matériel : une demi-bouteille, du sable, du coton, du charbon et du gravier."
+     },
+     {
+      "register": "pas_a_pas",
+      "body": "On coupe la bouteille, on la retourne, puis on met le coton, le sable, le charbon et le gravier."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Pour faire un filtre, on utilise une…",
+       "options": [
+        "demi-bouteille",
+        "assiette",
+        "cuillère"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Une demi-bouteille."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Lequel sert à filtrer l’eau ?",
+       "options": [
+        "Le sable",
+        "Le sucre",
+        "Le savon"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le sable fait partie du filtre."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Quels matériaux met-on dans le filtre ?",
+       "options": [
+        "Du gravier, du charbon, du sable et du coton",
+        "Du sucre, du sel et de l’huile",
+        "Du papier et de la colle",
+        "Des feuilles et des cailloux peints"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Gravier, charbon, sable et coton."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "On fabrique le filtre avec une demi-{{1}}, du sable, du coton, du charbon et du {{2}}.",
+       "blanks": 2
+      },
+      "answer": {
+       "values": [
+        "bouteille",
+        "gravier"
+       ]
+      },
+      "explain": "Une demi-bouteille et du gravier."
+     }
+    ]
+   },
+   {
+    "kind": "liste",
+    "statement": "Dans le filtre, l’eau traverse le gravier, le charbon, le sable puis le coton.",
+    "illustration": "fi-couches",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A cut-away view of four stacked layers in a bottle, from top to bottom gravel, charcoal, sand, cotton, with a blue arrow going down, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "De haut en bas : gravier, charbon, sable, coton."
+     },
+     {
+      "register": "visuel",
+      "body": "Le gravier arrête les gros morceaux, le coton retient les plus petites saletés."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Dans le filtre, l’eau passe d’abord par…",
+       "options": [
+        "le gravier",
+        "le coton",
+        "la bouteille vide"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le gravier est en haut."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Que traverse l’eau en dernier ?",
+       "options": [
+        "Le coton",
+        "Le gravier",
+        "Le charbon"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le coton est tout en bas."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Dans quel ordre l’eau traverse-t-elle le filtre ?",
+       "options": [
+        "Gravier, charbon, sable, coton",
+        "Coton, sable, charbon, gravier",
+        "Sable, gravier, coton, charbon",
+        "Charbon, coton, gravier, sable"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Gravier, charbon, sable, coton."
+     },
+     {
+      "kind": "chronologie",
+      "level": 3,
+      "payload": {
+       "question": "Remets les couches du filtre, du haut vers le bas.",
+       "tokens": [
+        "Gravier",
+        "Charbon",
+        "Sable",
+        "Coton"
+       ]
+      },
+      "answer": {
+       "order": [
+        0,
+        1,
+        2,
+        3
+       ]
+      },
+      "explain": "Gravier, charbon, sable, coton."
+     }
+    ]
+   },
+   {
+    "kind": "relation",
+    "statement": "L’eau non potable entre dans le filtre et l’eau potable en sort.",
+    "illustration": "fi-eau-potable",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. On the left a glass of cloudy water, on the right a glass of clear water, an arrow between them, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "L’eau sale entre en haut, l’eau propre sort en bas."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "L’eau qui entre dans le filtre est…",
+       "options": [
+        "non potable",
+        "potable",
+        "sucrée"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Elle est non potable : on ne peut pas la boire."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "L’eau qui sort du filtre est…",
+       "options": [
+        "potable",
+        "plus sale",
+        "brûlante"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Elle est potable."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "À quoi sert un filtre à eau ?",
+       "options": [
+        "À rendre l’eau potable",
+        "À chauffer l’eau",
+        "À colorer l’eau",
+        "À geler l’eau"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "À rendre l’eau potable."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "L’eau non potable entre dans le filtre et l’eau {{1}} en sort.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "potable"
+       ]
+      },
+      "explain": "L’eau potable."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "matiere": "Éducation à la paix",
+  "couleur": "#7a76c4",
+  "titre": "La paix",
+  "resume": "Pour maintenir la paix, je pratique le vivre-ensemble au village ou en ville, en acceptant les autres, en étant tolérant, en les assistant et en collaborant avec eux.",
+  "illustration": "pa-village",
+  "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Neighbours of a small village helping each other carry baskets under a calm sky, dove flying above, plain background.",
+  "notions": [
+   {
+    "kind": "relation",
+    "statement": "Pour maintenir la paix, je pratique le vivre-ensemble au village ou en ville.",
+    "illustration": "pa-ensemble",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Two small houses, one rural and one in town, joined by a path with children walking together, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "La paix se construit là où l’on vit : au village comme en ville."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Pour maintenir la paix, je pratique le…",
+       "options": [
+        "vivre-ensemble",
+        "chacun pour soi",
+        "silence toute la journée"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le vivre-ensemble."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Où pratique-t-on le vivre-ensemble ?",
+       "options": [
+        "Au village ou en ville",
+        "Seulement à l’école",
+        "Nulle part"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Au village ou en ville."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Que faut-il faire pour maintenir la paix ?",
+       "options": [
+        "Pratiquer le vivre-ensemble",
+        "Se disputer",
+        "Rester tout seul",
+        "Crier plus fort"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Pratiquer le vivre-ensemble."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Pour maintenir la {{1}}, je pratique le vivre-{{2}}.",
+       "blanks": 2
+      },
+      "answer": {
+       "values": [
+        "paix",
+        "ensemble"
+       ]
+      },
+      "explain": "La paix, le vivre-ensemble."
+     }
+    ]
+   },
+   {
+    "kind": "liste",
+    "statement": "Le vivre-ensemble, c’est accepter les autres, être tolérant, les assister et collaborer avec eux.",
+    "illustration": "pa-mains",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Four hands of different skin tones joining together over a soft circle, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Quatre gestes : accepter, tolérer, assister, collaborer."
+     },
+     {
+      "register": "analogie",
+      "body": "C’est comme porter une table à plusieurs : si un seul lâche, tout tombe."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Vivre ensemble, c’est d’abord…",
+       "options": [
+        "accepter les autres",
+        "refuser les autres",
+        "ignorer les autres"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Accepter les autres."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Aider quelqu’un, c’est l’…",
+       "options": [
+        "assister",
+        "oublier",
+        "éviter"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "C’est l’assister."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Lequel ne fait PAS partie du vivre-ensemble ?",
+       "options": [
+        "Refuser les autres",
+        "Être tolérant",
+        "Assister les autres",
+        "Collaborer avec eux"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Refuser les autres éloigne de la paix."
+     },
+     {
+      "kind": "chronologie",
+      "level": 3,
+      "payload": {
+       "question": "Remets les trois façons de vivre ensemble, dans l’ordre du cahier.",
+       "tokens": [
+        "Être tolérant",
+        "Assister les autres",
+        "Collaborer avec eux"
+       ]
+      },
+      "answer": {
+       "order": [
+        0,
+        1,
+        2
+       ]
+      },
+      "explain": "Tolérer, assister, collaborer."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Je vis en paix en étant {{1}} avec les autres.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "tolérant"
+       ]
+      },
+      "explain": "En étant tolérant."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "matiere": "Géographie",
+  "couleur": "#6f9a3f",
+  "titre": "Le sol",
+  "resume": "Le sol est la partie superficielle de la terre. Il diffère en fonction de sa structure : sablonneux, ferralitique, basaltique ou argileux.",
+  "illustration": "so-terre",
+  "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A gentle cut-away of the ground showing a thin top layer with grass and a small plant, plain soft background.",
+  "notions": [
+   {
+    "kind": "definition",
+    "statement": "Le sol est la partie superficielle de la terre.",
+    "illustration": "so-coupe",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A simple slice of ground with the very top layer highlighted in a warm colour, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Le sol, c’est la couche du dessus, celle sur laquelle on marche."
+     },
+     {
+      "register": "analogie",
+      "body": "C’est comme la peau de la terre : fine, mais c’est là que tout pousse."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Où se trouve le sol ?",
+       "options": [
+        "À la surface de la terre",
+        "Au centre de la Terre",
+        "Dans le ciel"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "À la surface : c’est la partie superficielle."
+     },
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Le sol est la partie… de la terre",
+       "options": [
+        "superficielle",
+        "profonde",
+        "invisible"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Superficielle veut dire « du dessus »."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Qu’est-ce que le sol ?",
+       "options": [
+        "La partie superficielle de la terre",
+        "Le ciel au-dessus de nous",
+        "L’eau de la rivière",
+        "Le centre de la Terre"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "La partie superficielle de la terre."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Le sol est la partie {{1}} de la terre.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "superficielle"
+       ]
+      },
+      "explain": "Superficielle."
+     }
+    ]
+   },
+   {
+    "kind": "relation",
+    "statement": "Le sol diffère en fonction de sa structure.",
+    "illustration": "so-structures",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. Four small jars of earth of different colours and grain sizes lined up, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Tous les sols ne se ressemblent pas : cela dépend de leur structure."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Tous les sols sont-ils pareils ?",
+       "options": [
+        "Non, ils sont différents",
+        "Oui, tous pareils"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Ils diffèrent selon leur structure."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Qu’est-ce qui fait la différence entre les sols ?",
+       "options": [
+        "Leur structure",
+        "Leur prix",
+        "Leur nom",
+        "Leur âge"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Leur structure."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Le sol diffère en fonction de sa {{1}}.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "structure"
+       ]
+      },
+      "explain": "Sa structure."
+     }
+    ]
+   },
+   {
+    "kind": "definition",
+    "statement": "Le sol sablonneux est fait de grains de roche.",
+    "illustration": "so-sablonneux",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A close view of pale sandy soil with visible grains, a small shell shape, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Sablonneux : il est fait de grains de roche, comme du sable."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Le sol sablonneux est fait de…",
+       "options": [
+        "grains de roche",
+        "eau",
+        "fer"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "De grains de roche."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Quel sol est fait de grains de roche ?",
+       "options": [
+        "Le sol sablonneux",
+        "Le sol argileux",
+        "Le sol basaltique",
+        "Le sol ferralitique"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le sol sablonneux."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Le sol {{1}} est fait de grains de roche.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "sablonneux"
+       ]
+      },
+      "explain": "Sablonneux."
+     }
+    ]
+   },
+   {
+    "kind": "definition",
+    "statement": "Le sol ferralitique est rouge et riche en fer.",
+    "illustration": "so-ferralitique",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A close view of deep red earth with a small iron-coloured pebble, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Ferralitique : il est rouge parce qu’il contient beaucoup de fer."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Le sol ferralitique est de quelle couleur ?",
+       "options": [
+        "Rouge",
+        "Noir",
+        "Blanc"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Il est rouge."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Pourquoi le sol ferralitique est-il rouge ?",
+       "options": [
+        "Il est riche en fer",
+        "Il est riche en eau",
+        "Il a été brûlé",
+        "Il a été peint"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Parce qu’il est riche en fer."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Le sol ferralitique est rouge et riche en {{1}}.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "fer"
+       ]
+      },
+      "explain": "En fer."
+     }
+    ]
+   },
+   {
+    "kind": "definition",
+    "statement": "Le sol basaltique est noir et fertile.",
+    "illustration": "so-basaltique",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A close view of dark black earth with a healthy green sprout growing, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Basaltique : il est noir, et les plantes y poussent bien."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Le sol basaltique est…",
+       "options": [
+        "noir",
+        "rouge",
+        "jaune"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Il est noir."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Quel sol est noir et fertile ?",
+       "options": [
+        "Le basaltique",
+        "L’argileux",
+        "Le sablonneux",
+        "Le ferralitique"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Le basaltique."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Le sol basaltique est {{1}} et fertile.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "noir"
+       ]
+      },
+      "explain": "Noir."
+     }
+    ]
+   },
+   {
+    "kind": "definition",
+    "statement": "Le sol argileux est mou et pas fertile.",
+    "illustration": "so-argileux",
+    "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand. A close view of soft grey clay earth, a finger print pressed into it, no plant, plain background.",
+    "explications": [
+     {
+      "register": "simple",
+      "body": "Argileux : il est mou, et les plantes y poussent mal."
+     }
+    ],
+    "items": [
+     {
+      "kind": "qcm",
+      "level": 1,
+      "payload": {
+       "question": "Le sol argileux est…",
+       "options": [
+        "mou",
+        "dur comme la pierre",
+        "brûlant"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "Il est mou."
+     },
+     {
+      "kind": "qcm",
+      "level": 2,
+      "payload": {
+       "question": "Quel sol n’est pas fertile ?",
+       "options": [
+        "L’argileux",
+        "Le basaltique",
+        "Le ferralitique",
+        "Aucun"
+       ]
+      },
+      "answer": {
+       "index": 0
+      },
+      "explain": "L’argileux n’est pas fertile."
+     },
+     {
+      "kind": "texte_a_trous",
+      "level": 3,
+      "payload": {
+       "text": "Le sol argileux est mou et pas {{1}}.",
+       "blanks": 1
+      },
+      "answer": {
+       "values": [
+        "fertile"
+       ]
+      },
+      "explain": "Pas fertile."
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -27,3 +27,7 @@ desktop.ini
 
 # Les films vivent dans le stockage Supabase, pas dans le depot.
 app/public/films/
+
+# Les images sources de Higgsfield : lourdes, et regenerables depuis les prompts.
+work/images-*/
+__pycache__/
