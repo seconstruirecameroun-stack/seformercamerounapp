@@ -44,19 +44,32 @@ export function trierFichiers(fichiers: File[]) {
   return { acceptes, refuses };
 }
 
-/** Trouve la matière par son intitulé, ou la crée. Les intitulés sont libres. */
-export async function matiereParIntitule(parentId: string, libelle: string): Promise<string> {
+/**
+ * Trouve une matière dans le catalogue de la classe, ou l'y ajoute.
+ *
+ * L'emploi du temps de l'école fournit la liste, mais il ne dit pas tout :
+ * un cahier peut porter un intitulé qui n'y figure pas. On ne fige donc
+ * rien — on rattache la nouvelle matière à la classe, pour qu'elle soit
+ * proposée la prochaine fois au lieu d'être réinventée.
+ */
+export async function matiereDeClasse(
+  parentId: string,
+  classId: string,
+  libelle: string,
+): Promise<string> {
   const label = libelle.trim();
   const { data: existante } = await supabase
     .from('subjects')
     .select('id')
+    .eq('parent_id', parentId)
+    .eq('class_id', classId)
     .eq('label', label)
     .maybeSingle();
   if (existante) return existante.id;
 
   const { data, error } = await supabase
     .from('subjects')
-    .insert({ parent_id: parentId, label })
+    .insert({ parent_id: parentId, class_id: classId, label })
     .select('id')
     .single();
   if (error) throw error;
@@ -79,18 +92,18 @@ export type ResultatImport = {
 export async function importerCours(params: {
   parentId: string;
   childId: string;
-  subjectLabel: string;
+  /** Une matière du catalogue de la classe. L'import n'en invente plus. */
+  subjectId: string | null;
   kind: 'cours' | 'devoir' | 'autre';
   fichiers: File[];
   onProgress?: (fait: number, total: number) => void;
 }): Promise<ResultatImport> {
-  const { parentId, childId, subjectLabel, kind, fichiers, onProgress } = params;
+  const { parentId, childId, subjectId, kind, fichiers, onProgress } = params;
   const { acceptes, refuses } = trierFichiers(fichiers);
   if (acceptes.length === 0) {
     throw new Error('Aucun fichier exploitable : ' + (refuses[0]?.raison ?? 'liste vide'));
   }
 
-  const subjectId = subjectLabel.trim() ? await matiereParIntitule(parentId, subjectLabel) : null;
   const batchId = crypto.randomUUID();
   const documents: string[] = [];
 

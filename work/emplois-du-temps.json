@@ -1,0 +1,1720 @@
+{
+ "ecole": "New Century Bilingual School, Yaoundé",
+ "classes": [
+  {
+   "code": "CM1",
+   "equivalent_anglophone": "Class 5",
+   "matieres": [
+    {
+     "libelle": "Histoire-Géographie",
+     "couleur": "#d66d4d",
+     "officiel_fr": "Histoire / Géographie",
+     "officiel_en": "Social Studies I (Hist/Geo)",
+     "intitules_cahier": [
+      "Histoire",
+      "Géographie",
+      "Hist/Géo",
+      "Histoire-Géo"
+     ]
+    },
+    {
+     "libelle": "ECM",
+     "couleur": "#b4584f",
+     "officiel_fr": "Histoire / Géographie / ECM",
+     "officiel_en": "Social Studies 2 (Civics, Moral Educ, Human Rights)",
+     "intitules_cahier": [
+      "Éducation civique",
+      "Éducation morale",
+      "Droits et devoirs",
+      "Éducation à la paix",
+      "ECM"
+     ]
+    },
+    {
+     "libelle": "Français",
+     "couleur": "#5b8ac2",
+     "officiel_fr": "Français",
+     "officiel_en": "French",
+     "intitules_cahier": [
+      "Français",
+      "Dictée",
+      "Grammaire",
+      "Conjugaison"
+     ]
+    },
+    {
+     "libelle": "Anglais",
+     "couleur": "#4f7fae",
+     "officiel_fr": "Anglais",
+     "officiel_en": "English Language",
+     "intitules_cahier": [
+      "English",
+      "Anglais",
+      "Vocabulary",
+      "Grammar",
+      "Reading comprehension"
+     ]
+    },
+    {
+     "libelle": "Mathématiques",
+     "couleur": "#3f7d6a",
+     "officiel_fr": "Mathématiques",
+     "officiel_en": "Maths",
+     "intitules_cahier": [
+      "Maths",
+      "Mathématiques",
+      "Calcul"
+     ]
+    },
+    {
+     "libelle": "Sciences",
+     "couleur": "#3f9d8f",
+     "officiel_fr": "Sciences",
+     "officiel_en": "Science",
+     "intitules_cahier": [
+      "Sciences",
+      "SVT",
+      "Environnement",
+      "Santé"
+     ]
+    },
+    {
+     "libelle": "Technologie",
+     "couleur": "#d08a3c",
+     "officiel_fr": "Technologie",
+     "officiel_en": "Technology",
+     "intitules_cahier": [
+      "Technologie",
+      "Technologies"
+     ]
+    },
+    {
+     "libelle": "TIC",
+     "couleur": "#7a76c4",
+     "officiel_fr": "TIC",
+     "officiel_en": "ICT",
+     "intitules_cahier": [
+      "TIC",
+      "TICE",
+      "Informatique",
+      "ICT"
+     ]
+    },
+    {
+     "libelle": "Musique",
+     "couleur": "#c2708f",
+     "officiel_fr": "Musique",
+     "officiel_en": "Music",
+     "intitules_cahier": [
+      "Musique",
+      "Chant"
+     ]
+    },
+    {
+     "libelle": "Dessin",
+     "couleur": "#c98f5a",
+     "officiel_fr": "Dessin",
+     "officiel_en": "Drawing",
+     "intitules_cahier": [
+      "Dessin",
+      "Arts plastiques"
+     ]
+    },
+    {
+     "libelle": "EPS",
+     "couleur": "#6f9a3f",
+     "officiel_fr": "EPS",
+     "officiel_en": "PE",
+     "intitules_cahier": [
+      "EPS",
+      "Sport"
+     ]
+    },
+    {
+     "libelle": "Langues et cultures nationales",
+     "couleur": "#8a6fb0",
+     "officiel_fr": "Langues et cultures nationales",
+     "officiel_en": "National languages and cultures",
+     "intitules_cahier": [
+      "Langues nationales",
+      "Culture nationale"
+     ]
+    },
+    {
+     "libelle": "Développement personnel",
+     "couleur": "#a0714d",
+     "officiel_fr": "Développement personnel",
+     "officiel_en": "Personal development",
+     "intitules_cahier": [
+      "Développement personnel"
+     ]
+    },
+    {
+     "libelle": "Métiers",
+     "couleur": "#9a8450",
+     "officiel_fr": "Métiers",
+     "officiel_en": "Vocational studies (home economics)",
+     "intitules_cahier": [
+      "Économie familiale",
+      "Travaux manuels"
+     ]
+    }
+   ],
+   "emploi_du_temps": {
+    "1": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Morning devotion",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social Studies 2 (Civics)",
+      "matiere": "ECM"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social Studies I (Hist/Geo)",
+      "matiere": "Histoire-Géographie"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Reading Comp)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Technologie",
+      "matiere": "Technologie"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Histoire / Géo",
+      "matiere": "Histoire-Géographie"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "TIC",
+      "matiere": "TIC"
+     }
+    ],
+    "2": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Devotion",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Histoire / Géographie / ECM",
+      "matiere": "ECM"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Petite pause",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Vocabulary)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Sciences (Health Educ)",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Long break",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Vocational Studies (Home Economics)",
+      "matiere": "Métiers"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Vocabulary)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social Studies II (Moral Educ)",
+      "matiere": "ECM"
+     }
+    ],
+    "3": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Rassemblement",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social Studies I (Hist/Geo)",
+      "matiere": "Histoire-Géographie"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social Studies I (Hist/Geo)",
+      "matiere": "Histoire-Géographie"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Vocabulary)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Grammar)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences (Environ Educ)",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Musique",
+      "matiere": "Musique"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "TIC",
+      "matiere": "TIC"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     }
+    ],
+    "4": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Matinal",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Histoire / Géo - ECM",
+      "matiere": "ECM"
+     },
+     {
+      "debut": "08:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français",
+      "matiere": "Français"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Musique",
+      "matiere": "Musique"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Petite pause",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Guided Writing)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Sciences (Environ Educ)",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Long break",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Sciences (Health Educ)",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Drawing",
+      "matiere": "Dessin"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "club",
+      "langue": null,
+      "libelle": "Club activities",
+      "matiere": null
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "club",
+      "langue": null,
+      "libelle": "Club activities",
+      "matiere": null
+     }
+    ],
+    "5": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social Studies 2 (Human Rights)",
+      "matiere": "ECM"
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Maths",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Productive Writing)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Productive Writing)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English Language (Spelling/Dictation)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "ICT",
+      "matiere": "TIC"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences",
+      "matiere": "Sciences"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Dictée",
+      "matiere": "Français"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Développement personnel",
+      "matiere": "Développement personnel"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Langues et cultures nationales",
+      "matiere": "Langues et cultures nationales"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "EPS",
+      "matiere": "EPS"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "EPS",
+      "matiere": "EPS"
+     }
+    ]
+   }
+  },
+  {
+   "code": "CE1",
+   "equivalent_anglophone": "Class 3",
+   "matieres": [
+    {
+     "libelle": "Histoire",
+     "couleur": "#d66d4d",
+     "officiel_fr": "Sciences humaines et sociales (histoire)",
+     "officiel_en": "Social studies (history)",
+     "intitules_cahier": [
+      "Histoire"
+     ]
+    },
+    {
+     "libelle": "Géographie",
+     "couleur": "#c97c52",
+     "officiel_fr": "Sciences humaines et sociales (géographie)",
+     "officiel_en": "Social studies (geography)",
+     "intitules_cahier": [
+      "Géographie"
+     ]
+    },
+    {
+     "libelle": "Éducation civique",
+     "couleur": "#3f9d8f",
+     "officiel_fr": "Sciences humaines et sociales (éducation civique)",
+     "officiel_en": "Social studies (civics)",
+     "intitules_cahier": [
+      "Éducation civique",
+      "Instruction civique"
+     ]
+    },
+    {
+     "libelle": "Éducation morale",
+     "couleur": "#c2708f",
+     "officiel_fr": "Sciences humaines et sociales (éducation morale)",
+     "officiel_en": "Social studies (moral education)",
+     "intitules_cahier": [
+      "Éducation morale",
+      "Éducation à la paix",
+      "Morale"
+     ]
+    },
+    {
+     "libelle": "Droits humains",
+     "couleur": "#5b8ac2",
+     "officiel_fr": "Sciences humaines et sociales (droits humains)",
+     "officiel_en": "Social studies (human rights)",
+     "intitules_cahier": [
+      "Droits et devoirs",
+      "Droits humains",
+      "Droits de l’enfant"
+     ]
+    },
+    {
+     "libelle": "Français",
+     "couleur": "#4f7fae",
+     "officiel_fr": "Français",
+     "officiel_en": "French",
+     "intitules_cahier": [
+      "Français",
+      "Littérature",
+      "Grammaire",
+      "Conjugaison",
+      "Orthographe",
+      "Vocabulaire",
+      "Dictée"
+     ]
+    },
+    {
+     "libelle": "Anglais",
+     "couleur": "#3f6f9e",
+     "officiel_fr": "Anglais",
+     "officiel_en": "English language",
+     "intitules_cahier": [
+      "English",
+      "Anglais",
+      "Vocabulary",
+      "Grammar",
+      "Spelling",
+      "Reading"
+     ]
+    },
+    {
+     "libelle": "Mathématiques",
+     "couleur": "#3f7d6a",
+     "officiel_fr": "Mathématiques",
+     "officiel_en": "Mathematics",
+     "intitules_cahier": [
+      "Maths",
+      "Mathématiques",
+      "Nombres et calculs",
+      "Mesures et grandeurs",
+      "Géométrie"
+     ]
+    },
+    {
+     "libelle": "Sciences et technologies",
+     "couleur": "#d08a3c",
+     "officiel_fr": "Sciences et technologies",
+     "officiel_en": "Science and technology",
+     "intitules_cahier": [
+      "Sciences",
+      "Technologies",
+      "Technologie",
+      "Environnement",
+      "Santé"
+     ]
+    },
+    {
+     "libelle": "TIC",
+     "couleur": "#7a76c4",
+     "officiel_fr": "T.I.C.E (informatique)",
+     "officiel_en": "I.C.T",
+     "intitules_cahier": [
+      "TIC",
+      "TICE",
+      "Informatique",
+      "ICT"
+     ]
+    },
+    {
+     "libelle": "Éducation artistique",
+     "couleur": "#b36fa0",
+     "officiel_fr": "Éducation artistique (musique, dessin)",
+     "officiel_en": "Art and craft",
+     "intitules_cahier": [
+      "Musique",
+      "Dessin",
+      "Art",
+      "Chant"
+     ]
+    },
+    {
+     "libelle": "EPS",
+     "couleur": "#6f9a3f",
+     "officiel_fr": "EPS",
+     "officiel_en": "P.E",
+     "intitules_cahier": [
+      "EPS",
+      "Sport"
+     ]
+    },
+    {
+     "libelle": "Langue et culture nationale",
+     "couleur": "#8a6fb0",
+     "officiel_fr": "Langue et culture nationale",
+     "officiel_en": "National language and culture",
+     "intitules_cahier": [
+      "Langues nationales",
+      "Culture nationale"
+     ]
+    },
+    {
+     "libelle": "Développement personnel",
+     "couleur": "#a0714d",
+     "officiel_fr": "Développement personnel",
+     "officiel_en": "Personal development",
+     "intitules_cahier": [
+      "Développement personnel"
+     ]
+    },
+    {
+     "libelle": "Métiers",
+     "couleur": "#9a8450",
+     "officiel_fr": "Métiers",
+     "officiel_en": "Vocational studies",
+     "intitules_cahier": [
+      "Économie familiale",
+      "Agropastoral",
+      "Travaux manuels"
+     ]
+    },
+    {
+     "libelle": "Bibliothèque",
+     "couleur": "#7d8a6a",
+     "officiel_fr": "Bibliothèque / littérature",
+     "officiel_en": "Library / literature",
+     "intitules_cahier": [
+      "Bibliothèque",
+      "Lecture suivie"
+     ]
+    }
+   ],
+   "emploi_du_temps": {
+    "1": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Morning devotion and inspection",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Mathematics",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (vocabulary)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Vocational studies (home economics)",
+      "matiere": "Métiers"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social studies (geography)",
+      "matiere": "Géographie"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (grammar)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (spelling and dictation)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Science and technology (environ education)",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (littérature)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (vocabulaire)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (grammaire)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (nombres et calculs)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (nombres et calculs)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences et technologies",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences humaines et sociales (histoire)",
+      "matiere": "Histoire"
+     }
+    ],
+    "2": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Morning devotion and inspection",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences humaines et sociales (éducation civique)",
+      "matiere": "Éducation civique"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (littérature)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (production d’écrits)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (production d’écrits)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Musique",
+      "matiere": "Éducation artistique"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (mesures et grandeurs)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences et technologies",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Literature",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Mathematics",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Science and technology (environmental education)",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "ICT",
+      "matiere": "TIC"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Vocational studies (home economics)",
+      "matiere": "Métiers"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Art (drama and sing)",
+      "matiere": "Éducation artistique"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Art and craft (drawing)",
+      "matiere": "Éducation artistique"
+     }
+    ],
+    "3": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Morning devotion and inspection",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social studies (civics)",
+      "matiere": "Éducation civique"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Mathematics",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (vocabulary)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (guided writing and handwriting)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social studies (history)",
+      "matiere": "Histoire"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "I.C.T",
+      "matiere": "TIC"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Science and technology (tech and engineering)",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (littérature)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (géométrie et espace)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (géométrie et espace)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (conjugaison)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences humaines et sociales (éducation civique)",
+      "matiere": "Éducation civique"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences et technologies",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Bibliothèque / littérature",
+      "matiere": "Bibliothèque"
+     }
+    ],
+    "4": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Morning devotion and inspection",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences humaines et sociales (éducation morale)",
+      "matiere": "Éducation morale"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (littérature)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (mesures et grandeurs)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (grammaire)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (orthographe)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Développement personnel",
+      "matiere": "Développement personnel"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "EPS",
+      "matiere": "EPS"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (grammar)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Mathematics",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "National language and culture",
+      "matiere": "Langue et culture nationale"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (spelling and dictation)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (extensive reading)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "club",
+      "langue": null,
+      "libelle": "Clubs",
+      "matiere": null
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "club",
+      "langue": null,
+      "libelle": "Clubs",
+      "matiere": null
+     }
+    ],
+    "5": [
+     {
+      "debut": "07:20",
+      "fin": "07:40",
+      "genre": "rassemblement",
+      "langue": null,
+      "libelle": "Morning devotion and inspection",
+      "matiere": null
+     },
+     {
+      "debut": "07:40",
+      "fin": "08:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social studies (moral education)",
+      "matiere": "Éducation morale"
+     },
+     {
+      "debut": "08:00",
+      "fin": "08:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Mathematics",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "08:30",
+      "fin": "09:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (vocabulary)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "09:00",
+      "fin": "09:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Social studies (human rights)",
+      "matiere": "Droits humains"
+     },
+     {
+      "debut": "09:30",
+      "fin": "10:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "English language (reading comprehension)",
+      "matiere": "Anglais"
+     },
+     {
+      "debut": "10:00",
+      "fin": "10:30",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Science and technology (health education)",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "10:30",
+      "fin": "11:00",
+      "genre": "cours",
+      "langue": "en",
+      "libelle": "Vocational studies (agropastoral farming)",
+      "matiere": "Métiers"
+     },
+     {
+      "debut": "11:00",
+      "fin": "11:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Short break",
+      "matiere": null
+     },
+     {
+      "debut": "11:10",
+      "fin": "11:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (mesures et grandeurs)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "11:40",
+      "fin": "12:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Mathématiques (mesures et grandeurs)",
+      "matiere": "Mathématiques"
+     },
+     {
+      "debut": "12:10",
+      "fin": "12:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Sciences et technologies",
+      "matiere": "Sciences et technologies"
+     },
+     {
+      "debut": "12:40",
+      "fin": "13:10",
+      "genre": "pause",
+      "langue": null,
+      "libelle": "Récréation",
+      "matiere": null
+     },
+     {
+      "debut": "13:10",
+      "fin": "13:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Éducation artistique (musique, dessin)",
+      "matiere": "Éducation artistique"
+     },
+     {
+      "debut": "13:40",
+      "fin": "14:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Français (NCBS dictée)",
+      "matiere": "Français"
+     },
+     {
+      "debut": "14:10",
+      "fin": "14:40",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "T.I.C.E (informatique)",
+      "matiere": "TIC"
+     },
+     {
+      "debut": "14:40",
+      "fin": "15:10",
+      "genre": "cours",
+      "langue": "fr",
+      "libelle": "Langue et culture nationale",
+      "matiere": "Langue et culture nationale"
+     }
+    ]
+   }
+  }
+ ],
+ "lecons": [
+  {
+   "titre": "La Préhistoire",
+   "classe": "CM1",
+   "matiere": "Histoire-Géographie",
+   "chapitre": "Histoire"
+  },
+  {
+   "titre": "Les grandes inventions et les grandes découvertes",
+   "classe": "CM1",
+   "matiere": "Histoire-Géographie",
+   "chapitre": "Histoire"
+  },
+  {
+   "titre": "L’obéissance",
+   "classe": "CE1",
+   "matiere": "Éducation morale",
+   "chapitre": "Éducation morale"
+  },
+  {
+   "titre": "Le droit à l’identité",
+   "classe": "CE1",
+   "matiere": "Droits humains",
+   "chapitre": "Droits et devoirs"
+  },
+  {
+   "titre": "L’intégration nationale",
+   "classe": "CE1",
+   "matiere": "Éducation civique",
+   "chapitre": "Éducation civique"
+  },
+  {
+   "titre": "Les techniques de filtrage de l’eau",
+   "classe": "CE1",
+   "matiere": "Sciences et technologies",
+   "chapitre": "Technologies"
+  },
+  {
+   "titre": "La paix",
+   "classe": "CE1",
+   "matiere": "Éducation morale",
+   "chapitre": "Éducation à la paix"
+  },
+  {
+   "titre": "Le sol",
+   "classe": "CE1",
+   "matiere": "Géographie",
+   "chapitre": "Géographie"
+  }
+ ]
+}

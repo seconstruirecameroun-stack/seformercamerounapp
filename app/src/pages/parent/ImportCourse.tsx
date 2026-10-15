@@ -2,9 +2,9 @@ import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
-import { importerCours, TAILLE_MAX, TYPES_ACCEPTES } from '../../lib/import';
+import { importerCours, matiereDeClasse, TAILLE_MAX, TYPES_ACCEPTES } from '../../lib/import';
 import type { FichierRefuse } from '../../lib/import';
-import { Button, Card, ErrorNote, Field, Pill } from '../../components/ui';
+import { Button, Card, ErrorNote, Pill } from '../../components/ui';
 
 type ChildOption = { id: string; first_name: string };
 
@@ -13,17 +13,70 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [childId, setChildId] = useState('');
   const [matiere, setMatiere] = useState('');
+  /** L'intitulé saisi quand la matière du cahier n'est pas au tableau. */
+  const [nouvelle, setNouvelle] = useState('');
   const [kind, setKind] = useState<'cours' | 'devoir' | 'autre'>('cours');
   const [fichiers, setFichiers] = useState<File[]>([]);
   const [avancement, setAvancement] = useState<string | null>(null);
   const [refuses, setRefuses] = useState<FichierRefuse[]>([]);
 
-  const matieres = useQuery({
-    queryKey: ['subjects'],
+  // La classe de l'enfant commande les matières proposées. Sans ce filtre,
+  // l'import inventait sa matière à chaque cahier — six en une seule fois,
+  // dont deux qui n'existaient pas au tableau de l'école.
+  const classe = useQuery({
+    queryKey: ['classe-enfant', childId],
+    enabled: childId !== '',
     queryFn: async () => {
-      const { data, error } = await supabase.from('subjects').select('id, label').order('label');
+      const { data, error } = await supabase
+        .from('children')
+        .select('class_id')
+        .eq('id', childId)
+        .single();
       if (error) throw error;
-      return data as Array<{ id: string; label: string }>;
+      return (data as { class_id: string | null }).class_id;
+    },
+  });
+
+  const matieres = useQuery({
+    queryKey: ['subjects', classe.data],
+    enabled: Boolean(classe.data),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('id, label, official_fr')
+        .eq('class_id', classe.data!)
+        .order('label');
+      if (error) throw error;
+      return data as Array<{ id: string; label: string; official_fr: string | null }>;
+    },
+  });
+
+  /**
+   * Les matières du jour, d'après l'emploi du temps.
+   *
+   * Un parent photographie le cahier le soir même : les trois ou quatre
+   * matières de la journée couvrent presque toujours ce qu'il envoie, et
+   * elles lui évitent de parcourir seize lignes.
+   */
+  const duJour = useQuery({
+    queryKey: ['matieres-du-jour', classe.data],
+    enabled: Boolean(classe.data),
+    queryFn: async () => {
+      const jour = new Date().getDay();
+      if (jour < 1 || jour > 5) return [] as string[];
+      const { data, error } = await supabase
+        .from('timetable_slots')
+        .select('subject_id, debut')
+        .eq('class_id', classe.data!)
+        .eq('day', jour)
+        .eq('kind', 'cours')
+        .order('debut');
+      if (error) throw error;
+      const vus = new Set<string>();
+      for (const c of (data ?? []) as Array<{ subject_id: string | null }>) {
+        if (c.subject_id) vus.add(c.subject_id);
+      }
+      return [...vus];
     },
   });
 
@@ -32,10 +85,19 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
       const { data: auth } = await supabase.auth.getUser();
       const parentId = auth.user?.id;
       if (!parentId) throw new Error('Session expirée, reconnectez-vous.');
+      // « Une autre matière » : on l'ajoute au catalogue de la classe, pour
+      // qu'elle soit proposée au prochain import.
+      let subjectId: string | null = matiere || null;
+      if (matiere === 'autre') {
+        if (!classe.data) throw new Error('Classe de l’enfant inconnue.');
+        if (!nouvelle.trim()) throw new Error('Donnez l’intitulé de la matière.');
+        subjectId = await matiereDeClasse(parentId, classe.data, nouvelle);
+      }
+
       return importerCours({
         parentId,
         childId,
-        subjectLabel: matiere,
+        subjectId,
         kind,
         fichiers,
         onProgress: (fait, total) => setAvancement(`Envoi ${fait} / ${total}`),
@@ -43,6 +105,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
     },
     onSuccess: (res) => {
       setFichiers([]);
+      setNouvelle('');
       setAvancement(null);
       setRefuses(res.refuses);
       if (inputRef.current) inputRef.current.value = '';
@@ -92,21 +155,42 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
             </select>
           </label>
 
-          <div>
-            <Field
-              label="Matière"
-              list="liste-matieres"
+          <label className="block">
+            <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+              Matière
+            </span>
+            <select
+              className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2 disabled:opacity-50"
               value={matiere}
               onChange={(e) => setMatiere(e.target.value)}
-              placeholder="Histoire, Science, ECM…"
-              hint="L’intitulé de l’école. Créé s’il n’existe pas."
-            />
-            <datalist id="liste-matieres">
+              disabled={!classe.data}
+            >
+              <option value="">{classe.data ? 'Choisir…' : 'Choisissez l’enfant d’abord'}</option>
               {(matieres.data ?? []).map((m) => (
-                <option key={m.id} value={m.label} />
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
               ))}
-            </datalist>
-          </div>
+              {/* L'emploi du temps ne dit pas tout : le cahier de KLEIN porte
+                  une « éducation à la paix » qui n'y figure pas. La liste
+                  guide, elle n'enferme pas. */}
+              <option value="autre">Une autre matière…</option>
+            </select>
+            {matiere === 'autre' ? (
+              <input
+                className="mt-2 w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+                value={nouvelle}
+                onChange={(e) => setNouvelle(e.target.value)}
+                placeholder="Intitulé du cahier"
+                autoFocus
+              />
+            ) : null}
+            <span className="mt-1 block text-xs text-muted">
+              {matiere === 'autre'
+                ? 'Elle sera ajoutée aux matières de cette classe.'
+                : 'Les matières de la classe, telles que l’école les nomme.'}
+            </span>
+          </label>
 
           <label className="block">
             <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
@@ -123,6 +207,33 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
             </select>
           </label>
         </div>
+
+        {(duJour.data ?? []).length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold tracking-wide text-muted uppercase">
+              Au programme aujourd’hui
+            </span>
+            {(duJour.data ?? []).map((id) => {
+              const m = (matieres.data ?? []).find((x) => x.id === id);
+              if (!m) return null;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setMatiere(id)}
+                  className={
+                    'rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors ' +
+                    (matiere === id
+                      ? 'border-ink bg-ink text-white-warm'
+                      : 'border-line bg-white-warm text-ink-2 hover:border-ink-2')
+                  }
+                >
+                  {m.label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
 
         <label className="block">
           <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">

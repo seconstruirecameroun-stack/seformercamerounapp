@@ -23,10 +23,27 @@ Conséquence directe sur le modèle : la matière, le chapitre et l'ordre des
 leçons sont des **étiquettes déduites du document**, proposées par l'app puis
 corrigées par le parent. Ce ne sont pas les entrées d'un référentiel national.
 
-Les matières ne sont donc pas une liste fermée. À l'import, l'app propose un
-rattachement ; le parent accepte, renomme, fusionne ou crée. Les intitulés
-restent ceux de l'école de l'enfant — « Sciences », « ECM », « Social
-Studies », « National Studies », peu importe.
+Les matières ne sont donc pas une liste fermée par un programme national.
+Elles le sont par **l'emploi du temps de l'école**, que le parent photographie
+une fois : l'app en tire le catalogue des matières de chaque classe, avec le
+libellé officiel dans les deux langues et les intitulés de cahier qui y
+renvoient.
+
+Ce catalogue guide sans enfermer. À l'import, l'app propose d'abord les
+matières du jour — un parent photographie le cahier le soir même, et les
+trois ou quatre matières de la journée couvrent presque toujours ce qu'il
+envoie. Si le cahier porte un intitulé absent du tableau, le parent l'ajoute,
+et il rejoint le catalogue de la classe pour la fois suivante.
+
+Sans ce référentiel, chaque import inventait sa matière : six créées en une
+seule fois pour un seul cahier, dont deux qui n'existaient nulle part à
+l'école. Un cahier écrit « Technologies » ; l'école écrit « Sciences et
+technologies » / « Science and technology ». C'est la même matière.
+
+L'emploi du temps porte aussi la **langue de chaque créneau** : « Maths » le
+lundi et « Mathématiques » le mercredi sont la même matière enseignée dans
+deux langues. C'est ainsi qu'un établissement bilingue le signale, et c'est
+ce qui permet de ranger un cours dans la bonne langue sans le demander.
 
 ### On commence par les cours à résumé
 

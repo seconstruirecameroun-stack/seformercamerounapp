@@ -31,3 +31,6 @@ app/public/films/
 # Les images sources de Higgsfield : lourdes, et regenerables depuis les prompts.
 work/images-*/
 __pycache__/
+
+# Les photos des emplois du temps : la transcription fait foi.
+work/emplois/
