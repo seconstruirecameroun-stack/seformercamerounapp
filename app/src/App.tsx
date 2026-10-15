@@ -7,6 +7,7 @@ import ParentSpace from './pages/parent/ParentSpace';
 import PinGate from './components/PinGate';
 import ChildSpace from './pages/child/ChildSpace';
 import ChildHome from './pages/child/ChildHome';
+import Matiere from './pages/child/Matiere';
 
 function RequireParent({ children }: { children: React.ReactNode }) {
   const { session, ready } = useSession();
@@ -43,6 +44,14 @@ export default function App() {
           element={
             <RequireParent>
               <ChildHome />
+            </RequireParent>
+          }
+        />
+        <Route
+          path="/enfant/:childId/matiere/:subjectId"
+          element={
+            <RequireParent>
+              <Matiere />
             </RequireParent>
           }
         />

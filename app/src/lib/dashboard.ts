@@ -24,9 +24,20 @@ export type LeconResume = {
   title: string;
   illustration: string | null;
   matiere: string | null;
+  matiereId: string | null;
+  couleur: string | null;
   notions: number;
   acquises: number;
   dues: number;
+  /**
+   * Notions déjà travaillées dont la date de révision est arrivée.
+   *
+   * Différent de `dues`, qui compte aussi tout ce qui n'a jamais été vu :
+   * c'est ce qu'il faut pour bâtir une mission, mais pas pour une pastille.
+   * Annoncer « 3 à revoir » à un enfant qui n'a jamais ouvert la leçon est
+   * faux, et ça met du rouge partout dès le premier écran.
+   */
+  aRevoir: number;
   /** L'étape en cours dans cette leçon, 1 à 3. */
   etape: number;
   /** Les trois étapes sont franchies. */
@@ -36,8 +47,28 @@ export type LeconResume = {
   etapeTotal: number;
 };
 
+/**
+ * Une matière, vue comme un dossier.
+ *
+ * Six leçons tiennent dans une liste ; vingt n'y tiennent pas. L'enfant
+ * choisit d'abord la matière, puis la leçon — deux écrans courts valent
+ * mieux qu'un écran interminable.
+ */
+export type MatiereResume = {
+  id: string;
+  label: string;
+  couleur: string | null;
+  /** La couverture du dossier : l'image de sa première leçon. */
+  illustration: string | null;
+  lecons: number;
+  /** Leçons dont une étape reste à franchir. */
+  enCours: number;
+  aRevoir: number;
+};
+
 export type TableauDeBord = {
   lecons: LeconResume[];
+  matieres: MatiereResume[];
   duesTotal: number;
   points: number;
   serie: number;
@@ -97,7 +128,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     supabase
       .from('lessons')
       .select(
-        'id, title, illustration, subjects(label), ' +
+        'id, title, illustration, subject_id, subjects(label, color), ' +
           'notions(id, statement, illustration, status, items(id, level, status))',
       )
       .eq('status', 'approved')
@@ -128,7 +159,8 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     id: string;
     title: string;
     illustration: string | null;
-    subjects: { label: string } | null;
+    subject_id: string | null;
+    subjects: { label: string; color: string | null } | null;
     notions: Array<{
       id: string;
       statement: string;
@@ -145,12 +177,14 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     const notions = lecon.notions.filter((n) => n.status === 'approved');
     let acquises = 0;
     let dues = 0;
+    let aRevoir = 0;
 
     for (const notion of notions) {
       const m = suivi.get(notion.id);
       const acquis = (m?.level ?? 1) >= NIVEAU_ACQUIS;
       if (acquis) acquises += 1;
       if (!m?.next_review || m.next_review <= aujourdhui) dues += 1;
+      if (m?.next_review && m.next_review <= aujourdhui) aRevoir += 1;
       autocollants.push({
         notionId: notion.id,
         statement: notion.statement,
@@ -173,9 +207,12 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       title: lecon.title,
       illustration: lecon.illustration,
       matiere: lecon.subjects?.label ?? null,
+      matiereId: lecon.subject_id,
+      couleur: lecon.subjects?.color ?? null,
       notions: notions.length,
       acquises,
       dues,
+      aRevoir,
       etape: niveau,
       etapeTerminee: termine,
       etapeFaites: termine ? aValider.length : (reussies.get(niveau)?.size ?? 0),
@@ -193,8 +230,30 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
 
   const jours = [...new Set((tentatives.data ?? []).map((t) => String(t.created_at).slice(0, 10)))];
 
+  // Les dossiers, dans l'ordre d'apparition des leçons : l'enfant retrouve
+  // ses matières à la même place d'une fois sur l'autre.
+  const parMatiere = new Map<string, MatiereResume>();
+  for (const l of resumes) {
+    if (!l.matiereId) continue;
+    const dossier = parMatiere.get(l.matiereId) ?? {
+      id: l.matiereId,
+      label: l.matiere ?? 'Leçons',
+      couleur: l.couleur,
+      illustration: l.illustration,
+      lecons: 0,
+      enCours: 0,
+      aRevoir: 0,
+    };
+    dossier.lecons += 1;
+    if (!l.etapeTerminee && l.etapeTotal > 0) dossier.enCours += 1;
+    dossier.aRevoir += l.aRevoir;
+    if (!dossier.illustration) dossier.illustration = l.illustration;
+    parMatiere.set(l.matiereId, dossier);
+  }
+
   return {
     lecons: resumes,
+    matieres: [...parMatiere.values()],
     duesTotal: resumes.reduce((n, l) => n + l.dues, 0),
     points: (recompenses.data ?? []).reduce((somme, r) => somme + (r.value ?? 0), 0),
     serie: calculerSerie(jours),

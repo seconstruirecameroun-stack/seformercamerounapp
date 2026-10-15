@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { chargerTableauDeBord } from '../../lib/dashboard';
 import { PALIERS } from '../../lib/paliers';
-import type { Autocollant, LeconResume } from '../../lib/dashboard';
+import CarteMatiere from '../../components/CarteMatiere';
+import type { Autocollant } from '../../lib/dashboard';
 import Illustration from '../../components/Illustration';
 import { ErrorNote, Loading } from '../../components/ui';
 
@@ -59,70 +60,6 @@ function Semaine({ jours, serie }: { jours: string[]; serie: number }) {
   );
 }
 
-/**
- * Où en est l'enfant dans cette leçon : l'escalier, et la marche en cours.
- *
- * Le pourcentage de notions acquises qui figurait ici ne disait rien à un
- * enfant — il ne voyait ni où il était, ni ce qu'il visait.
- */
-function CarteLecon({ lecon, childId }: { lecon: LeconResume; childId: string }) {
-  const part =
-    lecon.etapeTotal > 0 ? Math.round((lecon.etapeFaites / lecon.etapeTotal) * 100) : 0;
-  return (
-    <Link
-      to={`/enfant/${childId}/lecon/${lecon.id}`}
-      className="tuile flex items-center gap-3 overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm p-2 pr-4 shadow-[var(--shadow-tile)]"
-    >
-      <Illustration
-        cle={lecon.illustration}
-        forme="scene"
-        alt=""
-        className="h-20 w-28 shrink-0 rounded-2xl object-cover"
-      />
-      <div className="min-w-0 flex-1">
-        <p className="text-kid-xs font-black tracking-wide text-muted uppercase">
-          {lecon.matiere ?? 'Leçon'}
-        </p>
-        <h3 className="line-clamp-2 text-kid font-extrabold">{lecon.title}</h3>
-        <div className="mt-1.5 flex items-center gap-2">
-          <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
-            {[1, 2, 3].map((n) => (
-              <span
-                key={n}
-                className={
-                  'grid h-5 w-5 place-items-center rounded-full text-[0.7rem] font-black ' +
-                  (lecon.etapeTerminee || n < lecon.etape
-                    ? 'bg-leaf text-white-warm'
-                    : n === lecon.etape
-                      ? 'bg-gold text-ink'
-                      : 'bg-line text-muted')
-                }
-              >
-                {lecon.etapeTerminee || n < lecon.etape ? '★' : n}
-              </span>
-            ))}
-          </span>
-          <span className="h-2 flex-1 overflow-hidden rounded-full bg-ink/15">
-            <span
-              className="block h-full rounded-full bg-gold transition-all duration-500"
-              style={{ width: `${part}%` }}
-            />
-          </span>
-        </div>
-        <p className="mt-1 text-kid-xs font-bold text-muted">
-          {lecon.etapeTerminee
-            ? 'Leçon terminée — tu révises'
-            : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
-        </p>
-      </div>
-      {lecon.dues > 0 ? (
-        <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-clay px-2 text-kid-xs font-black text-white-warm">
-          {lecon.dues}
-        </span>
-      ) : null}
-    </Link>
-  );
-}
 
 function Collection({ autocollants }: { autocollants: Autocollant[] }) {
   const avec = autocollants.filter((a) => a.illustration);
@@ -279,10 +216,12 @@ export default function ChildHome() {
             Elle n'apparaît qu'à partir de la deuxième. */}
         {d.lecons.length > 1 ? (
           <section>
-            <h2 className="text-kid-lg font-extrabold">Mes leçons</h2>
-            <div className="mt-2 grid gap-2">
-              {d.lecons.map((lecon) => (
-                <CarteLecon key={lecon.id} lecon={lecon} childId={childId!} />
+            <h2 className="text-kid-lg font-extrabold">Mes matières</h2>
+            {/* Deux colonnes : des tuiles assez grandes pour un doigt, et
+                toute la liste visible sans défiler longtemps. */}
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {d.matieres.map((matiere) => (
+                <CarteMatiere key={matiere.id} matiere={matiere} childId={childId!} />
               ))}
             </div>
           </section>

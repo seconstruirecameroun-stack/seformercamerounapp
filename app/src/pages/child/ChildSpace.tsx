@@ -22,6 +22,7 @@ type LessonBundle = {
   summary: string | null;
   lang: string;
   illustration: string | null;
+  subject_id: string | null;
   subjects: { label: string } | null;
   notions: Array<NotionRow & { explanations: ExplanationRow[] }>;
   videos: VideoRow[];
@@ -470,7 +471,7 @@ export default function ChildSpace() {
       const { data, error } = await supabase
         .from('lessons')
         .select(
-          'id, title, summary, lang, illustration, subjects(label), ' +
+          'id, title, summary, lang, illustration, subject_id, subjects(label), ' +
             'notions(id, kind, statement, sort_order, illustration, parent_id, lesson_id, status, created_at, ' +
             'explanations(id, register, body, notion_id, parent_id, status, created_at)), ' +
             'videos(id, external_url, poster_url, duration_s, status, lesson_id, parent_id, manifest, voice_preset, storage_path, created_at)',
@@ -522,11 +523,17 @@ export default function ChildSpace() {
       <div className="mx-auto max-w-2xl px-4 pt-4 sm:px-6">
         <header className="flex items-center justify-between gap-3">
           <Link
-            to={`/enfant/${childId}`}
+            to={
+              bundle?.subject_id
+                ? `/enfant/${childId}/matiere/${bundle.subject_id}`
+                : `/enfant/${childId}`
+            }
             className="tuile flex items-center gap-2 rounded-full bg-white-warm/80 py-2 pr-4 pl-3 text-kid-sm font-bold"
           >
             <span aria-hidden="true">←</span>
-            Mes leçons
+            <span className="max-w-[11.5rem] truncate">
+              {bundle?.subjects?.label ?? 'Mes leçons'}
+            </span>
           </Link>
           <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
             <span aria-hidden="true">★</span>
