@@ -1,0 +1,47 @@
+{
+  "title": "La paix",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Un village où chacun fait un geste, et où la paix tient parce que tout le monde s’y met.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Pour garder la paix, je vis bien avec les autres.",
+      "shot": "A calm village square with children and adults greeting each other, a white dove flying above.",
+      "keywords": [
+        "LA PAIX"
+      ]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "J’accepte les autres, même s’ils sont différents.",
+      "shot": "Two children of different looks sharing one bench and one book, smiling at each other.",
+      "keywords": [
+        "ACCEPTER"
+      ]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Je les aide quand ils en ont besoin.",
+      "shot": "A child helping another lift a heavy basket of fruit, both leaning in together.",
+      "keywords": [
+        "AIDER"
+      ]
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "Et je travaille avec eux : c’est le vivre-ensemble.",
+      "shot": "Four children of different skin tones carrying one long plank together towards a half built hut, teamwork.",
+      "keywords": [
+        "VIVRE ENSEMBLE"
+      ]
+    }
+  ]
+}

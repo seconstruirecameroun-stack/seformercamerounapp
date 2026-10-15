@@ -14,7 +14,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import ffmpeg from 'ffmpeg-static';
 
 const dossier = process.argv[2];
@@ -111,7 +111,10 @@ for (const p of plans) {
 }
 writeFileSync(
   join(temp, 'voix.txt'),
-  morceaux.map((m) => `file '${m.replace(/\\/g, '/')}'`).join('\n'),
+  // ffmpeg résout les chemins d'une liste depuis le dossier de la liste, et
+  // non depuis le dossier courant. Un dossier passé en relatif donnait donc
+  // une liste illisible : on écrit en absolu.
+  morceaux.map((m) => `file '${resolve(m).replace(/\\/g, '/')}'`).join('\n'),
   'utf8',
 );
 ff(['-f', 'concat', '-safe', '0', '-i', join(temp, 'voix.txt'), '-c', 'copy', join(temp, 'voix.wav')]);
@@ -119,7 +122,7 @@ ff(['-f', 'concat', '-safe', '0', '-i', join(temp, 'voix.txt'), '-c', 'copy', jo
 // ───────────────────────── 3. assemblage ─────────────────────────
 writeFileSync(
   join(temp, 'plans.txt'),
-  plans.map((p) => `file '${join(temp, `plan${p.n}.mp4`).replace(/\\/g, '/')}'`).join('\n'),
+  plans.map((p) => `file '${resolve(join(temp, `plan${p.n}.mp4`)).replace(/\\/g, '/')}'`).join('\n'),
   'utf8',
 );
 ff(['-f', 'concat', '-safe', '0', '-i', join(temp, 'plans.txt'), '-c', 'copy', join(temp, 'muet.mp4')]);
@@ -129,6 +132,9 @@ ff([
   '-i', join(temp, 'muet.mp4'),
   '-i', join(temp, 'voix.wav'),
   '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128k', '-shortest',
+  // L'index en tête du fichier : la lecture démarre avant la fin du
+  // téléchargement, ce qui change tout sur une connexion lente.
+  '-movflags', '+faststart',
   sortie,
 ]);
 

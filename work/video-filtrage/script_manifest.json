@@ -1,0 +1,56 @@
+{
+  "title": "Les techniques de filtrage de l’eau",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Une expérience, du début à la fin : l’eau sale entre, l’eau propre sort.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "L’eau du puits n’est pas toujours potable.",
+      "shot": "A child holding a glass of cloudy brown water next to a village well, worried friendly face.",
+      "keywords": [
+        "EAU SALE"
+      ]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Je coupe une bouteille en deux, et je la retourne.",
+      "shot": "A clear plastic bottle cut in half and turned upside down, resting in the neck of a glass jar, clean simple scene.",
+      "keywords": [
+        "LA BOUTEILLE"
+      ]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Je mets le coton, puis le sable, puis le charbon, puis le gravier.",
+      "shot": "A cut-away of the upside down bottle filling with four clean layers, white cotton at the bottom, then beige sand, then black charcoal, then grey gravel on top.",
+      "keywords": [
+        "LES COUCHES"
+      ]
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "Je verse l’eau sale tout en haut.",
+      "shot": "A hand pouring cloudy water into the top of the layered bottle filter, droplets in the air.",
+      "keywords": [
+        "JE VERSE"
+      ]
+    },
+    {
+      "n": 5,
+      "block_kind": "narration",
+      "vo_line": "En bas, l’eau qui sort est propre : elle est potable.",
+      "shot": "A clear drop falling from the bottle neck into a glass of perfectly clear water below, bright and clean.",
+      "keywords": [
+        "EAU POTABLE"
+      ]
+    }
+  ]
+}

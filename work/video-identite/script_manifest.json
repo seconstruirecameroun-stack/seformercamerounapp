@@ -1,0 +1,38 @@
+{
+  "title": "Le droit à l’identité",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Un carnet d’identité qui s’ouvre et se remplit, page après page.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Chaque enfant a droit à une identité.",
+      "shot": "Three children of different looks standing together, each with a soft glowing badge on the chest, friendly scene.",
+      "keywords": [
+        "CHAQUE ENFANT"
+      ]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "L’identité lui donne un nom.",
+      "shot": "A large open booklet on a table with a child portrait drawn on the left page and an empty name line on the right.",
+      "keywords": [
+        "UN NOM"
+      ]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Elle lui donne aussi une nationalité.",
+      "shot": "The same open booklet with a small waving flag planted beside it and a globe in the soft background.",
+      "keywords": [
+        "UNE NATIONALITÉ"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "title": "L’intégration nationale",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Un village qui grandit : d’abord quelques cases, puis tout un pays qui vit ensemble.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "L’intégration nationale, c’est le mélange des cultures et des traditions.",
+      "shot": "Several coloured ribbons of different patterns braiding together into one wide ribbon above a crowd of small figures.",
+      "keywords": [
+        "MÉLANGE"
+      ]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Au Cameroun, plus de deux cent cinquante ethnies vivent dans la paix.",
+      "shot": "Many small colourful African houses of different styles on gentle hills, tiny people walking between them, warm sun.",
+      "keywords": [
+        "250 ETHNIES"
+      ]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Les mariages entre ethnies rapprochent les familles.",
+      "shot": "Two families in different traditional clothes joining hands around a happy couple, flowers in the air.",
+      "keywords": [
+        "MARIAGES"
+      ]
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "La cohabitation et les affectations des travailleurs les rapprochent encore.",
+      "shot": "Neighbouring houses side by side and a small bus arriving with a worker carrying a bag, friendly village street.",
+      "keywords": [
+        "COHABITATION"
+      ]
+    }
+  ]
+}

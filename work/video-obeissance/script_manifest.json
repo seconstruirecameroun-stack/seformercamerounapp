@@ -1,0 +1,47 @@
+{
+  "title": "L’obéissance",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Une journée d’un enfant à la maison : on lui demande, il fait, on l’aime.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Obéir, c’est faire ce qu’un aîné demande, sans discuter.",
+      "shot": "A calm living room, a grandmother gently asking something of a small boy who listens carefully, warm morning light.",
+      "keywords": [
+        "OBÉIR"
+      ]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Quand maman appelle, je viens tout de suite.",
+      "shot": "A mother standing at a doorway calling, a boy running towards her across a tidy courtyard, happy movement.",
+      "keywords": [
+        "TOUT DE SUITE"
+      ]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Un enfant obéissant est aimé de tout le monde.",
+      "shot": "A family of four smiling around a small boy, soft hearts floating above them, warm colours.",
+      "keywords": [
+        "AIMÉ DE TOUS"
+      ]
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "Si nous voulons réussir dans la vie, obéissons.",
+      "shot": "A boy climbing three soft wide steps towards a big glowing star in a gentle sky.",
+      "keywords": [
+        "RÉUSSIR"
+      ]
+    }
+  ]
+}
