@@ -1,0 +1,54 @@
+{
+  "title": "Les grandes inventions et les grandes découvertes",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "duration_seconds": 60,
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "Une carte marine se déroule ; un petit bateau y avance à chaque scène et finit par boucler le tour du globe.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Une invention, c'est créer un objet qui n'existait pas avant.",
+      "shot": "A sea chart unrolling on a table, a glowing light bulb rising above an open wooden toolbox.",
+      "keywords": ["INVENTION"]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Les Chinois inventent le papier et la poudre à canon, au premier siècle.",
+      "shot": "A rolled sheet of paper unfolding on the left, a small clay jar of dark powder smoking on the right.",
+      "keywords": ["PAPIER", "POUDRE", "1ER SIÈCLE"]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Puis la boussole au septième siècle, et le gouvernail au douzième.",
+      "shot": "A brass compass with its red needle settling, then a wooden ship rudder turning behind it.",
+      "keywords": ["BOUSSOLE", "GOUVERNAIL"]
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "En Europe, la caravelle en 1440, et l'imprimerie en 1450 par Gutenberg.",
+      "shot": "A small caravel gliding across the chart, a wooden printing press lowering its plate onto blank sheets.",
+      "keywords": ["CARAVELLE 1440", "IMPRIMERIE 1450"]
+    },
+    {
+      "n": 5,
+      "block_kind": "narration",
+      "vo_line": "Mieux équipés, les marins partent loin. Dias atteint le cap de Bonne-Espérance en 1487, Colomb l'Amérique en 1492.",
+      "shot": "The little ship rounding a green rocky cape, then arriving before a tropical green shore.",
+      "keywords": ["DIAS 1487", "COLOMB 1492"]
+    },
+    {
+      "n": 6,
+      "block_kind": "narration",
+      "vo_line": "Vasco de Gama ouvre la route des Indes en 1498, et Magellan boucle le premier tour du monde.",
+      "shot": "The ship sailing towards baskets of colourful spices, then the chart curving into a globe encircled by a dotted ribbon.",
+      "keywords": ["VASCO DE GAMA 1498", "MAGELLAN"]
+    }
+  ]
+}

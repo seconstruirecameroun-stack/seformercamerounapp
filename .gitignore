@@ -5,6 +5,14 @@ outputs/*.mp4
 outputs/*.png
 outputs/*.zip
 
+# Rushes de production vidéo : les scènes brutes font 1,5 Mo pièce. Le script
+# et le manifeste, eux, sont versionnés — ce sont eux qui permettent de
+# refaire le film à l'identique.
+work/video-*/scene*.png
+work/video-*/*.mp3
+work/video-*/*.wav
+work/video-*/*.mp4
+
 # Secrets / configuration locale
 .env
 .env.*
