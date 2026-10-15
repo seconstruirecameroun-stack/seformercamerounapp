@@ -61,6 +61,9 @@ const PLAN = {
   'gd-indes': { src: '3616411f', forme: 'objet' },
   'gd-tour-du-monde': { src: '7da1d38d', forme: 'objet' },
 
+  // Affiche du film des grandes découvertes.
+  'gd-film': { src: '8fc12667', forme: 'scene' },
+
   // Le guide qui accompagne l'enfant.
   'guide': { src: '8ae114', forme: 'portrait' },
 };

@@ -9,6 +9,8 @@ outputs/*.zip
 # et le manifeste, eux, sont versionnés — ce sont eux qui permettent de
 # refaire le film à l'identique.
 work/video-*/scene*.png
+work/video-*/.montage/
+work/video-*/.apercu/
 work/video-*/*.mp3
 work/video-*/*.wav
 work/video-*/*.mp4
