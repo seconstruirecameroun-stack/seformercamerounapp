@@ -24,3 +24,6 @@ work/video-*/*.mp4
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Les films vivent dans le stockage Supabase, pas dans le depot.
+app/public/films/
