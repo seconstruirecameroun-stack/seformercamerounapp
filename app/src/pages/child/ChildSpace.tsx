@@ -447,8 +447,8 @@ export default function ChildSpace() {
                 </p>
                 <h1
                   className={
-                    'leading-tight font-black text-white-warm text-balance ' +
-                    (onglet === 'lecon' ? 'text-kid-lg' : 'text-kid-2xl')
+                    'line-clamp-2 leading-tight font-black text-white-warm text-balance ' +
+                    (onglet === 'lecon' || bundle.title.length > 28 ? 'text-kid-lg' : 'text-kid-2xl')
                   }
                 >
                   {bundle.title}

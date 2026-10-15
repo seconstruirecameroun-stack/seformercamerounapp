@@ -47,6 +47,20 @@ const PLAN = {
   'medaille': { src: '3d6a0df8', forme: 'objet' },
   'repos': { src: '2b149718', forme: 'objet' },
 
+  // Leçon « Les grandes inventions et les grandes découvertes ».
+  'gd-caravelle-mer': { src: '79f3afb9', forme: 'scene' },
+  'gd-invention': { src: 'dd24bc47', forme: 'objet' },
+  'gd-papier-poudre': { src: '03969e79', forme: 'objet' },
+  'gd-boussole': { src: '476576e9', forme: 'objet' },
+  'gd-gouvernail': { src: 'f1847018', forme: 'objet' },
+  'gd-caravelle': { src: '5593502d', forme: 'objet' },
+  'gd-imprimerie': { src: '7041b79c', forme: 'objet' },
+  'gd-navigation': { src: '2e47ba9e', forme: 'objet' },
+  'gd-cap': { src: '5df485a9', forme: 'objet' },
+  'gd-amerique': { src: '853144d2', forme: 'objet' },
+  'gd-indes': { src: '3616411f', forme: 'objet' },
+  'gd-tour-du-monde': { src: '7da1d38d', forme: 'objet' },
+
   // Le guide qui accompagne l'enfant.
   'guide': { src: '8ae114', forme: 'portrait' },
 };

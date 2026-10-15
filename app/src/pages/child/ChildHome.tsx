@@ -75,7 +75,7 @@ function CarteLecon({ lecon, childId }: { lecon: LeconResume; childId: string })
         <p className="text-kid-xs font-black tracking-wide text-muted uppercase">
           {lecon.matiere ?? 'Leçon'}
         </p>
-        <h3 className="truncate text-kid font-extrabold">{lecon.title}</h3>
+        <h3 className="line-clamp-2 text-kid font-extrabold">{lecon.title}</h3>
         <div className="mt-1.5 flex items-center gap-2">
           <span className="h-2 flex-1 overflow-hidden rounded-full bg-line">
             <span
@@ -212,7 +212,12 @@ export default function ChildHome() {
               <p className="text-kid-xs font-black tracking-widest text-gold uppercase">
                 {d.duesTotal > 0 ? 'Ta mission du jour' : 'Tout est à jour'}
               </p>
-              <h1 className="text-kid-2xl leading-tight font-black text-white-warm text-balance">
+              <h1
+                className={
+                  'line-clamp-2 leading-tight font-black text-white-warm text-balance ' +
+                  (prochaine.title.length > 28 ? 'text-kid-lg' : 'text-kid-2xl')
+                }
+              >
                 {prochaine.title}
               </h1>
               <p className="mt-1 text-kid-sm font-bold text-white-warm/90">
