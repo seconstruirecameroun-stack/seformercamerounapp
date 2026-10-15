@@ -25,6 +25,10 @@ export type LeconResume = {
   illustration: string | null;
   matiere: string | null;
   matiereId: string | null;
+  /** L'intitulé du cahier : « Éducation à la paix », « Droits et devoirs ». */
+  chapitre: string | null;
+  /** Le jour écrit en haut de la page, quand le cahier le porte. */
+  date: string | null;
   couleur: string | null;
   notions: number;
   acquises: number;
@@ -128,7 +132,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     supabase
       .from('lessons')
       .select(
-        'id, title, illustration, subject_id, subjects(label, color), ' +
+        'id, title, illustration, subject_id, chapter, taught_on, subjects(label, color), ' +
           'notions(id, statement, illustration, status, items(id, level, status))',
       )
       .eq('status', 'approved')
@@ -160,6 +164,8 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     title: string;
     illustration: string | null;
     subject_id: string | null;
+    chapter: string | null;
+    taught_on: string | null;
     subjects: { label: string; color: string | null } | null;
     notions: Array<{
       id: string;
@@ -208,6 +214,8 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       illustration: lecon.illustration,
       matiere: lecon.subjects?.label ?? null,
       matiereId: lecon.subject_id,
+      chapitre: lecon.chapter,
+      date: lecon.taught_on,
       couleur: lecon.subjects?.color ?? null,
       notions: notions.length,
       acquises,

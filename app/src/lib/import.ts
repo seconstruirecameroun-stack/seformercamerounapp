@@ -94,11 +94,18 @@ export async function importerCours(params: {
   childId: string;
   /** Une matière du catalogue de la classe. L'import n'en invente plus. */
   subjectId: string | null;
+  /**
+   * Le jour écrit en haut de la page du cahier.
+   *
+   * Nullable : toutes les pages n'en portent pas, et deviner le jour d'un
+   * cours serait pire que de l'ignorer.
+   */
+  taughtOn: string | null;
   kind: 'cours' | 'devoir' | 'autre';
   fichiers: File[];
   onProgress?: (fait: number, total: number) => void;
 }): Promise<ResultatImport> {
-  const { parentId, childId, subjectId, kind, fichiers, onProgress } = params;
+  const { parentId, childId, subjectId, taughtOn, kind, fichiers, onProgress } = params;
   const { acceptes, refuses } = trierFichiers(fichiers);
   if (acceptes.length === 0) {
     throw new Error('Aucun fichier exploitable : ' + (refuses[0]?.raison ?? 'liste vide'));
@@ -123,6 +130,7 @@ export async function importerCours(params: {
         parent_id: parentId,
         child_id: childId,
         subject_id: subjectId,
+        taught_on: taughtOn,
         kind,
         storage_path: chemin,
         original_name: fichier.name,

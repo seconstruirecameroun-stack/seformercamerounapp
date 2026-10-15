@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Illustration from './Illustration';
 import type { LeconResume } from '../lib/dashboard';
+import { jourCourt } from '../lib/rangement';
 
 /**
  * Où en est l'enfant dans cette leçon : l'escalier, et la marche en cours.
@@ -63,10 +64,17 @@ export default function CarteLecon({
             />
           </span>
         </div>
-        <p className="mt-1 text-kid-xs font-bold text-muted">
-          {lecon.etapeTerminee
-            ? 'Leçon terminée — tu révises'
-            : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
+        <p className="mt-1 flex items-center gap-2 text-kid-xs font-bold text-muted">
+          <span>
+            {lecon.etapeTerminee
+              ? 'Leçon terminée — tu révises'
+              : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
+          </span>
+          {/* Le jour du cahier : ce n'est pas ce que l'enfant vient chercher,
+              mais c'est ce qui l'aide à reconnaître « le cours de mardi ». */}
+          {jourCourt(lecon.date) ? (
+            <span className="shrink-0 font-semibold opacity-70">{jourCourt(lecon.date)}</span>
+          ) : null}
         </p>
       </div>
       {lecon.aRevoir > 0 ? (

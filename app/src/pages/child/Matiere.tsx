@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { chargerTableauDeBord } from '../../lib/dashboard';
 import CarteLecon from '../../components/CarteLecon';
+import { grouperParChapitre } from '../../lib/rangement';
 import Illustration from '../../components/Illustration';
 import { ErrorNote, Loading } from '../../components/ui';
 
@@ -79,11 +80,28 @@ export default function Matiere() {
             <p className="mt-2 text-kid-sm text-muted">Pas encore de leçon ici.</p>
           </div>
         ) : (
-          <div className="grid gap-2">
-            {lecons.map((lecon) => (
-              <CarteLecon key={lecon.id} lecon={lecon} childId={childId!} montrerMatiere={false} />
-            ))}
-          </div>
+          grouperParChapitre(lecons).map((groupe) => (
+            <section key={groupe.titre ?? 'tout'} className="grid gap-2">
+              {groupe.titre ? (
+                <h2 className="flex items-center gap-2 text-kid font-extrabold">
+                  <span
+                    aria-hidden="true"
+                    className="h-4 w-1.5 rounded-full"
+                    style={{ backgroundColor: couleur }}
+                  />
+                  {groupe.titre}
+                </h2>
+              ) : null}
+              {groupe.lecons.map((lecon) => (
+                <CarteLecon
+                  key={lecon.id}
+                  lecon={lecon}
+                  childId={childId!}
+                  montrerMatiere={false}
+                />
+              ))}
+            </section>
+          ))
         )}
       </div>
     </main>

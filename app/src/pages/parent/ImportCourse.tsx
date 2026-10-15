@@ -15,6 +15,8 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
   const [matiere, setMatiere] = useState('');
   /** L'intitulé saisi quand la matière du cahier n'est pas au tableau. */
   const [nouvelle, setNouvelle] = useState('');
+  /** Le jour écrit en haut de la page. Vide tant que le parent ne l'a pas lu. */
+  const [date, setDate] = useState('');
   const [kind, setKind] = useState<'cours' | 'devoir' | 'autre'>('cours');
   const [fichiers, setFichiers] = useState<File[]>([]);
   const [avancement, setAvancement] = useState<string | null>(null);
@@ -98,6 +100,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
         parentId,
         childId,
         subjectId,
+        taughtOn: date || null,
         kind,
         fichiers,
         onProgress: (fait, total) => setAvancement(`Envoi ${fait} / ${total}`),
@@ -106,6 +109,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
     onSuccess: (res) => {
       setFichiers([]);
       setNouvelle('');
+      setDate('');
       setAvancement(null);
       setRefuses(res.refuses);
       if (inputRef.current) inputRef.current.value = '';
@@ -135,7 +139,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
       </p>
 
       <form onSubmit={submit} className="mt-4 grid gap-4">
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="block">
             <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
               Pour quel enfant
@@ -189,6 +193,22 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
               {matiere === 'autre'
                 ? 'Elle sera ajoutée aux matières de cette classe.'
                 : 'Les matières de la classe, telles que l’école les nomme.'}
+            </span>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+              Date du cours
+            </span>
+            <input
+              type="date"
+              className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              max={new Date().toISOString().slice(0, 10)}
+            />
+            <span className="mt-1 block text-xs text-muted">
+              Celle du cahier. Laissez vide si la page n’en porte pas.
             </span>
           </label>
 
