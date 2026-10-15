@@ -1,0 +1,1521 @@
+[
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Par quoi commence la Préhistoire ?",
+   "options": [
+    "L’apparition des premiers humains",
+    "L’invention de l’écriture",
+    "La construction des villes"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Elle commence avec les premiers humains."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "La Préhistoire est le temps des premiers…",
+   "options": [
+    "humains",
+    "rois",
+    "machines"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "C’est le temps des premiers humains."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "La Préhistoire s’arrête à quelle invention ?",
+   "options": [
+    "L’écriture",
+    "La roue",
+    "Le feu",
+    "Les métaux"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Elle s’arrête à l’invention de l’écriture."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Combien d’époques compte la Préhistoire ?",
+   "options": [
+    "Trois",
+    "Deux",
+    "Cinq",
+    "Dix"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Trois : Paléolithique, Néolithique, âge des métaux."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi dit-on « Préhistoire » ?",
+   "options": [
+    "Parce que c’est avant l’Histoire écrite",
+    "Parce que les humains ne parlaient pas",
+    "Parce qu’il n’y avait pas d’animaux",
+    "Parce qu’il faisait très froid"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "« Pré » veut dire avant : avant l’écriture."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 1,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "La Préhistoire va de l’apparition des premiers {{1}} à l’invention de l’{{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "humains",
+    "écriture"
+   ]
+  },
+  "explain": "Des premiers humains à l’écriture."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 2,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "L’écriture marque la fin de quelle période ?",
+   "options": [
+    "La Préhistoire",
+    "Le Moyen Âge",
+    "L’époque des machines"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’écriture termine la Préhistoire."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 2,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Vers quelle date l’écriture est-elle inventée ?",
+   "options": [
+    "Vers 3 000 avant J.-C.",
+    "Vers 300 avant J.-C.",
+    "Vers 3 000 après J.-C.",
+    "Vers 30 avant J.-C."
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Vers 3 000 avant J.-C."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 2,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "L’invention de l’{{1}} marque la fin de la {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "écriture",
+    "Préhistoire"
+   ]
+  },
+  "explain": "L’écriture termine la Préhistoire."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Le Paléolithique est l’âge de la pierre…",
+   "options": [
+    "taillée",
+    "polie",
+    "peinte"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Paléolithique : pierre taillée."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "À quoi sert la pierre taillée ?",
+   "options": [
+    "À fabriquer des outils",
+    "À faire du pain",
+    "À écrire"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "On taille la pierre pour en faire des outils."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Quel outil est typique du Paléolithique ?",
+   "options": [
+    "Le biface, une pierre taillée",
+    "La charrue",
+    "Le marteau en fer",
+    "Le stylo"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Le biface est une pierre taillée des deux côtés."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 3,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Le {{1}} est l’âge de la pierre {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "Paléolithique",
+    "taillée"
+   ]
+  },
+  "explain": "Paléolithique : pierre taillée."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi dit-on pierre « taillée » ?",
+   "options": [
+    "Parce qu’on la casse pour lui donner un bord coupant",
+    "Parce qu’on la frotte pour la rendre lisse",
+    "Parce qu’on la cuit au feu",
+    "Parce qu’on la peint"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Tailler, c’est casser la pierre pour la rendre coupante."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Au Paléolithique, comment se nourrit-on ?",
+   "options": [
+    "En chassant et en cueillant",
+    "En cultivant des champs",
+    "En achetant au marché"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Chasse, pêche et cueillette."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Au Paléolithique, cultive-t-on la terre ?",
+   "options": [
+    "Non, on chasse et on cueille",
+    "Oui, on cultive du blé"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’agriculture viendra plus tard, au Néolithique."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Laquelle de ces activités n’existe PAS au Paléolithique ?",
+   "options": [
+    "L’agriculture",
+    "La chasse",
+    "La pêche",
+    "La cueillette"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’agriculture commence au Néolithique."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi les humains du Paléolithique se déplacent-ils souvent ?",
+   "options": [
+    "Ils suivent les animaux et les fruits sauvages",
+    "Ils cherchent du métal",
+    "Ils vont d’une ville à l’autre",
+    "Ils fuient la pluie"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Ils suivent leur nourriture : ils sont nomades."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Le Néolithique est l’âge de la pierre…",
+   "options": [
+    "polie",
+    "taillée",
+    "peinte"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Néolithique : pierre polie."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Qu’est-ce qui change au Néolithique ?",
+   "options": [
+    "Les humains cultivent et élèvent des animaux",
+    "Les humains inventent l’écriture",
+    "Les humains fabriquent du fer",
+    "Les humains arrêtent de fabriquer des outils"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Au Néolithique commence l’agriculture."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 5,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Le {{1}} est l’âge de la pierre {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "Néolithique",
+    "polie"
+   ]
+  },
+  "explain": "Néolithique : pierre polie."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi l’agriculture change-t-elle la vie des humains ?",
+   "options": [
+    "Ils se fixent et construisent des villages",
+    "Ils deviennent nomades",
+    "Ils arrêtent de fabriquer des outils",
+    "Ils inventent l’écriture"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "On reste près de ses champs : les villages naissent."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "À l’âge des métaux, avec quoi fabrique-t-on les outils ?",
+   "options": [
+    "Avec du métal",
+    "Avec du papier",
+    "Avec du verre"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Des outils en métal, pas en pierre."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Quel est un métal de cette époque ?",
+   "options": [
+    "Le cuivre",
+    "Le plastique",
+    "Le carton"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Cuivre, bronze et fer."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Quels métaux les humains utilisent-ils à cette époque ?",
+   "options": [
+    "Le cuivre, le bronze et le fer",
+    "L’or, l’argent et le plastique",
+    "Le fer, le verre et le bois",
+    "Le bronze, le papier et la pierre"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Cuivre, bronze, puis fer."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 6,
+  "kind": "chronologie",
+  "level": 3,
+  "payload": {
+   "question": "Remets ces métaux dans l’ordre où on les a utilisés.",
+   "tokens": [
+    "Cuivre",
+    "Bronze",
+    "Fer"
+   ]
+  },
+  "answer": {
+   "order": [
+    0,
+    1,
+    2
+   ]
+  },
+  "explain": "Cuivre, puis bronze, puis fer."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 6,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "À l’âge des métaux, on fabrique des outils et des bijoux en {{1}}, en bronze et en {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "cuivre",
+    "fer"
+   ]
+  },
+  "explain": "Cuivre, bronze et fer."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Combien d’époques se suivent dans la Préhistoire ?",
+   "options": [
+    "Trois",
+    "Deux",
+    "Six"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Paléolithique, Néolithique, âge des métaux."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Quelle période vient juste après le Paléolithique ?",
+   "options": [
+    "Le Néolithique",
+    "L’âge des métaux",
+    "L’écriture",
+    "La pierre taillée"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Paléolithique, puis Néolithique."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Quelle période vient en dernier ?",
+   "options": [
+    "L’âge des métaux",
+    "Le Néolithique",
+    "Le Paléolithique",
+    "La pierre polie"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’âge des métaux termine la Préhistoire."
+ },
+ {
+  "lecon": "La Préhistoire",
+  "ordre": 7,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Les trois époques sont le {{1}}, le {{2}} et l’âge des {{3}}.",
+   "blanks": 3
+  },
+  "answer": {
+   "values": [
+    "Paléolithique",
+    "Néolithique",
+    "métaux"
+   ]
+  },
+  "explain": "Dans cet ordre."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Inventer, c’est…",
+   "options": [
+    "créer quelque chose de nouveau",
+    "copier quelque chose",
+    "acheter quelque chose"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Inventer, c’est créer ce qui n’existait pas."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Laquelle de ces phrases décrit une invention ?",
+   "options": [
+    "Fabriquer le premier bateau à voile",
+    "Trouver une pièce par terre",
+    "Lire un livre",
+    "Marcher jusqu’à la rivière"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "On crée un objet qui n’existait pas."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Quelle est la différence entre inventer et découvrir ?",
+   "options": [
+    "Inventer, c’est créer ; découvrir, c’est trouver ce qui existait déjà",
+    "Inventer, c’est trouver ; découvrir, c’est créer",
+    "Il n’y a aucune différence",
+    "Inventer, c’est copier"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "On invente un objet, on découvre un lieu."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 1,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Une {{1}} est la création d’un objet qui n’existait pas avant.",
+   "blanks": 1
+  },
+  "answer": {
+   "values": [
+    "invention"
+   ]
+  },
+  "explain": "Une invention."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 1,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Christophe Colomb a-t-il inventé l’Amérique ?",
+   "options": [
+    "Non, il l’a découverte : elle existait déjà",
+    "Oui, il l’a inventée",
+    "Oui, avec Gutenberg",
+    "Non, il a inventé la caravelle"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "On découvre une terre, on ne l’invente pas."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 2,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui invente la poudre à canon ?",
+   "options": [
+    "Les Chinois",
+    "Les Français",
+    "Les Portugais"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Les Chinois, au 1ᵉʳ siècle."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 2,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Qu’inventent les Chinois au 1ᵉʳ siècle ?",
+   "options": [
+    "Le papier et la poudre à canon",
+    "La caravelle et l’imprimerie",
+    "La boussole et le gouvernail",
+    "Le fer et le bronze"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Le papier et la poudre à canon."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 2,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "À quel siècle le papier est-il inventé ?",
+   "options": [
+    "Au 1ᵉʳ siècle",
+    "Au VIIᵉ siècle",
+    "Au XIIᵉ siècle",
+    "En 1440"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Au 1ᵉʳ siècle."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 2,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Les Chinois inventent le {{1}} et la {{2}} à canon au 1ᵉʳ siècle.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "papier",
+    "poudre"
+   ]
+  },
+  "explain": "Le papier et la poudre."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 2,
+  "kind": "chronologie",
+  "level": 3,
+  "payload": {
+   "question": "Remets ces inventions chinoises dans l’ordre.",
+   "tokens": [
+    "Le papier, 1ᵉʳ siècle",
+    "La boussole, VIIᵉ siècle",
+    "Le gouvernail, XIIᵉ siècle"
+   ]
+  },
+  "answer": {
+   "order": [
+    0,
+    1,
+    2
+   ]
+  },
+  "explain": "Papier, boussole, gouvernail."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui invente la boussole ?",
+   "options": [
+    "Les Chinois",
+    "Les Portugais",
+    "Les Allemands"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Les Chinois, au VIIᵉ siècle."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "La boussole indique…",
+   "options": [
+    "le nord",
+    "l’heure",
+    "la pluie"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Elle montre toujours le nord."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "À quel siècle la boussole est-elle inventée ?",
+   "options": [
+    "Au VIIᵉ siècle",
+    "Au 1ᵉʳ siècle",
+    "Au XIIᵉ siècle",
+    "En 1492"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Au VIIᵉ siècle."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 3,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Les Chinois inventent la {{1}} au VIIᵉ siècle.",
+   "blanks": 1
+  },
+  "answer": {
+   "values": [
+    "boussole"
+   ]
+  },
+  "explain": "La boussole."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 3,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi la boussole est-elle utile aux marins ?",
+   "options": [
+    "Elle donne la direction même quand on ne voit plus la terre",
+    "Elle fait avancer le bateau",
+    "Elle imprime les cartes",
+    "Elle sert à pêcher"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En pleine mer, elle montre où est le nord."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Le gouvernail sert à…",
+   "options": [
+    "diriger le bateau",
+    "écrire",
+    "cuisiner"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Il dirige le bateau."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui invente le gouvernail ?",
+   "options": [
+    "Les Chinois",
+    "Les Allemands",
+    "Les Portugais"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Les Chinois, au XIIᵉ siècle."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "À quel siècle le gouvernail est-il inventé ?",
+   "options": [
+    "Au XIIᵉ siècle",
+    "Au VIIᵉ siècle",
+    "Au 1ᵉʳ siècle",
+    "En 1450"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Au XIIᵉ siècle."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 4,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Les Chinois inventent le {{1}} au XIIᵉ siècle.",
+   "blanks": 1
+  },
+  "answer": {
+   "values": [
+    "gouvernail"
+   ]
+  },
+  "explain": "Le gouvernail."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 4,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Boussole et gouvernail : que permettent-ils ensemble ?",
+   "options": [
+    "Trouver la direction et la suivre",
+    "Imprimer des livres",
+    "Fabriquer du papier",
+    "Cultiver la terre"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’une montre la route, l’autre la suit."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "La caravelle est…",
+   "options": [
+    "un bateau",
+    "un livre",
+    "une arme"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Un bateau rapide et solide."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui invente la caravelle ?",
+   "options": [
+    "Les Portugais",
+    "Les Chinois",
+    "Les Allemands"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Les Portugais, en 1440."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "En quelle année la caravelle est-elle inventée ?",
+   "options": [
+    "1440",
+    "1450",
+    "1487",
+    "1492"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En 1440."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 5,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Les {{1}} inventent la caravelle en {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "Portugais",
+    "1440"
+   ]
+  },
+  "explain": "Les Portugais, en 1440."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 5,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi la caravelle change-t-elle les voyages ?",
+   "options": [
+    "Elle est solide et rapide : elle peut aller très loin",
+    "Elle est plus petite qu’une barque",
+    "Elle avance sans vent",
+    "Elle sert à imprimer des cartes"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Elle tient la haute mer, longtemps."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui invente l’imprimerie ?",
+   "options": [
+    "Gutenberg",
+    "Colomb",
+    "Magellan"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’Allemand Gutenberg, en 1450."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "L’imprimerie sert à…",
+   "options": [
+    "copier des livres rapidement",
+    "naviguer",
+    "cultiver la terre"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Elle copie les livres vite."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "En quelle année l’imprimerie est-elle inventée ?",
+   "options": [
+    "1450",
+    "1440",
+    "1487",
+    "1498"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En 1450."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 6,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi l’imprimerie est-elle importante ?",
+   "options": [
+    "Les livres et les cartes se copient vite et circulent partout",
+    "Elle permet de traverser l’océan",
+    "Elle remplace la boussole",
+    "Elle fabrique le papier"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Le savoir voyage avec les livres."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Grâce à ces inventions, les marins peuvent…",
+   "options": [
+    "aller plus loin",
+    "rester au port",
+    "voler"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Ils partent plus loin, plus sûrement."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Ces inventions ont surtout aidé…",
+   "options": [
+    "la navigation",
+    "la cuisine",
+    "l’école"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Elles ont aidé la navigation."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Quelles inventions aident les marins à partir loin ?",
+   "options": [
+    "La boussole, le gouvernail et la caravelle",
+    "Le papier et la poudre",
+    "L’imprimerie et le papier",
+    "La charrue et la roue"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Direction, pilotage et bon bateau."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 7,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi les grandes découvertes viennent-elles après les grandes inventions ?",
+   "options": [
+    "Il fallait d’abord des bateaux et des instruments pour partir loin",
+    "Les marins n’avaient pas envie avant",
+    "Parce que l’écriture venait d’être inventée",
+    "Parce que la Terre a changé de forme"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Sans ces outils, le grand large est impossible."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 7,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Ces inventions ont favorisé la {{1}} et les grands {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "navigation",
+    "voyages"
+   ]
+  },
+  "explain": "La navigation et les grands voyages."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 8,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui atteint le cap de Bonne-Espérance ?",
+   "options": [
+    "Bartholomeu Dias",
+    "Christophe Colomb",
+    "Gutenberg"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Bartholomeu Dias, en 1487."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 8,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Où se trouve le cap de Bonne-Espérance ?",
+   "options": [
+    "Au sud de l’Afrique",
+    "En Amérique",
+    "En Chine"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Tout au sud de l’Afrique."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 8,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "En quelle année Dias atteint-il le cap de Bonne-Espérance ?",
+   "options": [
+    "1487",
+    "1492",
+    "1498",
+    "1519"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En 1487."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 8,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Bartholomeu {{1}} atteint le cap de Bonne-Espérance en {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "Dias",
+    "1487"
+   ]
+  },
+  "explain": "Dias, en 1487."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 8,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi le cap de Bonne-Espérance compte-t-il autant ?",
+   "options": [
+    "Il ouvre la route vers l’océan Indien, au sud de l’Afrique",
+    "C’est le point le plus au nord du monde",
+    "C’est là que Colomb est arrivé",
+    "C’est une ville d’Allemagne"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En le passant, on peut filer vers les Indes."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 9,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Christophe Colomb découvre…",
+   "options": [
+    "l’Amérique",
+    "la Chine",
+    "l’Australie"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "L’Amérique, en 1492."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 9,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "En quelle année Colomb arrive-t-il en Amérique ?",
+   "options": [
+    "1492",
+    "1892",
+    "1192"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En 1492."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 9,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "Que cherchait Christophe Colomb en partant vers l’ouest ?",
+   "options": [
+    "La route des Indes",
+    "L’Amérique",
+    "Le cap de Bonne-Espérance",
+    "L’Allemagne"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Il cherchait les Indes, il trouve l’Amérique."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 9,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi dit-on que Colomb a « découvert » l’Amérique ?",
+   "options": [
+    "Les Européens ne la connaissaient pas, mais des peuples y vivaient déjà",
+    "Parce qu’il l’a inventée",
+    "Parce que personne n’y habitait",
+    "Parce qu’il y est né"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Découverte pour les Européens seulement."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 10,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Qui trouve la route des Indes ?",
+   "options": [
+    "Vasco de Gama",
+    "Bartholomeu Dias",
+    "Gutenberg"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Vasco de Gama, en 1498."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 10,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Aux Indes, les marins vont chercher…",
+   "options": [
+    "des épices",
+    "de la neige",
+    "du charbon"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Les épices valaient très cher."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 10,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "En quelle année Vasco de Gama arrive-t-il aux Indes ?",
+   "options": [
+    "1498",
+    "1487",
+    "1492",
+    "1522"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "En 1498."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 10,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Vasco de {{1}} trouve la route des Indes en {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "Gama",
+    "1498"
+   ]
+  },
+  "explain": "Vasco de Gama, en 1498."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 10,
+  "kind": "qcm",
+  "level": 3,
+  "payload": {
+   "question": "Pourquoi cherchait-on une route vers les Indes ?",
+   "options": [
+    "Pour acheter des épices et des tissus",
+    "Pour visiter l’Amérique",
+    "Pour fuir l’Europe",
+    "Pour imprimer des livres"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Pour le commerce des épices."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 11,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Magellan et son équipage font le premier…",
+   "options": [
+    "tour du monde",
+    "livre imprimé",
+    "bateau en métal"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "Le premier tour du monde."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 11,
+  "kind": "qcm",
+  "level": 1,
+  "payload": {
+   "question": "Faire le tour du monde, c’est…",
+   "options": [
+    "revenir au point de départ en faisant le tour de la Terre",
+    "aller tout droit sans revenir",
+    "rester au port"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "On part, on fait le tour, on revient."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 11,
+  "kind": "qcm",
+  "level": 2,
+  "payload": {
+   "question": "De quelle année à quelle année dure le premier tour du monde ?",
+   "options": [
+    "De 1519 à 1522",
+    "De 1492 à 1498",
+    "De 1440 à 1450",
+    "De 1487 à 1492"
+   ]
+  },
+  "answer": {
+   "index": 0
+  },
+  "explain": "De 1519 à 1522."
+ },
+ {
+  "lecon": "Les grandes inventions et les grandes découvertes",
+  "ordre": 11,
+  "kind": "texte_a_trous",
+  "level": 3,
+  "payload": {
+   "text": "Magellan et son équipage font le premier tour du monde de {{1}} à {{2}}.",
+   "blanks": 2
+  },
+  "answer": {
+   "values": [
+    "1519",
+    "1522"
+   ]
+  },
+  "explain": "De 1519 à 1522."
+ }
+]

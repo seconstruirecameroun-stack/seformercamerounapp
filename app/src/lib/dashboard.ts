@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { etapeCourante, reussitesParNiveau } from './paliers';
 
 /**
  * Ce que l'enfant voit en arrivant.
@@ -26,6 +27,13 @@ export type LeconResume = {
   notions: number;
   acquises: number;
   dues: number;
+  /** L'étape en cours dans cette leçon, 1 à 3. */
+  etape: number;
+  /** Les trois étapes sont franchies. */
+  etapeTerminee: boolean;
+  /** Notions validées à l'étape en cours, et nombre total à y valider. */
+  etapeFaites: number;
+  etapeTotal: number;
 };
 
 export type TableauDeBord = {
@@ -71,10 +79,13 @@ export function calculerSerie(jours: string[]): number {
 }
 
 export async function chargerTableauDeBord(childId: string): Promise<TableauDeBord> {
-  const [lecons, maitrise, recompenses, tentatives] = await Promise.all([
+  const [lecons, maitrise, recompenses, tentatives, justes] = await Promise.all([
     supabase
       .from('lessons')
-      .select('id, title, illustration, subjects(label), notions(id, statement, illustration, status)')
+      .select(
+        'id, title, illustration, subjects(label), ' +
+          'notions(id, statement, illustration, status, items(id, level, status))',
+      )
       .eq('status', 'approved')
       .order('sort_order'),
     supabase.from('mastery').select('notion_id, level, next_review').eq('child_id', childId),
@@ -85,6 +96,9 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .eq('child_id', childId)
       .order('created_at', { ascending: false })
       .limit(400),
+    // Seules les bonnes réponses situent l'étape : la liste reste courte,
+    // et elle ne peut pas être tronquée par une limite comme au-dessus.
+    supabase.from('attempts').select('item_id').eq('child_id', childId).eq('correct', true),
   ]);
 
   if (lecons.error) throw lecons.error;
@@ -100,7 +114,13 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     title: string;
     illustration: string | null;
     subjects: { label: string } | null;
-    notions: Array<{ id: string; statement: string; illustration: string | null; status: string }>;
+    notions: Array<{
+      id: string;
+      statement: string;
+      illustration: string | null;
+      status: string;
+      items: Array<{ id: string; level: number; status: string }>;
+    }>;
   }>;
 
   const resumes: LeconResume[] = [];
@@ -124,6 +144,15 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       });
     }
 
+    // L'étape se lit avec la règle de la salle de jeu, importée telle quelle.
+    const avecItems = notions.map((n) => ({
+      id: n.id,
+      items: (n.items ?? []).filter((i) => i.status === 'approved'),
+    }));
+    const reussies = reussitesParNiveau(avecItems, justes.data ?? []);
+    const { niveau, termine } = etapeCourante(avecItems, reussies);
+    const aValider = avecItems.filter((n) => n.items.some((i) => i.level === niveau));
+
     resumes.push({
       id: lecon.id,
       title: lecon.title,
@@ -132,12 +161,20 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       notions: notions.length,
       acquises,
       dues,
+      etape: niveau,
+      etapeTerminee: termine,
+      etapeFaites: termine ? aValider.length : (reussies.get(niveau)?.size ?? 0),
+      etapeTotal: aValider.length,
     });
   }
 
-  // La leçon proposée en premier est celle qui a le plus de notions dues :
-  // c'est là que la révision sert le plus.
-  const prochaine = [...resumes].sort((a, b) => b.dues - a.dues)[0];
+  // La leçon mise en avant est celle dont une étape reste à franchir : c'est
+  // l'escalier qui tire l'enfant, pas le calendrier. Quand tout est gravi, on
+  // repasse la main à la révision espacée, et la leçon la plus due remonte.
+  const enCours = resumes.filter((l) => !l.etapeTerminee && l.etapeTotal > 0);
+  const prochaine =
+    enCours.sort((a, b) => a.etape - b.etape || b.etapeTotal - b.etapeFaites - (a.etapeTotal - a.etapeFaites))[0] ??
+    [...resumes].sort((a, b) => b.dues - a.dues)[0];
 
   const jours = [...new Set((tentatives.data ?? []).map((t) => String(t.created_at).slice(0, 10)))];
 
@@ -148,6 +185,6 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     serie: calculerSerie(jours),
     jours,
     autocollants,
-    prochaineLecon: prochaine && prochaine.dues > 0 ? prochaine.id : (resumes[0]?.id ?? null),
+    prochaineLecon: prochaine?.id ?? resumes[0]?.id ?? null,
   };
 }

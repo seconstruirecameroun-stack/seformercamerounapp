@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { chargerTableauDeBord } from '../../lib/dashboard';
+import { PALIERS } from '../../lib/paliers';
 import type { Autocollant, LeconResume } from '../../lib/dashboard';
 import Illustration from '../../components/Illustration';
 import { ErrorNote, Loading } from '../../components/ui';
@@ -58,8 +59,15 @@ function Semaine({ jours, serie }: { jours: string[]; serie: number }) {
   );
 }
 
+/**
+ * Où en est l'enfant dans cette leçon : l'escalier, et la marche en cours.
+ *
+ * Le pourcentage de notions acquises qui figurait ici ne disait rien à un
+ * enfant — il ne voyait ni où il était, ni ce qu'il visait.
+ */
 function CarteLecon({ lecon, childId }: { lecon: LeconResume; childId: string }) {
-  const part = lecon.notions > 0 ? Math.round((lecon.acquises / lecon.notions) * 100) : 0;
+  const part =
+    lecon.etapeTotal > 0 ? Math.round((lecon.etapeFaites / lecon.etapeTotal) * 100) : 0;
   return (
     <Link
       to={`/enfant/${childId}/lecon/${lecon.id}`}
@@ -77,16 +85,35 @@ function CarteLecon({ lecon, childId }: { lecon: LeconResume; childId: string })
         </p>
         <h3 className="line-clamp-2 text-kid font-extrabold">{lecon.title}</h3>
         <div className="mt-1.5 flex items-center gap-2">
-          <span className="h-2 flex-1 overflow-hidden rounded-full bg-line">
+          <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
+            {[1, 2, 3].map((n) => (
+              <span
+                key={n}
+                className={
+                  'grid h-5 w-5 place-items-center rounded-full text-[0.7rem] font-black ' +
+                  (lecon.etapeTerminee || n < lecon.etape
+                    ? 'bg-leaf text-white-warm'
+                    : n === lecon.etape
+                      ? 'bg-gold text-ink'
+                      : 'bg-line text-muted')
+                }
+              >
+                {lecon.etapeTerminee || n < lecon.etape ? '★' : n}
+              </span>
+            ))}
+          </span>
+          <span className="h-2 flex-1 overflow-hidden rounded-full bg-ink/15">
             <span
-              className="block h-full rounded-full bg-leaf transition-all duration-500"
+              className="block h-full rounded-full bg-gold transition-all duration-500"
               style={{ width: `${part}%` }}
             />
           </span>
-          <span className="text-kid-xs font-bold text-muted">
-            {lecon.acquises}/{lecon.notions}
-          </span>
         </div>
+        <p className="mt-1 text-kid-xs font-bold text-muted">
+          {lecon.etapeTerminee
+            ? 'Leçon terminée — tu révises'
+            : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
+        </p>
       </div>
       {lecon.dues > 0 ? (
         <span className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full bg-clay px-2 text-kid-xs font-black text-white-warm">
@@ -210,7 +237,11 @@ export default function ChildHome() {
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/45 to-transparent px-5 pt-14 pb-4">
               <p className="text-kid-xs font-black tracking-widest text-gold uppercase">
-                {d.duesTotal > 0 ? 'Ta mission du jour' : 'Tout est à jour'}
+                {!prochaine.etapeTerminee
+                  ? `Étape ${prochaine.etape} · ${PALIERS[prochaine.etape - 1]?.nom ?? ''}`
+                  : d.duesTotal > 0
+                    ? 'Ta mission du jour'
+                    : 'Tout est à jour'}
               </p>
               <h1
                 className={
@@ -221,9 +252,13 @@ export default function ChildHome() {
                 {prochaine.title}
               </h1>
               <p className="mt-1 text-kid-sm font-bold text-white-warm/90">
-                {d.duesTotal > 0
-                  ? `${d.duesTotal} à revoir`
-                  : 'Rejoue quand tu veux'}
+                {!prochaine.etapeTerminee
+                  ? `Encore ${prochaine.etapeTotal - prochaine.etapeFaites} ${
+                      prochaine.etapeTotal - prochaine.etapeFaites > 1 ? 'questions' : 'question'
+                    } pour l’étape ${prochaine.etape + 1}`
+                  : d.duesTotal > 0
+                    ? `${d.duesTotal} à revoir`
+                    : 'Rejoue quand tu veux'}
               </p>
             </div>
             <span className="absolute right-4 bottom-4 grid h-12 w-12 place-items-center rounded-full bg-clay text-xl text-white-warm shadow-[0_3px_0_var(--color-clay-dark)]">

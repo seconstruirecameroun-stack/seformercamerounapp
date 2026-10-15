@@ -4,10 +4,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
-import { construireMission } from '../../lib/mission';
+import { construireSeance, PALIERS } from '../../lib/paliers';
 import { NIVEAU_ACQUIS } from '../../lib/dashboard';
 import { stopper } from '../../lib/voix';
-import type { EtapeMission } from '../../lib/mission';
+import type { Palier } from '../../lib/paliers';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
 import Illustration from '../../components/Illustration';
@@ -27,7 +27,6 @@ type LessonBundle = {
   videos: VideoRow[];
 };
 
-const NIVEAUX = ['Découverte', 'Entraînement', 'Maîtrise', 'Défi'];
 
 /** Bouton rond et large : la cible principale de l'espace enfant. */
 function GrosBouton({
@@ -80,7 +79,79 @@ function Galets({ total, faits }: { total: number; faits: number }) {
   );
 }
 
-function Mission({
+
+/**
+ * L'étape en cours, en haut de l'écran.
+ *
+ * C'est la pièce qui manquait : l'enfant jouait sans jamais voir où il en
+ * était ni ce qu'il visait. On montre l'escalier entier — les trois étapes,
+ * celle où il se trouve — et ce qu'il reste à faire pour franchir celle-ci.
+ */
+function BarreEtape({
+  palier,
+  reussies,
+  total,
+  termine,
+}: {
+  palier: Palier;
+  reussies: number;
+  total: number;
+  termine: boolean;
+}) {
+  const part = total === 0 ? 0 : Math.min(1, reussies / total);
+  return (
+    <div className="rounded-[var(--radius-card)] border-2 border-line bg-white-warm p-4 shadow-[var(--shadow-tile)]">
+      <div className="flex items-center gap-2">
+        {PALIERS.map((p) => {
+          const franchi = termine || p.niveau < palier.niveau;
+          const courant = !termine && p.niveau === palier.niveau;
+          return (
+            <span
+              key={p.niveau}
+              title={p.nom}
+              className={
+                'grid h-9 w-9 shrink-0 place-items-center rounded-full text-kid-sm font-black transition-all duration-300 ' +
+                (franchi
+                  ? 'bg-leaf text-white-warm'
+                  : courant
+                    ? 'halo bg-gold text-ink ring-4 ring-gold/30'
+                    : 'bg-sand text-muted')
+              }
+            >
+              {franchi ? '★' : p.niveau}
+            </span>
+          );
+        })}
+        <span className="ml-1 min-w-0 flex-1">
+          <span className="block text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+            {termine ? 'Leçon terminée' : `Étape ${palier.niveau} sur ${PALIERS.length}`}
+          </span>
+          <span className="block truncate text-kid font-extrabold">
+            {termine ? 'Tu révises' : palier.nom}
+          </span>
+        </span>
+      </div>
+
+      {/* Le fond doit trancher sur l'or : à la taille d'un téléphone, un
+          sable pâle sous une barre dorée se lit comme une barre pleine. */}
+      <div className="mt-3 h-4 overflow-hidden rounded-full bg-ink/15 inset-shadow-sm">
+        <div
+          className="h-full rounded-full bg-gold transition-[width] duration-700 ease-out"
+          style={{ width: `${part * 100}%` }}
+        />
+      </div>
+      <p className="mt-1.5 text-kid-sm font-bold text-ink-2">
+        {termine
+          ? 'Tu peux rejouer autant que tu veux.'
+          : reussies >= total
+            ? 'Étape réussie !'
+            : `Encore ${total - reussies} ${total - reussies > 1 ? 'questions à réussir' : 'question à réussir'} pour passer à l’étape ${palier.niveau + 1}`}
+      </p>
+    </div>
+  );
+}
+
+function Etape({
   parentId,
   childId,
   lessonId,
@@ -93,153 +164,185 @@ function Mission({
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [verrouille, setVerrouille] = useState(false);
-  // Le retour de la dernière réponse : tant qu'il est posé, la fenêtre est
-  // ouverte et c'est elle qui porte le passage à la question suivante.
   const [retour, setRetour] = useState<{
     ton: 'juste' | 'faux' | 'fete';
     titre: string;
     texte: string;
     points: number;
     vignette: string | null;
+    /** Cette réponse vient de franchir l'étape : la fenêtre change de rôle. */
+    franchie: boolean;
   } | null>(null);
   const [gagnes, setGagnes] = useState(0);
   const [justes, setJustes] = useState(0);
-  // Les notions qui viennent de franchir le seuil de maîtrise pendant cette
-  // séance : ce sont elles qui se révéleront sur l'écran de fin.
-  const [revelees, setRevelees] = useState<Array<{ id: string; illustration: string | null; statement: string }>>([]);
+  /** Notions validées pendant cette séance, pour faire avancer la barre tout de suite. */
+  const [validees, setValidees] = useState<Set<string>>(new Set());
+  const [revelees, setRevelees] = useState<
+    Array<{ id: string; illustration: string | null; statement: string }>
+  >([]);
   const [erreur, setErreur] = useState<unknown>(null);
 
-  const mission = useQuery({
-    queryKey: ['mission', childId, lessonId],
-    queryFn: () => construireMission(childId, lessonId),
+  const seance = useQuery({
+    queryKey: ['seance', childId, lessonId],
+    queryFn: () => construireSeance(childId, lessonId),
     staleTime: 0,
   });
 
-  if (mission.isLoading) return <Loading label="Je prépare ta mission…" />;
-  if (mission.error) return <ErrorNote error={mission.error} />;
+  /** Nouvelle série de questions, à la suite : l'enfant ne retourne pas au menu. */
+  function continuer() {
+    setIndex(0);
+    setVerrouille(false);
+    setGagnes(0);
+    setJustes(0);
+    setValidees(new Set());
+    setRevelees([]);
+    setRetour(null);
+    seance.refetch();
+  }
 
-  const etapes = (mission.data ?? []) as EtapeMission[];
+  if (seance.isLoading) return <Loading label="Je prépare ton étape…" />;
+  if (seance.error) return <ErrorNote error={seance.error} />;
 
-  if (etapes.length === 0) {
+  const s = seance.data;
+
+  if (!s || s.questions.length === 0) {
     return (
       <div className="rounded-[var(--radius-card)] border border-line bg-white-warm p-6 text-center">
         <Illustration cle="repos" forme="objet" alt="" className="mx-auto h-28 w-28" />
-        <h2 className="mt-3 text-kid-lg font-extrabold">Rien à réviser</h2>
-        <p className="mt-1 text-kid-sm text-muted">Reviens demain !</p>
+        <h2 className="mt-3 text-kid-lg font-extrabold">Rien à jouer ici</h2>
+        <p className="mt-1 text-kid-sm text-muted">Cette leçon n’a pas encore de questions.</p>
       </div>
     );
   }
 
-  if (index >= etapes.length) {
+  const reussies = s.reussies + validees.size;
+  const etapeFranchie = !s.termine && reussies >= s.total;
+
+  if (index >= s.questions.length) {
+    const reste = s.total - reussies;
     return (
-      <div className="monte overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm text-center shadow-[var(--shadow-card)]">
-        <div className="bg-gold/25 px-6 py-7">
-          <Illustration cle="medaille" forme="objet" alt="" className="mx-auto h-28 w-28" />
-          <h2 className="mt-3 text-kid-2xl font-black">Mission terminée !</h2>
-          <p className="mt-1 text-kid font-bold text-ink-2">
-            {justes} sur {etapes.length} · +{gagnes} points
-          </p>
-        </div>
-        {revelees.length > 0 ? (
-          <div className="border-b border-line px-6 py-5">
-            <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
-              {revelees.length > 1
-                ? `${revelees.length} images gagnées`
-                : 'Une image gagnée'}
-            </p>
-            <ul className="mt-3 flex flex-wrap justify-center gap-3">
-              {revelees.map((r, i) => (
-                <li key={r.id} className="w-24">
-                  <div
-                    className="halo revele overflow-hidden rounded-2xl border-2 border-gold"
-                    style={{ animationDelay: `${i * 220}ms` }}
-                  >
-                    <Illustration
-                      cle={r.illustration}
-                      forme="objet"
-                      alt={r.statement}
-                      className="h-24 w-24 object-cover"
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-kid-sm text-muted">
-              {revelees.length > 1 ? 'Dans ta collection !' : 'Dans ta collection !'}
+      <div className="grid gap-3">
+        <BarreEtape palier={s.palier} reussies={reussies} total={s.total} termine={s.termine} />
+
+        <div className="monte overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm text-center shadow-[var(--shadow-card)]">
+          <div className={'px-6 py-7 ' + (etapeFranchie ? 'bg-leaf/25' : 'bg-gold/25')}>
+            <Illustration
+              cle='medaille'
+              forme="objet"
+              alt=""
+              className="mx-auto h-28 w-28"
+            />
+            <h2 className="mt-3 text-kid-2xl font-black">
+              {etapeFranchie ? 'Étape réussie !' : 'Bien joué !'}
+            </h2>
+            <p className="mt-1 text-kid font-bold text-ink-2">
+              {justes} sur {s.questions.length} · +{gagnes} points
             </p>
           </div>
-        ) : null}
-        <div className="px-6 py-5">
-          <p className="text-kid-sm text-muted">
-            {justes === etapes.length
-              ? 'Tout juste ! On revérifie dans quelques jours.'
-              : 'On revoit demain ce qui a coincé.'}
-          </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            <GrosBouton onClick={() => navigate(`/enfant/${childId}`)}>Mes leçons</GrosBouton>
-            <GrosBouton
-              variante="douce"
-              onClick={() => {
-                setIndex(0);
-                setVerrouille(false);
-                setGagnes(0);
-                setJustes(0);
-                setRevelees([]);
-                setRetour(null);
-                mission.refetch();
-              }}
-            >
-              Rejouer
-            </GrosBouton>
+
+          {revelees.length > 0 ? (
+            <div className="border-b border-line px-6 py-5">
+              <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+                {revelees.length > 1 ? `${revelees.length} images gagnées` : 'Une image gagnée'}
+              </p>
+              <ul className="mt-3 flex flex-wrap justify-center gap-3">
+                {revelees.map((r, i) => (
+                  <li key={r.id} className="w-24">
+                    <div
+                      className="halo revele overflow-hidden rounded-2xl border-2 border-gold"
+                      style={{ animationDelay: `${i * 220}ms` }}
+                    >
+                      <Illustration
+                        cle={r.illustration}
+                        forme="objet"
+                        alt={r.statement}
+                        className="h-24 w-24 object-cover"
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-kid-sm text-muted">Dans ta collection !</p>
+            </div>
+          ) : null}
+
+          <div className="px-6 py-5">
+            <p className="text-kid-sm text-muted">
+              {etapeFranchie
+                ? `Tu passes en « ${PALIERS[s.palier.niveau]?.nom ?? 'révision'} ».`
+                : s.termine
+                  ? 'Tu connais toute la leçon.'
+                  : reste > 0
+                    ? `Encore ${reste} ${reste > 1 ? 'questions' : 'question'} à réussir pour l’étape ${s.palier.niveau + 1}.`
+                    : 'On continue.'}
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <GrosBouton onClick={continuer}>
+                {etapeFranchie ? 'Étape suivante' : 'Continuer'}
+              </GrosBouton>
+              <GrosBouton variante="douce" onClick={() => navigate(`/enfant/${childId}`)}>
+                Mes leçons
+              </GrosBouton>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  const etape = etapes[index];
+  const question = s.questions[index];
 
   async function repondre(reponse: Reponse) {
-    if (verrouille) return;
+    if (verrouille || !s) return;
     setVerrouille(true);
     setErreur(null);
     try {
       const bilan = await recordAttempt({
         parentId,
         childId,
-        item: etape.item,
+        item: question.item,
         answer: reponse.donnee,
         correct: reponse.correct,
       });
+
+      // La notion tombe pour cette étape : c'est ce qui fait avancer la barre.
+      const valide = reponse.correct && !validees.has(question.notion.id);
+      const suite = valide ? new Set(validees).add(question.notion.id) : validees;
+      if (valide) setValidees(suite);
+
+      const franchie = !s.termine && s.reussies + suite.size >= s.total;
       const acquise = bilan.previousLevel < NIVEAU_ACQUIS && bilan.level >= NIVEAU_ACQUIS;
 
       const bouts: string[] = [];
-      if (etape.item.explain) bouts.push(etape.item.explain);
-      if (acquise) bouts.push('Nouvelle image pour ta collection !');
-      else if (bilan.leveledUp) bouts.push(`Tu passes en « ${NIVEAUX[bilan.level - 1]} » !`);
-      if (bilan.leveledDown) bouts.push('On reprend plus doucement.');
+      if (question.item.explain) bouts.push(question.item.explain);
+      if (franchie) bouts.push(`Tu passes en « ${PALIERS[s.palier.niveau]?.nom ?? 'révision'} » !`);
+      else if (acquise) bouts.push('Nouvelle image pour ta collection !');
+      else if (!reponse.correct) bouts.push('On la repose tout à l’heure.');
 
       setRetour({
-        ton: acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
-        titre: acquise ? 'Image gagnée !' : reponse.correct ? 'Bravo !' : 'Presque…',
+        ton: franchie || acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
+        titre: franchie ? 'Étape réussie !' : acquise ? 'Image gagnée !' : reponse.correct ? 'Bravo !' : 'Presque…',
         texte: bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'),
         points: bilan.points,
-        vignette: acquise ? etape.notion.illustration : null,
+        vignette: acquise ? question.notion.illustration : null,
+        franchie,
       });
-      setGagnes(gagnes + bilan.points);
+
+      setGagnes((g) => g + bilan.points);
       if (acquise) {
         setRevelees((d) => [
           ...d,
           {
-            id: etape.notion.id,
-            illustration: etape.notion.illustration,
-            statement: etape.notion.statement,
+            id: question.notion.id,
+            illustration: question.notion.illustration,
+            statement: question.notion.statement,
           },
         ]);
       }
-      if (reponse.correct) setJustes(justes + 1);
+      if (reponse.correct) setJustes((j) => j + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
       qc.invalidateQueries({ queryKey: ['tableau', childId] });
+      qc.invalidateQueries({ queryKey: ['maitrise', childId, lessonId] });
     } catch (err) {
       setErreur(err);
       setRetour(null);
@@ -248,73 +351,88 @@ function Mission({
   }
 
   function questionSuivante() {
+    // Une étape franchie arrête la série : la suite se joue au niveau du dessus.
+    if (retour?.franchie) {
+      continuer();
+      return;
+    }
     setRetour(null);
     setIndex(index + 1);
     setVerrouille(false);
   }
 
+  const derniere = index + 1 === s.questions.length;
+
   return (
-    <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
-      <div className="flex items-center justify-between gap-3">
-        <Galets total={etapes.length} faits={index} />
-        <span className="rounded-full bg-sand px-3 py-1 text-kid-xs font-black tracking-wide uppercase">
-          {NIVEAUX[etape.item.level - 1] ?? 'Niveau ' + etape.item.level}
-        </span>
-      </div>
+    <div className="grid gap-3">
+      <BarreEtape palier={s.palier} reussies={reussies} total={s.total} termine={s.termine} />
 
-      <div className="mt-5">
-        <ItemPlayer
-          item={etape.item}
-          onRepondre={repondre}
-          verrouille={verrouille}
-          visuel={
-            etape.notion.illustration ? (
-              <Illustration
-                cle={etape.notion.illustration}
-                forme="objet"
-                alt=""
-                priorite
-                className="h-14 w-14 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20"
-              />
-            ) : null
-          }
-        />
-      </div>
-
-      {erreur ? (
-        <div className="mt-4">
-          <ErrorNote error={erreur} />
+      <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <Galets total={s.questions.length} faits={index} />
+          <span className="rounded-full bg-sand px-3 py-1 text-kid-xs font-black tracking-wide uppercase">
+            {s.palier.promesse}
+          </span>
         </div>
-      ) : null}
 
-      {retour ? (
-        <Popup
-          ton={retour.ton}
-          titre={retour.titre}
-          action={index + 1 === etapes.length ? 'Voir mon résultat' : 'Question suivante'}
-          onFermer={questionSuivante}
-          vignette={
-            retour.vignette ? (
-              <Illustration
-                cle={retour.vignette}
-                forme="objet"
-                alt=""
-                className="h-28 w-28 object-cover"
-              />
-            ) : (
-              <Illustration cle="guide" forme="portrait" alt="" className="h-28 w-auto" />
-            )
-          }
-        >
-          {retour.texte}
-          {retour.points > 0 ? (
-            <span className="mt-3 block text-kid-lg font-black text-gold">
-              +{retour.points} points
-            </span>
-          ) : null}
-        </Popup>
-      ) : null}
-    </section>
+        <div className="mt-5">
+          <ItemPlayer
+            item={question.item}
+            onRepondre={repondre}
+            verrouille={verrouille}
+            visuel={
+              question.notion.illustration ? (
+                <Illustration
+                  cle={question.notion.illustration}
+                  forme="objet"
+                  alt=""
+                  priorite
+                  className="h-14 w-14 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20"
+                />
+              ) : null
+            }
+          />
+        </div>
+
+        {erreur ? (
+          <div className="mt-4">
+            <ErrorNote error={erreur} />
+          </div>
+        ) : null}
+
+        {retour ? (
+          <Popup
+            ton={retour.ton}
+            titre={retour.titre}
+            action={
+              retour.franchie ? 'Étape suivante' : derniere ? 'Voir mon résultat' : 'Question suivante'
+            }
+            onFermer={questionSuivante}
+            vignette={
+              retour.franchie ? (
+                <Illustration cle="medaille" forme="objet" alt="" className="h-28 w-28 object-cover" />
+              ) : retour.vignette ? (
+                <Illustration
+                  cle={retour.vignette}
+                  forme="objet"
+                  alt=""
+                  className="h-28 w-28 object-cover"
+                />
+              ) : (
+                <Illustration cle="guide" forme="portrait" alt="" className="h-28 w-auto" />
+              )
+            }
+          >
+            {retour.texte}
+            {retour.points > 0 ? (
+              <span className="mt-3 block text-kid-lg font-black text-gold">
+                +{retour.points} points
+              </span>
+            ) : null}
+          </Popup>
+        ) : null}
+      </section>
+    </div>
   );
 }
 
@@ -482,7 +600,7 @@ export default function ChildSpace() {
             <div className="mt-4">
               {onglet === 'mission' ? (
                 parentId && childId ? (
-                  <Mission parentId={parentId} childId={childId} lessonId={bundle.id} />
+                  <Etape parentId={parentId} childId={childId} lessonId={bundle.id} />
                 ) : (
                   <Loading />
                 )

@@ -141,24 +141,40 @@ chronologie ; une date donne un QCM. Le type de notion pilote le moteur.
 
 ## 5. Difficulté et progression
 
-### Quatre niveaux par notion
+### Trois étapes par leçon
 
-| Niveau | Nom | Ce qu'on demande | Indices |
+L'enfant gravit une leçon comme les niveaux d'un jeu : trois étapes, dans
+l'ordre, et la suivante reste fermée tant que la précédente n'est pas nette.
+
+| Étape | Nom | Ce qu'on demande | Forme des questions |
 |---|---|---|---|
-| 1 | Découverte | reconnaître | le résumé reste affiché |
-| 2 | Entraînement | choisir | indice sur demande |
-| 3 | Maîtrise | produire (texte à trous, remise en ordre) | aucun |
-| 4 | Défi | transférer, croiser deux notions, chronométré | aucun |
+| 1 | Découverte | reconnaître | 3 choix, la réponse est dans le résumé |
+| 2 | Entraînement | comprendre | 4 choix, distracteurs plausibles |
+| 3 | Défi | restituer | texte à trous, chronologie, raisonnement |
 
-### Règle de montée et de descente
+### Règle de franchissement
 
-- 3 bonnes réponses d'affilée sur une notion → niveau + 1
-- 2 erreurs sur la même notion → niveau − 1 **et** on propose une autre
-  variante d'explication
+Une étape est franchie quand **chaque notion de la leçon** a reçu une bonne
+réponse à ce niveau. Pas une moyenne, pas un pourcentage : une moyenne
+laisserait passer un enfant qui ignore trois notions sur dix.
 
-Cette seconde règle est la réponse directe à « générer encore et encore des
-textes différents pour que l'enfant comprenne mieux » : l'échec ne punit pas,
-il déclenche une nouvelle façon d'expliquer.
+Tant qu'il reste des notions à valider, la séance suivante repose des
+questions sur celles-là, et sur celles-là seulement — avec une autre
+formulation quand elle existe, pour qu'il revoie la notion plutôt que de
+retenir la position de la bonne case.
+
+Rater ne fait pas reculer : ça fait revenir. Perdre un acquis décourage un
+enfant de primaire bien plus que ça ne le motive.
+
+Deux erreurs sur la même notion déclenchent une autre explication. C'est la
+réponse directe à « générer encore et encore des textes différents pour que
+l'enfant comprenne mieux » : l'échec ne punit pas, il déclenche une nouvelle
+façon d'expliquer.
+
+L'étape se déduit entièrement du journal des tentatives : aucune colonne
+« étape en cours » à tenir à jour, donc rien qui puisse mentir sur l'état
+réel. La révision espacée continue en parallèle, et reprend la main une fois
+les trois étapes franchies.
 
 ### Variantes d'explication
 
