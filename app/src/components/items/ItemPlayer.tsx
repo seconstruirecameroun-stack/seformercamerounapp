@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import type { ItemRow } from '../../types/db';
 import { Button } from '../ui';
+import Illustration from '../Illustration';
+import { Enonce, LETTRES, memeMot } from './partage';
+import type { Props } from './partage';
+import VraiFaux from './VraiFaux';
+import Association from './Association';
+import Dictee from './Dictee';
+
+export type { Reponse } from './partage';
+export { memeMot } from './partage';
 
 /**
  * Un item, quel que soit son type, se joue de la même façon :
@@ -10,51 +19,71 @@ import { Button } from '../ui';
  * moins 60 px de haut, texte large, et aucun glisser-déposer.
  */
 
-export type Reponse = { correct: boolean; donnee: unknown };
-
-type Props = {
-  item: ItemRow;
-  onRepondre: (r: Reponse) => void;
-  verrouille: boolean;
-  /** Vignette de la notion, posée contre l'énoncé et non contre l'exercice :
-      les réponses gardent ainsi toute la largeur, ce qui compte sur un
-      téléphone où une option sur deux lignes devient pénible à viser. */
-  visuel?: React.ReactNode;
-};
-
-function Enonce({ visuel, children }: { visuel?: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-3">
-      {visuel}
-      <h2 className="flex-1 text-kid-xl leading-snug font-extrabold text-balance">{children}</h2>
-    </div>
-  );
-}
-
-const LETTRES = ['A', 'B', 'C', 'D', 'E'];
-
-/** Comparaison indulgente : la casse, les accents et les espaces ne comptent pas. */
-export function memeMot(a: string, b: string) {
-  const net = (s: string) =>
-    s
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/\s+/g, ' ');
-  return net(a) === net(b);
-}
-
 function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
-  const payload = item.payload as { question: string; options: string[] };
+  const payload = item.payload as { question: string; options?: string[]; images?: string[] };
   const bonne = (item.answer as { index: number }).index;
   const [choisi, setChoisi] = useState<number | null>(null);
+
+  // Quand les réponses sont des images, on les montre en grand plutôt que
+  // d'écrire leur nom : à sept ans, reconnaître une terre rouge est plus sûr
+  // que lire « ferralitique ».
+  if (payload.images) {
+    return (
+      <>
+        <Enonce visuel={visuel}>{payload.question}</Enonce>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          {payload.images.map((cle, i) => {
+            const estBonne = verrouille && i === bonne;
+            const estRate = verrouille && i === choisi && i !== bonne;
+            return (
+              <button
+                key={i}
+                type="button"
+                disabled={verrouille}
+                onClick={() => {
+                  setChoisi(i);
+                  onRepondre({ correct: i === bonne, donnee: { index: i } });
+                }}
+                className={
+                  'tuile relative overflow-hidden rounded-[var(--radius-tile)] border-[3px] shadow-[var(--shadow-tile)] ' +
+                  (estBonne
+                    ? 'border-leaf'
+                    : estRate
+                      ? 'border-clay'
+                      : verrouille
+                        ? 'border-line opacity-55'
+                        : 'border-line hover:border-ink-2')
+                }
+              >
+                <Illustration cle={cle} forme="objet" alt="" className="h-28 w-full object-cover sm:h-36" />
+                <span
+                  aria-hidden="true"
+                  className={
+                    'absolute top-1.5 left-1.5 grid h-8 w-8 place-items-center rounded-full text-kid-sm font-black ' +
+                    (estBonne
+                      ? 'bg-leaf text-white-warm'
+                      : estRate
+                        ? 'bg-clay text-white-warm'
+                        : 'bg-white-warm/90 text-ink')
+                  }
+                >
+                  {estBonne ? '✓' : estRate ? '✗' : LETTRES[i]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
+
+  const options = payload.options ?? [];
 
   return (
     <>
       <Enonce visuel={visuel}>{payload.question}</Enonce>
       <div className="mt-5 grid gap-3">
-        {payload.options.map((option, i) => {
+        {options.map((option, i) => {
           const estBonne = verrouille && i === bonne;
           const estRate = verrouille && i === choisi && i !== bonne;
           return (
@@ -100,7 +129,7 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
 }
 
 function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
-  const payload = item.payload as { question: string; tokens: string[] };
+  const payload = item.payload as { question: string; tokens: string[]; consigne?: string };
   const ordre = (item.answer as { order: number[] }).order;
   const [choisis, setChoisis] = useState<number[]>([]);
 
@@ -117,7 +146,9 @@ function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
   return (
     <>
       <Enonce visuel={visuel}>{payload.question}</Enonce>
-      <p className="mt-1 text-kid-sm text-muted">Touche les étiquettes dans le bon ordre.</p>
+      <p className="mt-1 text-kid-sm text-muted">
+        {payload.consigne ?? 'Touche les étiquettes dans le bon ordre.'}
+      </p>
 
       <ol className="mt-5 grid gap-2">
         {payload.tokens.map((_, position) => {
@@ -256,14 +287,33 @@ export function estJouable(item: ItemRow): boolean {
   if (!p || !a) return false;
 
   switch (item.kind) {
-    case 'qcm':
+    case 'qcm': {
+      // Les réponses sont des textes ou des images, jamais les deux.
+      const choix = (p.images ?? p.options) as unknown[];
       return (
         typeof p.question === 'string' &&
-        tableau(p.options) &&
+        tableau(choix) &&
         typeof a.index === 'number' &&
         a.index >= 0 &&
-        a.index < (p.options as unknown[]).length
+        a.index < choix.length
       );
+    }
+    case 'vrai_faux':
+      return typeof p.statement === 'string' && typeof a.value === 'boolean';
+    case 'association':
+      return (
+        typeof p.question === 'string' &&
+        tableau(p.gauche) &&
+        tableau(p.droite) &&
+        tableau(a.order) &&
+        (a.order as unknown[]).length === (p.gauche as unknown[]).length &&
+        (a.order as number[]).every(
+          (j) => Number.isInteger(j) && j >= 0 && j < (p.droite as unknown[]).length,
+        ) &&
+        new Set(a.order as number[]).size === (a.order as unknown[]).length
+      );
+    case 'dictee':
+      return typeof p.phrase === 'string' && (p.phrase as string).trim().length > 0;
     case 'chronologie':
       return (
         typeof p.question === 'string' &&
@@ -297,6 +347,12 @@ export default function ItemPlayer(props: Props) {
   switch (item.kind) {
     case 'qcm':
       return <Qcm {...props} />;
+    case 'vrai_faux':
+      return <VraiFaux {...props} />;
+    case 'association':
+      return <Association {...props} />;
+    case 'dictee':
+      return <Dictee {...props} />;
     case 'chronologie':
       return <Chronologie {...props} />;
     default:

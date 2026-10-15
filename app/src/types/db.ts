@@ -25,6 +25,7 @@ export type ItemKind =
   | 'chronologie'
   | 'texte_a_trous'
   | 'vrai_faux'
+  | 'dictee'
   | 'restitution_audio'
   | 'defi_chrono';
 

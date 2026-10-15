@@ -158,16 +158,26 @@ chronologie ; une date donne un QCM. Le type de notion pilote le moteur.
 
 ## 5. Difficulté et progression
 
-### Trois étapes par leçon
+### Quatre étapes par leçon
 
-L'enfant gravit une leçon comme les niveaux d'un jeu : trois étapes, dans
+L'enfant gravit une leçon comme les niveaux d'un jeu : quatre étapes, dans
 l'ordre, et la suivante reste fermée tant que la précédente n'est pas nette.
 
 | Étape | Nom | Ce qu'on demande | Forme des questions |
 |---|---|---|---|
 | 1 | Découverte | reconnaître | 3 choix, la réponse est dans le résumé |
-| 2 | Entraînement | comprendre | 4 choix, distracteurs plausibles |
-| 3 | Défi | restituer | texte à trous, chronologie, raisonnement |
+| 2 | Entraînement | comprendre | 4 choix, relier, images |
+| 3 | Maîtrise | produire | texte à trous, dictée, mots à remettre en ordre |
+| 4 | Défi | transférer, vite | 20 secondes par question, QCM court ou vrai/faux |
+
+La dernière marche se joue au chronomètre. Partout ailleurs, presser un
+enfant qui découvre une notion l'empêche de la comprendre ; ici la notion est
+déjà sue, et c'est la vitesse qu'on vient chercher. Le temps écoulé vaut une
+réponse manquée — la notion revient, sans drame.
+
+On n'y pose que du court, et on y demande du transfert : « on trouve une
+pierre cassée en pointe, quelle époque ? » plutôt que « qu'est-ce que le
+Paléolithique ? ».
 
 ### Règle de franchissement
 
@@ -217,15 +227,28 @@ repart à J+1. C'est ce calendrier, et non le dernier score, qui construit la
 Un type de jeu n'est pas un écran dédié : c'est une **façon d'interroger une
 notion**. Le même contenu alimente tous les types.
 
-| Type | Niveaux | Type de notion visé |
-|---|---|---|
-| QCM | 1–2 | définition, date |
-| Association (colonnes à relier) | 2–3 | liste, définition |
-| Chronologie (remettre en ordre) | 2–3 | relation |
-| Texte à trous | 3 | liste, définition |
-| Vrai / faux justifié | 3–4 | relation |
-| Restitution audio (dire le résumé) | 2–4 | définition, liste |
-| Défi chronométré | 4 | tous |
+| Type | Niveaux | Type de notion visé | État |
+|---|---|---|---|
+| QCM | 1–2 | définition, date | construit |
+| QCM en images | 1–2 | tout ce qui s'illustre | construit |
+| Association (colonnes à relier) | 2–3 | liste, définition | construit |
+| Chronologie (remettre en ordre) | 2–3 | relation | construit |
+| Mots d'une phrase à remettre en ordre | 3 | définition | construit |
+| Texte à trous | 3 | liste, définition | construit |
+| Dictée écoutée | 3 | définition | construit |
+| Vrai / faux | 1–4 | relation | construit |
+| Restitution audio (dire le résumé) | 2–4 | définition, liste | repoussé |
+
+La restitution audio attend : enregistrer la voix de l'enfant demande le
+micro, du stockage, et surtout quelqu'un pour juger la réponse. Sans
+correction, c'est un bouton qui ne fait rien.
+
+Le vrai / faux ne vaut qu'accompagné : seul, il laisse une chance sur deux.
+On ne le pose donc jamais comme unique question d'une notion.
+
+Le QCM en images réutilise les illustrations déjà produites pour chaque
+notion : « clique sur le sol ferralitique » demande moins de lecture qu'un
+mot comme « ferralitique », ce qui compte en CE1.
 
 ### Points et récompenses
 

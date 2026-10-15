@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
-import { construireSeance, PALIERS } from '../../lib/paliers';
+import { construireSeance, estChronometre, PALIERS, SECONDES_DEFI } from '../../lib/paliers';
 import { NIVEAU_ACQUIS } from '../../lib/dashboard';
 import { stopper } from '../../lib/voix';
 import type { Palier } from '../../lib/paliers';
@@ -100,6 +100,8 @@ function BarreEtape({
   termine: boolean;
 }) {
   const part = total === 0 ? 0 : Math.min(1, reussies / total);
+  // Au sommet de l'escalier, il n'y a pas d'étape suivante à annoncer.
+  const derniere = palier.niveau === PALIERS[PALIERS.length - 1].niveau;
   return (
     <div className="rounded-[var(--radius-card)] border-2 border-line bg-white-warm p-4 shadow-[var(--shadow-tile)]">
       <div className="flex items-center gap-2">
@@ -146,8 +148,76 @@ function BarreEtape({
           ? 'Tu peux rejouer autant que tu veux.'
           : reussies >= total
             ? 'Étape réussie !'
-            : `Encore ${total - reussies} ${total - reussies > 1 ? 'questions à réussir' : 'question à réussir'} pour passer à l’étape ${palier.niveau + 1}`}
+            : `Encore ${total - reussies} ${total - reussies > 1 ? 'questions' : 'question'} ${
+                derniere ? 'pour terminer la leçon' : `pour passer à l’étape ${palier.niveau + 1}`
+              }`}
       </p>
+    </div>
+  );
+}
+
+/**
+ * Le sablier de la dernière étape.
+ *
+ * Il ne sert qu'au Défi : partout ailleurs, presser un enfant qui découvre
+ * une notion l'empêche justement de la comprendre. Ici la notion est déjà
+ * sue, et c'est la vitesse qu'on vient chercher.
+ *
+ * Le temps écoulé vaut une réponse manquée — la notion revient, sans drame.
+ */
+function Chrono({
+  cle,
+  secondes,
+  gele,
+  surFin,
+}: {
+  cle: string;
+  secondes: number;
+  gele: boolean;
+  surFin: () => void;
+}) {
+  const [reste, setReste] = useState(secondes);
+  const fini = useRef(false);
+  // La fonction de fin change à chaque rendu du parent. Dans une ref, elle ne
+  // relance pas le compte à rebours.
+  const fin = useRef(surFin);
+  fin.current = surFin;
+
+  useEffect(() => {
+    setReste(secondes);
+    fini.current = false;
+  }, [cle, secondes]);
+
+  useEffect(() => {
+    if (gele || fini.current) return;
+    if (reste <= 0) {
+      fini.current = true;
+      fin.current();
+      return;
+    }
+    const t = setTimeout(() => setReste((r) => r - 1), 1000);
+    return () => clearTimeout(t);
+  }, [reste, gele]);
+
+  const part = Math.max(0, reste / secondes);
+  const urgent = reste <= 5;
+
+  return (
+    <div className="flex items-center gap-2" aria-label={`${reste} secondes`}>
+      <span
+        className={
+          'grid h-8 w-8 shrink-0 place-items-center rounded-full text-kid-sm font-black tabular-nums ' +
+          (urgent ? 'bg-clay text-white-warm' : 'bg-sand text-ink')
+        }
+      >
+        {Math.max(0, reste)}
+      </span>
+      <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-ink/15">
+        <span
+          className={'block h-full rounded-full ' + (urgent ? 'bg-clay' : 'bg-leaf')}
+          style={{ width: `${part * 100}%`, transition: 'width 1s linear' }}
+        />
+      </span>
     </div>
   );
 }
@@ -270,7 +340,9 @@ function Etape({
           <div className="px-6 py-5">
             <p className="text-kid-sm text-muted">
               {etapeFranchie
-                ? `Tu passes en « ${PALIERS[s.palier.niveau]?.nom ?? 'révision'} ».`
+                ? PALIERS[s.palier.niveau]
+                ? `Tu passes en « ${PALIERS[s.palier.niveau].nom} ».`
+                : 'Tu as fini les quatre étapes de cette leçon.'
                 : s.termine
                   ? 'Tu connais toute la leçon.'
                   : reste > 0
@@ -316,13 +388,24 @@ function Etape({
 
       const bouts: string[] = [];
       if (question.item.explain) bouts.push(question.item.explain);
-      if (franchie) bouts.push(`Tu passes en « ${PALIERS[s.palier.niveau]?.nom ?? 'révision'} » !`);
+      const suivante = PALIERS[s.palier.niveau];
+      if (franchie) {
+        bouts.push(suivante ? `Tu passes en « ${suivante.nom} » !` : 'Tu connais toute la leçon !');
+      }
       else if (acquise) bouts.push('Nouvelle image pour ta collection !');
       else if (!reponse.correct) bouts.push('On la repose tout à l’heure.');
 
       setRetour({
         ton: franchie || acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
-        titre: franchie ? 'Étape réussie !' : acquise ? 'Image gagnée !' : reponse.correct ? 'Bravo !' : 'Presque…',
+        titre: franchie
+          ? 'Étape réussie !'
+          : acquise
+            ? 'Image gagnée !'
+            : reponse.correct
+              ? 'Bravo !'
+              : (reponse.donnee as { expire?: boolean })?.expire
+                ? 'Trop tard !'
+                : 'Presque…',
         texte: bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'),
         points: bilan.points,
         vignette: acquise ? question.notion.illustration : null,
@@ -375,6 +458,18 @@ function Etape({
             {s.palier.promesse}
           </span>
         </div>
+
+        {estChronometre(s.niveau) ? (
+          <div className="mt-3">
+            <Chrono
+              cle={question.item.id}
+              secondes={SECONDES_DEFI}
+              gele={verrouille || retour !== null}
+              /* Le temps écoulé vaut une réponse manquée : la notion revient. */
+              surFin={() => repondre({ correct: false, donnee: { expire: true } })}
+            />
+          </div>
+        ) : null}
 
         <div className="mt-5">
           <ItemPlayer

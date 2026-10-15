@@ -34,8 +34,22 @@ export type Palier = {
 export const PALIERS: Palier[] = [
   { niveau: 1, nom: 'Découverte', promesse: 'Reconnaître' },
   { niveau: 2, nom: 'Entraînement', promesse: 'Bien comprendre' },
-  { niveau: 3, nom: 'Défi', promesse: 'Tout retenir' },
+  { niveau: 3, nom: 'Maîtrise', promesse: 'Savoir écrire' },
+  { niveau: 4, nom: 'Défi', promesse: 'Vite et juste' },
 ];
+
+/**
+ * La dernière étape se joue au chronomètre.
+ *
+ * Vingt secondes par question : assez pour lire et réfléchir à cet âge, trop
+ * peu pour aller chercher la réponse dans la leçon. Le temps écoulé compte
+ * comme une erreur — on ne punit pas, la notion revient simplement.
+ */
+export const SECONDES_DEFI = 20;
+
+export function estChronometre(niveau: number): boolean {
+  return niveau === 4;
+}
 
 export const TAILLE_SEANCE = 6;
 
