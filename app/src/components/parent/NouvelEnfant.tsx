@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { Button, ErrorNote, Field } from '../ui';
+import { BUCKET } from '../../lib/import';
 import ChoixEmoji from './ChoixEmoji';
 import type { ClassRow } from '../../types/db';
 
@@ -81,6 +82,90 @@ export default function NouvelEnfant({
     },
   });
 
+  /**
+   * Le raccourci : une photo du bulletin, et la fiche se remplit.
+   *
+   * Le fichier ne sert qu'à être lu — il est effacé dès la réponse reçue.
+   * Rien n'est enregistré automatiquement : la lecture pré-remplit, le parent
+   * relit, et c'est lui qui crée le profil. Un prénom mal lu doit pouvoir
+   * être corrigé avant d'exister.
+   */
+  const [doutes, setDoutes] = useState<string[]>([]);
+  const [lu, setLu] = useState<string[]>([]);
+
+  const lire = useMutation({
+    mutationFn: async (fichier: File) => {
+      const { data: auth } = await supabase.auth.getUser();
+      const parentId = auth.user?.id;
+      if (!parentId) throw new Error('Session expirée, reconnectez-vous.');
+
+      const chemin = `${parentId}/fiches/${crypto.randomUUID()}`;
+      const depot = await supabase.storage
+        .from(BUCKET)
+        .upload(chemin, fichier, { contentType: fichier.type });
+      if (depot.error) throw depot.error;
+
+      try {
+        const { data, error } = await supabase.functions.invoke('lire-fiche-enfant', {
+          body: { chemin },
+        });
+        if (error) {
+          const detail = await error.context?.text?.();
+          if (detail && detail.includes('sans_cle')) {
+            throw new Error(
+              'La lecture automatique n’est pas encore activée sur ce projet. Remplissez les champs à la main — cela prend une minute.',
+            );
+          }
+          throw error;
+        }
+        return (data as { fiche: Record<string, unknown> }).fiche;
+      } finally {
+        // Le document a servi : il n'a pas à rester dans le compartiment.
+        await supabase.storage.from(BUCKET).remove([chemin]);
+      }
+    },
+    onSuccess: (fiche) => {
+      const trouves: string[] = [];
+      const texte = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null);
+
+      const p = texte(fiche.prenom);
+      if (p) {
+        setPrenom(p);
+        trouves.push('le prénom');
+      }
+      const n = texte(fiche.naissance);
+      if (n && /^\d{4}-\d{2}-\d{2}$/.test(n)) {
+        setNaissance(n);
+        trouves.push('la date de naissance');
+      }
+      const g = texte(fiche.genre);
+      if (g === 'fille' || g === 'garcon') {
+        setGenre(g);
+        trouves.push('le genre');
+      }
+      const e = texte(fiche.ecole);
+      if (e) {
+        setEcole(e);
+        trouves.push('l’école');
+      }
+      // La classe arrive telle que l'école l'écrit : on la rapproche de la
+      // liste, sans accents ni espaces, plutôt que d'imposer un format.
+      const c = texte(fiche.classe);
+      if (c) {
+        const net = (x: string) =>
+          x.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '');
+        const trouvee = classes.find((cl) => net(cl.code) === net(c));
+        if (trouvee) {
+          setSousSysteme(trouvee.subsystem as 'francophone' | 'anglophone');
+          setClassId(trouvee.id);
+          trouves.push('la classe');
+        }
+      }
+      setLu(trouves);
+      setDoutes(Array.isArray(fiche.doutes) ? (fiche.doutes as string[]).slice(0, 3) : []);
+    },
+  });
+
   const creer = useMutation({
     mutationFn: async () => {
       const { data: auth } = await supabase.auth.getUser();
@@ -140,6 +225,45 @@ export default function NouvelEnfant({
       {/* ───────── 1. L'enfant ───────── */}
       {etape === 0 ? (
         <div className="mt-4 grid gap-5">
+          <div className="rounded-2xl border-2 border-dashed border-line bg-paper px-4 py-4">
+            <p className="text-base font-bold">Vous avez son bulletin sous la main ?</p>
+            <p className="mt-0.5 text-sm text-muted">
+              Photographiez-le : prénom, classe, école et date de naissance se remplissent tout
+              seuls. Vous relisez ensuite.
+            </p>
+            <label className="tuile mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-line bg-white-warm px-5 py-2.5 text-base font-bold">
+              {lire.isPending ? 'Lecture…' : 'Photographier le document'}
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                disabled={lire.isPending}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) lire.mutate(f);
+                }}
+              />
+            </label>
+
+            {lu.length > 0 ? (
+              <p className="mt-3 rounded-2xl bg-leaf/15 px-4 py-2.5 text-sm font-bold text-leaf">
+                Lu sur le document : {lu.join(', ')}. Vérifiez ci-dessous.
+              </p>
+            ) : null}
+            {doutes.length > 0 ? (
+              <ul className="mt-2 grid gap-1 text-sm text-muted">
+                {doutes.map((d, i) => (
+                  <li key={i}>⚠ {d}</li>
+                ))}
+              </ul>
+            ) : null}
+            {lire.error ? (
+              <div className="mt-3">
+                <ErrorNote error={lire.error} />
+              </div>
+            ) : null}
+          </div>
+
           <Field
             label="Son prénom"
             required
