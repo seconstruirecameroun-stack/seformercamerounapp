@@ -71,6 +71,10 @@ const RESSORTS = [
 
 const QUESTIONS = [
   {
+    q: 'Combien ça coûte ?',
+    r: 'Rien, pour l’instant. L’app est jeune — elle a d’abord été écrite pour deux enfants d’une école de Yaoundé — et tout ce qu’elle sait faire est ouvert. Si un tarif apparaît un jour, il sera écrit sur cette page.',
+  },
+  {
     q: 'Comment une leçon entre-t-elle dans l’app ?',
     r: 'Vous photographiez les pages du cahier depuis l’espace parent. Vous relisez ce qui en est tiré, vous corrigez ce qui doit l’être, et vous publiez. Rien n’arrive à l’enfant sans ce passage par vous.',
   },
@@ -310,6 +314,39 @@ export default function Landing() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* ───────── Le prix ───────── */}
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+        <div className="rounded-[var(--radius-card)] border-2 border-gold bg-white-warm/90 p-6 text-center shadow-[var(--shadow-card)]">
+          <span className="inline-flex items-center gap-2 rounded-full bg-gold/35 px-4 py-1.5 text-kid-xs font-black">
+            ◆ Gratuit pour l’instant
+          </span>
+          <p className="mt-4 text-[3.5rem] leading-none font-black">0 FCFA</p>
+          <p className="mx-auto mt-3 max-w-lg text-kid-sm text-ink-2">
+            L’app est jeune : elle a d’abord été écrite pour deux enfants d’une école de Yaoundé.
+            Tout ce qu’elle sait faire est ouvert, sans limite de leçons ni d’enfants. Si un tarif
+            apparaît un jour, il sera écrit sur cette page.
+          </p>
+          <ul className="mx-auto mt-5 grid max-w-lg gap-2 text-left sm:grid-cols-2">
+            {[
+              'Les cours du cahier, importés',
+              'Les films et les illustrations',
+              'Les quatre étapes et les six types de questions',
+              'La collection, les rangs et les trophées',
+              'Le duel entre frères et sœurs',
+              'Les rappels du soir',
+            ].map((ligne) => (
+              <li key={ligne} className="flex items-start gap-2 text-kid-sm">
+                <span aria-hidden="true" className="mt-0.5 font-black text-leaf">
+                  ✓
+                </span>
+                {ligne}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 text-kid-xs text-muted">Ni publicité, ni revente de données.</p>
+        </div>
       </section>
 
       {/* ───────── Questions ───────── */}
