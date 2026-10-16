@@ -113,20 +113,20 @@ function CarteEnfant({ enfant }: { enfant: Enfant }) {
             <Chiffre valeur={`${gagnees}/${avecImage.length}`} libelle="images" />
           </div>
 
-          <dl className="mt-3 grid gap-1.5 text-base">
-            <div className="flex justify-between gap-3">
+          <dl className="mt-3 grid min-w-0 gap-1.5 text-base">
+            <div className="flex min-w-0 justify-between gap-3">
               <dt className="text-muted">Rang</dt>
               <dd className="font-bold">{d.rang.rang.nom}</dd>
             </div>
-            <div className="flex justify-between gap-3">
+            <div className="flex min-w-0 justify-between gap-3">
               <dt className="text-muted">Leçons</dt>
-              <dd className="text-right font-bold">
+              <dd className="min-w-0 text-right font-bold">
                 {terminees} terminée{terminees > 1 ? 's' : ''}
                 {enCours > 0 ? `, ${enCours} en cours` : ''}
               </dd>
             </div>
             {courante && !courante.etapeTerminee ? (
-              <div className="flex justify-between gap-3">
+              <div className="flex min-w-0 justify-between gap-3">
                 <dt className="text-muted">En ce moment</dt>
                 <dd className="min-w-0 text-right font-bold">
                   <span className="block truncate">{courante.title}</span>
@@ -137,7 +137,7 @@ function CarteEnfant({ enfant }: { enfant: Enfant }) {
               </div>
             ) : null}
             {aRevoir > 0 ? (
-              <div className="flex justify-between gap-3">
+              <div className="flex min-w-0 justify-between gap-3">
                 <dt className="text-muted">À revoir</dt>
                 <dd className="font-bold">
                   {aRevoir} notion{aRevoir > 1 ? 's' : ''}

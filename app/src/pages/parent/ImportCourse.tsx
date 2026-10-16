@@ -250,18 +250,29 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
           </div>
         ) : null}
 
+        {/* Le sélecteur natif annonce « Aucun fichier choisi » dans la langue
+            du navigateur, au milieu d'une interface qui ne ressemble à rien de
+            tel. On le cache, et la zone dit elle-même ce qu'elle attend. */}
         <label className="block">
-          <span className="mb-1.5 block text-sm font-bold">
-            Fichiers
+          <span className="mb-1.5 block text-sm font-bold">Les pages du cahier</span>
+          <span className="tuile flex cursor-pointer flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-line bg-white-warm px-4 py-6 text-center">
+            <strong className="text-base">
+              {fichiers.length === 0
+                ? 'Choisir les photos'
+                : `${fichiers.length} page${fichiers.length > 1 ? 's' : ''} choisie${fichiers.length > 1 ? 's' : ''}`}
+            </strong>
+            <span className="text-sm text-muted">
+              {fichiers.length === 0 ? 'ou le PDF du cours' : 'Toucher pour en choisir d’autres'}
+            </span>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept={TYPES_ACCEPTES.join(',')}
+              onChange={(e) => setFichiers([...(e.target.files ?? [])])}
+              className="sr-only"
+            />
           </span>
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            accept={TYPES_ACCEPTES.join(',')}
-            onChange={(e) => setFichiers([...(e.target.files ?? [])])}
-            className="w-full rounded-2xl border border-dashed border-line bg-white-warm px-4 py-6 text-sm"
-          />
           <span className="mt-1 block text-sm text-muted">
             JPEG, PNG, WebP, HEIC ou PDF · 20 Mo maximum par fichier
           </span>
