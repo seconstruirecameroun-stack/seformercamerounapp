@@ -199,13 +199,19 @@ begin
     (p_parent, v_notion, 'association', 2,
      '{"question": "Relie le bassin du Niger à ce qui lui appartient.", "gauche": ["Son fleuve principal", "Sa ville", "Un de ses affluents"], "droite": ["La Bénoué", "Garoua", "Le Faro"]}'::jsonb,
      '{"order": [0, 1, 2]}'::jsonb, 'Bénoué, Garoua, Faro.', 'approved'),
+    (p_parent, v_notion, 'qcm', 2,
+     '{"question": "Lequel est un affluent de la Bénoué ?", "options": ["Le Mayo Kébi", "Le Chari", "Le Dja", "Le Mbam"]}'::jsonb,
+     '{"index": 0}'::jsonb, 'Le Faro et le Mayo Kébi.', 'approved'),
     (p_parent, v_notion, 'dictee', 3,
      '{"phrase": "La Bénoué arrose la ville de Garoua.", "langue": "fr"}'::jsonb,
      '{"phrase": "La Bénoué arrose la ville de Garoua."}'::jsonb, 'La phrase du cahier.', 'approved'),
+    (p_parent, v_notion, 'vrai_faux', 4,
+     '{"statement": "Le Mayo Kébi se jette dans la Bénoué."}'::jsonb,
+     '{"value": true}'::jsonb, 'Oui, c’est un de ses affluents.', 'approved'),
     (p_parent, v_notion, 'qcm', 4,
      '{"question": "Un bateau descend la Bénoué depuis Garoua. Quel bassin ?", "options": ["Le Niger", "Le Tchad", "Le Congo"]}'::jsonb,
      '{"index": 0}'::jsonb, 'La Bénoué appartient au bassin du Niger.', 'approved');
-  n := n + 5;
+  n := n + 7;
 
   insert into notions (parent_id, lesson_id, kind, statement, sort_order, status, illustration, illustration_prompt)
   values (p_parent, v_lesson, 'relation', 'Le bassin de l’Atlantique a pour fleuve principal la Sanaga, qui traverse trois régions et arrose la ville d’Édéa.', 7, 'approved', 'bh-atlantique',

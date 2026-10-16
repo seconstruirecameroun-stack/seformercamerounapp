@@ -718,6 +718,25 @@
   {
    "lecon": "Les bassins hydrographiques du Cameroun",
    "rang": 6,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Lequel est un affluent de la Bénoué ?",
+    "options": [
+     "Le Mayo Kébi",
+     "Le Chari",
+     "Le Dja",
+     "Le Mbam"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le Faro et le Mayo Kébi."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
    "kind": "dictee",
    "level": 3,
    "payload": {
@@ -728,6 +747,19 @@
     "phrase": "La Bénoué arrose la ville de Garoua."
    },
    "explain": "La phrase du cahier."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
+   "kind": "vrai_faux",
+   "level": 4,
+   "payload": {
+    "statement": "Le Mayo Kébi se jette dans la Bénoué."
+   },
+   "answer": {
+    "value": true
+   },
+   "explain": "Oui, c’est un de ses affluents."
   },
   {
    "lecon": "Les bassins hydrographiques du Cameroun",

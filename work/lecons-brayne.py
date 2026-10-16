@@ -259,7 +259,10 @@ qcm(BH, 6, 2, 'Quelle ville la Bénoué arrose-t-elle ?', ['Garoua', 'Maroua', '
 relier(BH, 6, 2, 'Relie le bassin du Niger à ce qui lui appartient.',
        ['Son fleuve principal', 'Sa ville', 'Un de ses affluents'],
        ['La Bénoué', 'Garoua', 'Le Faro'], 'Bénoué, Garoua, Faro.')
+qcm(BH, 6, 2, 'Lequel est un affluent de la Bénoué ?',
+    ['Le Mayo Kébi', 'Le Chari', 'Le Dja', 'Le Mbam'], 0, 'Le Faro et le Mayo Kébi.')
 dictee(BH, 6, 3, 'La Bénoué arrose la ville de Garoua.', 'La phrase du cahier.')
+vf(BH, 6, 4, 'Le Mayo Kébi se jette dans la Bénoué.', True, 'Oui, c’est un de ses affluents.')
 qcm(BH, 6, 4, 'Un bateau descend la Bénoué depuis Garoua. Quel bassin ?', ['Le Niger', 'Le Tchad', 'Le Congo'], 0,
     'La Bénoué appartient au bassin du Niger.')
 
