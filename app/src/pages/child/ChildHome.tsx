@@ -230,7 +230,9 @@ export default function ChildHome() {
               priorite
               className="h-44 w-full object-cover sm:h-56"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/45 to-transparent px-5 pt-14 pb-4">
+            {/* La marge à droite réserve la place du gros bouton rond : sans elle,
+                le texte passait dessous sur un écran de téléphone. */}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/45 to-transparent px-5 pt-14 pr-20 pb-4">
               <p className="text-kid-xs font-black tracking-widest text-gold uppercase">
                 {!prochaine.etapeTerminee
                   ? `Étape ${prochaine.etape} · ${PALIERS[prochaine.etape - 1]?.nom ?? ''}`

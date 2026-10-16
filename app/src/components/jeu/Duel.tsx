@@ -16,8 +16,8 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
   return (
     <section className="rounded-[var(--radius-card)] border border-line bg-white-warm/80 px-4 py-3">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-kid-sm font-extrabold">Le duel de la semaine</h2>
-        <span className="text-kid-xs font-bold text-muted">
+        <h2 className="text-kid-sm font-extrabold">Duel de la semaine</h2>
+        <span className="shrink-0 text-kid-xs font-bold text-muted">
           {duel.joursRestants > 1 ? `${duel.joursRestants} jours restants` : 'dernier jour !'}
         </span>
       </div>
