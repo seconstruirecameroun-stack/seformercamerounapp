@@ -335,6 +335,28 @@ c'est la case vide qui donne envie. Une case non gagnée affiche sa condition
 (« Jouer 7 jours de suite »), pas son nom — l'enfant doit savoir quoi faire,
 pas ce qu'il rate.
 
+### Une nouvelle à la fois
+
+Une seule bonne réponse peut en déclencher trois d'un coup : l'image de la
+notion, l'étape franchie, le rang atteint. Entassées dans un même message,
+elles se noyaient — l'enfant lisait « tu passes en Défi » et ne voyait pas
+qu'il avait changé de rang.
+
+Elles défilent donc une par une, de la plus ordinaire à la plus rare :
+
+| Fenêtre | Ce qu'elle montre | Étoiles |
+|---|---|---|
+| La réponse | Niba, et l'explication de la notion | 5 × l'étape, + 10 si la notion tombe |
+| L'image | la vignette gagnée | + 40 |
+| L'étape | la médaille, et l'étape suivante nommée | + 50 |
+| Le rang | le médaillon du nouveau rang | — |
+
+Chaque fenêtre porte **les étoiles de ce moment-là**, et non le total de la
+réponse : un enfant comprend « +40 pour l'image » là où un « +115 » unique ne
+lui apprenait rien. Le bouton dit « Super ! » tant qu'il reste une nouvelle à
+venir, et seule la dernière rend la main au jeu. Le rang ne rapporte rien :
+il récompense un chemin déjà payé.
+
 ### Le coffre de fin de séance
 
 Le coffre n'ajoute aucune information : tout son contenu figurait déjà dans

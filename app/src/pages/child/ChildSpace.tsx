@@ -7,6 +7,7 @@ import {
   POINTS_ETAPE,
   POINTS_IMAGE,
   POINTS_NOTION,
+  POINTS_PAR_ETAPE,
   recordAttempt,
 } from '../../lib/progress';
 import {
@@ -28,9 +29,9 @@ import Popup from '../../components/Popup';
 import Coffre, { Confettis } from '../../components/jeu/Coffre';
 import type { Butin } from '../../components/jeu/Coffre';
 import Mascotte from '../../components/jeu/Mascotte';
+import type { Humeur } from '../../components/jeu/Mascotte';
 import { jouerSon } from '../../lib/sons';
 import { etatRang } from '../../lib/jeu';
-import type { Rang } from '../../lib/jeu';
 import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
 
@@ -244,6 +245,28 @@ function Chrono({
   );
 }
 
+/**
+ * Une nouvelle à annoncer, et une seule.
+ *
+ * Une bonne réponse peut en déclencher trois d'un coup : l'image de la
+ * notion, l'étape franchie, le rang atteint. Entassées dans un même message,
+ * elles se noyaient — l'enfant lisait la dernière et ne voyait pas qu'il
+ * avait changé de rang. Elles défilent donc une par une, de la plus
+ * ordinaire à la plus rare, chacune avec son titre, son image et les étoiles
+ * qu'elle a values.
+ */
+type Fenetre = {
+  ton: 'juste' | 'faux' | 'fete';
+  son: 'juste' | 'faux' | 'fete' | 'etape';
+  titre: string;
+  texte: string;
+  /** Les étoiles de ce moment-là, pas le total de la réponse. */
+  points: number;
+  /** L'illustration à montrer ; sans elle, c'est Niba qui paraît. */
+  vignette: string | null;
+  humeur: Humeur | null;
+};
+
 function Etape({
   parentId,
   childId,
@@ -257,17 +280,10 @@ function Etape({
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [verrouille, setVerrouille] = useState(false);
-  const [retour, setRetour] = useState<{
-    ton: 'juste' | 'faux' | 'fete';
-    titre: string;
-    texte: string;
-    points: number;
-    vignette: string | null;
-    /** Cette réponse vient de franchir l'étape : la fenêtre change de rôle. */
-    franchie: boolean;
-    /** Le rang atteint à l'instant, s'il vient de changer. */
-    rang: Rang | null;
-  } | null>(null);
+  const [file, setFile] = useState<Fenetre[]>([]);
+  /** La réponse en cours vient de franchir l'étape : la dernière fenêtre
+      rendra la main au bilan, et non à la question suivante. */
+  const [franchieMaintenant, setFranchieMaintenant] = useState(false);
   const [gagnes, setGagnes] = useState(0);
   const [justes, setJustes] = useState(0);
   /** Notions validées pendant cette séance, pour faire avancer la barre tout de suite. */
@@ -291,6 +307,12 @@ function Etape({
     refetchOnMount: 'always',
   });
 
+  // Chaque fenêtre sonne quand elle arrive, et non toutes au moment de la
+  // réponse : c'est ce qui fait qu'une bonne nouvelle s'entend.
+  useEffect(() => {
+    if (file.length > 0) jouerSon(file[0].son);
+  }, [file]);
+
   /** Nouvelle série de questions, à la suite : l'enfant ne retourne pas au menu. */
   function continuer() {
     setIndex(0);
@@ -299,7 +321,8 @@ function Etape({
     setJustes(0);
     setValidees(new Set());
     setRevelees([]);
-    setRetour(null);
+    setFile([]);
+    setFranchieMaintenant(false);
     setCoffreOuvert(false);
     seance.refetch();
   }
@@ -457,39 +480,73 @@ function Etape({
       const apres = etatRang(etoilesAvant + bilan.points).rang;
       const rangMonte = apres.nom !== avant.nom ? apres : null;
 
-      jouerSon(rangMonte || franchie ? 'etape' : acquise ? 'fete' : reponse.correct ? 'juste' : 'faux');
-
-      const bouts: string[] = [];
-      if (question.item.explain) bouts.push(question.item.explain);
+      // Une fenêtre par nouvelle, de la plus ordinaire à la plus rare.
+      // Entassées dans un seul message, les trois se noyaient : l'enfant
+      // lisait « tu passes en Défi » et ne voyait pas qu'il avait changé de
+      // rang. Chacune a maintenant son titre, son image et ses étoiles.
       const suivante = PALIERS[s.palier.niveau];
-      // Les deux bonnes nouvelles tombent souvent ensemble, sur la dernière
-      // notion de l'étape « Maîtrise ». Annoncer la marche et taire l'image
-      // priverait l'enfant de ce qu'il vient justement de gagner.
-      if (rangMonte) bouts.push(`Tu es maintenant ${rangMonte.nom} !`);
-      if (acquise) bouts.push('Nouvelle image pour ta collection !');
-      if (franchie) {
-        bouts.push(suivante ? `Tu passes en « ${suivante.nom} » !` : 'Tu connais toute la leçon !');
-      } else if (!reponse.correct) bouts.push('On la repose tout à l’heure.');
+      const fenetres: Fenetre[] = [
+        {
+          ton: reponse.correct ? 'juste' : 'faux',
+          son: reponse.correct ? 'juste' : 'faux',
+          titre: reponse.correct
+            ? 'Bravo !'
+            : (reponse.donnee as { expire?: boolean })?.expire
+              ? 'Trop tard !'
+              : 'Presque…',
+          texte:
+            question.item.explain ??
+            (reponse.correct ? 'Bien joué.' : 'On la repose tout à l’heure.'),
+          // Les étoiles de la réponse elle-même : le reste arrive avec les
+          // fenêtres qui l'ont mérité.
+          points: (reponse.correct ? POINTS_PAR_ETAPE * question.item.level : 0) +
+            (valide ? POINTS_NOTION : 0),
+          vignette: null,
+          humeur: reponse.correct ? 'fete' : 'encourage',
+        },
+      ];
 
-      setRetour({
-        rang: rangMonte,
-        ton: rangMonte || franchie || acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
-        titre: rangMonte
-          ? 'Nouveau rang !'
-          : franchie
-          ? 'Étape réussie !'
-          : acquise
-            ? 'Image gagnée !'
-            : reponse.correct
-              ? 'Bravo !'
-              : (reponse.donnee as { expire?: boolean })?.expire
-                ? 'Trop tard !'
-                : 'Presque…',
-        texte: bouts.join(' ') || (reponse.correct ? 'Bien joué.' : 'Ce sera pour la prochaine fois.'),
-        points: bilan.points,
-        vignette: acquise ? question.notion.illustration : null,
-        franchie,
-      });
+      if (acquise) {
+        fenetres.push({
+          ton: 'fete',
+          son: 'fete',
+          titre: 'Image gagnée !',
+          texte: 'Elle rejoint ta collection.',
+          points: POINTS_IMAGE,
+          vignette: question.notion.illustration,
+          humeur: null,
+        });
+      }
+
+      if (franchie) {
+        fenetres.push({
+          ton: 'fete',
+          son: 'etape',
+          titre: 'Étape réussie !',
+          texte: suivante
+            ? `Tu passes en « ${suivante.nom} » !`
+            : 'Tu connais toute la leçon !',
+          points: POINTS_ETAPE,
+          vignette: 'medaille',
+          humeur: null,
+        });
+      }
+
+      if (rangMonte) {
+        fenetres.push({
+          ton: 'fete',
+          son: 'etape',
+          titre: 'Nouveau rang !',
+          texte: `Tu es maintenant ${rangMonte.nom} !`,
+          // Le rang ne rapporte rien : il récompense le chemin déjà payé.
+          points: 0,
+          vignette: rangMonte.embleme,
+          humeur: null,
+        });
+      }
+
+      setFile(fenetres);
+      setFranchieMaintenant(franchie);
 
       setGagnes((g) => g + bilan.points);
       if (acquise) {
@@ -509,24 +566,28 @@ function Etape({
       qc.invalidateQueries({ queryKey: ['images', childId, lessonId] });
     } catch (err) {
       setErreur(err);
-      setRetour(null);
+      setFile([]);
       setVerrouille(false);
     }
   }
 
-  function questionSuivante() {
+  /**
+   * Le bouton de la fenêtre affichée.
+   *
+   * Tant qu'il reste des nouvelles à annoncer, il passe simplement à la
+   * suivante. C'est la dernière qui rend la main au jeu.
+   */
+  function fenetreSuivante() {
+    if (file.length > 1) {
+      setFile((f) => f.slice(1));
+      return;
+    }
+    setFile([]);
     // Une étape franchie arrête la série : la suite se joue au niveau du
     // dessus. On passe d'abord par le bilan — c'est là qu'est le coffre, et
     // c'est le moment de la séance où il a le plus de valeur. Enchaîner
     // directement sur l'étape suivante priverait l'enfant de sa récompense.
-    if (retour?.franchie) {
-      setRetour(null);
-      setIndex(seance.data?.questions.length ?? 0);
-      setVerrouille(false);
-      return;
-    }
-    setRetour(null);
-    setIndex(index + 1);
+    setIndex(franchieMaintenant ? (seance.data?.questions.length ?? 0) : index + 1);
     setVerrouille(false);
   }
 
@@ -549,7 +610,7 @@ function Etape({
             <Chrono
               cle={question.item.id}
               secondes={SECONDES_DEFI}
-              gele={verrouille || retour !== null}
+              gele={verrouille || file.length > 0}
               /* Le temps écoulé vaut une réponse manquée : la notion revient. */
               surFin={() => repondre({ correct: false, donnee: { expire: true } })}
             />
@@ -583,42 +644,44 @@ function Etape({
 
         {/* Les confettis n'accompagnent que la fête : sortis à chaque bonne
             réponse, ils ne voudraient plus rien dire au bout de dix minutes. */}
-        {retour?.ton === 'fete' ? <Confettis /> : null}
+        {file[0]?.ton === 'fete' ? <Confettis key={file.length} /> : null}
 
-        {retour ? (
+        {file[0] ? (
           <Popup
-            ton={retour.ton}
-            titre={retour.titre}
+            // La clé force une nouvelle fenêtre à chaque nouvelle : sans
+            // elle, React réutiliserait la même et l'animation d'entrée ne
+            // rejouerait pas — les trois annonces se succéderaient sans qu'on
+            // voie le changement.
+            key={file.length}
+            ton={file[0].ton}
+            titre={file[0].titre}
             action={
-              retour.franchie ? 'Étape suivante' : derniere ? 'Voir mon résultat' : 'Question suivante'
+              file.length > 1
+                ? 'Super !'
+                : franchieMaintenant
+                  ? 'Étape suivante'
+                  : derniere
+                    ? 'Voir mon résultat'
+                    : 'Question suivante'
             }
-            onFermer={questionSuivante}
+            onFermer={fenetreSuivante}
             vignette={
-              retour.rang ? (
+              file[0].vignette ? (
                 <Illustration
-                  cle={retour.rang.embleme}
+                  cle={file[0].vignette}
                   forme="objet"
                   alt=""
-                  className="halo h-28 w-28 rounded-full object-cover"
-                />
-              ) : retour.franchie ? (
-                <Illustration cle="medaille" forme="objet" alt="" className="h-28 w-28 object-cover" />
-              ) : retour.vignette ? (
-                <Illustration
-                  cle={retour.vignette}
-                  forme="objet"
-                  alt=""
-                  className="h-28 w-28 object-cover"
+                  className="halo h-28 w-28 rounded-2xl object-cover"
                 />
               ) : (
-                <Mascotte humeur={retour.ton === 'faux' ? 'encourage' : 'fete'} taille={112} />
+                <Mascotte humeur={file[0].humeur ?? 'fete'} taille={112} />
               )
             }
           >
-            {retour.texte}
-            {retour.points > 0 ? (
+            {file[0].texte}
+            {file[0].points > 0 ? (
               <span className="grimpe mt-3 block text-kid-lg font-black text-gold">
-                +{retour.points} ★
+                +{file[0].points} ★
               </span>
             ) : null}
           </Popup>
