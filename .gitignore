@@ -30,6 +30,9 @@ app/public/films/
 
 # Les images sources de Higgsfield : lourdes, et regenerables depuis les prompts.
 work/images-*/
+# Idem pour les emblèmes de rang : seuls les prompts et les .webp détourés
+# méritent l'historique.
+work/rangs/*.png
 __pycache__/
 
 # Les photos des emplois du temps : la transcription fait foi.
