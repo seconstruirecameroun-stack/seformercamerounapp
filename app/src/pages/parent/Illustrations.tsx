@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { preparerIllustration } from '../../lib/image';
 import type { FormeImage } from '../../lib/image';
 import { Card, ErrorNote, Loading, Pill, Vide } from '../../components/ui';
+import { sourceIllustration } from '../../components/Illustration';
 
 /**
  * Les illustrations des cours importés.
@@ -40,7 +41,7 @@ function Consigne({ texte }: { texte: string }) {
   const [copie, setCopie] = useState(false);
   return (
     <div className="mt-2 rounded-2xl bg-paper px-3 py-2">
-      <p className="text-sm leading-relaxed text-muted">{texte}</p>
+      <p className="text-sm leading-relaxed break-words text-muted">{texte}</p>
       <button
         type="button"
         className="mt-1 text-sm font-bold text-clay underline"
@@ -105,28 +106,52 @@ function Depot({
     },
   });
 
+  // L'illustration est tantôt une adresse complète — celles déposées ici —
+  // tantôt une clé courte livrée avec l'app. Posée telle quelle dans un
+  // `src`, la clé donnait une image cassée : c'est la même traduction que
+  // partout ailleurs qu'il faut appliquer.
+  const apercu = sourceIllustration(actuelle);
+
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-3">
-      {actuelle ? (
+    <div className="mt-3 flex flex-wrap items-center gap-3">
+      {apercu ? (
         <img
-          src={actuelle}
-          alt=""
+          src={apercu}
+          alt="L’illustration actuelle"
           className={
-            'rounded-xl border border-line object-cover ' +
-            (forme === 'scene' ? 'h-14 w-24' : 'h-14 w-14')
+            'rounded-xl border-2 border-line object-cover ' +
+            (forme === 'scene' ? 'h-16 w-28' : 'h-16 w-16')
           }
         />
-      ) : null}
-      <input
-        ref={input}
-        type="file"
-        accept="image/*"
-        className="max-w-[16rem] text-sm"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) envoi.mutate(f);
-        }}
-      />
+      ) : (
+        <span
+          aria-hidden="true"
+          className={
+            'grid place-items-center rounded-xl border-2 border-dashed border-line text-sm text-muted ' +
+            (forme === 'scene' ? 'h-16 w-28' : 'h-16 w-16')
+          }
+        >
+          vide
+        </span>
+      )}
+
+      {/* Le sélecteur natif affiche « Aucun fichier choisi » dans la langue
+          du navigateur et ne ressemble à rien d'autre dans l'app : on le
+          cache derrière un bouton rond, qui dit ce qu'il fait. */}
+      <label className="tuile inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-line bg-white-warm px-5 py-2.5 text-base font-bold">
+        {apercu ? 'Remplacer l’image' : 'Déposer une image'}
+        <input
+          ref={input}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) envoi.mutate(f);
+          }}
+        />
+      </label>
+
       {envoi.isPending ? <span className="text-sm text-muted">Préparation…</span> : null}
       {envoi.isSuccess ? (
         <span className="text-sm text-leaf">
