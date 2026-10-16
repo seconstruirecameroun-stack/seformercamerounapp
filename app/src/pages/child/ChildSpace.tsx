@@ -122,7 +122,19 @@ function BarreEtape({
   const derniere = palier.niveau === PALIERS[PALIERS.length - 1].niveau;
   return (
     <div className="rounded-[var(--radius-card)] border-2 border-line bg-white-warm p-4 shadow-[var(--shadow-tile)]">
-      <div className="flex items-center gap-2">
+      {/* Le titre occupe sa propre ligne. Posé à côté des quatre pastilles,
+          « ÉTAPE 1 SUR 4 » se cassait en deux sur un écran de téléphone, et
+          le 4 se retrouvait seul sous le reste. */}
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="shrink-0 text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+          {termine ? 'Leçon terminée' : `Étape ${palier.niveau} sur ${PALIERS.length}`}
+        </span>
+        <span className="truncate text-kid font-extrabold">
+          {termine ? 'Tu révises' : palier.nom}
+        </span>
+      </div>
+
+      <div className="mt-2 flex items-center gap-2">
         {PALIERS.map((p) => {
           const franchi = termine || p.niveau < palier.niveau;
           const courant = !termine && p.niveau === palier.niveau;
@@ -143,14 +155,6 @@ function BarreEtape({
             </span>
           );
         })}
-        <span className="ml-1 min-w-0 flex-1">
-          <span className="block text-kid-xs font-black tracking-widest text-clay-dark uppercase">
-            {termine ? 'Leçon terminée' : `Étape ${palier.niveau} sur ${PALIERS.length}`}
-          </span>
-          <span className="block truncate text-kid font-extrabold">
-            {termine ? 'Tu révises' : palier.nom}
-          </span>
-        </span>
       </div>
 
       {/* Le fond doit trancher sur l'or : à la taille d'un téléphone, un
