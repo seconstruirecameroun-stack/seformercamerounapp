@@ -311,21 +311,22 @@ c'est la récompense la plus rare du lot.
 ### Le duel de la semaine
 
 Deux enfants de classes différentes ne peuvent pas être comparés sur ce
-qu'ils savent. Le duel porte donc sur l'effort : les étoiles de la semaine,
-remises à zéro chaque lundi. Un CE1 qui travaille plus bat un CM1 qui
-travaille moins, et c'est tout l'intérêt.
+qu'ils savent. Le duel porte donc sur l'effort : les **questions réussies**
+de la semaine, remises à zéro chaque lundi. Un CE1 qui travaille plus bat un
+CM1 qui travaille moins, et c'est tout l'intérêt.
+
+On compte des questions et non des étoiles, parce qu'une question du Défi
+vaut quatre fois une question de Découverte : l'aîné, qui a fini ses leçons
+et rejoue au chronomètre, aurait creusé un écart que le cadet ne pouvait pas
+combler en travaillant. Une question reste une question, quelle que soit
+l'étape — c'est la seule mesure qui compare vraiment l'effort, et c'est aussi
+l'unité que l'enfant sait rattraper : « il te mène de 4 questions » dit quoi
+faire ce soir.
 
 La remise à zéro est la deuxième protection : celui qui perd ne perd que sept
 jours, jamais son avance cumulée. Un classement à vie décourage
-définitivement le second. Le texte ne tombe jamais dans la moquerie — « il te
-mène de 40 » donne un chiffre à rattraper, « tu es dernier » n'en donne
-aucun.
-
-Une réserve à surveiller : une question d'étape 4 vaut quatre fois une
-question d'étape 1. Un enfant qui a terminé ses leçons rejoue au Défi et
-marque donc plus vite qu'un frère encore en Découverte. Si l'écart devient
-décourageant, le duel se compte alors en questions réussies plutôt qu'en
-étoiles — une ligne à changer.
+définitivement le second. Le texte ne tombe jamais dans la moquerie — un
+chiffre à rattraper appelle, « tu es dernier » n'appelle à rien.
 
 ### Les trophées
 

@@ -7,11 +7,15 @@ import type { Duel as DuelData } from '../../lib/duel';
  * doit savoir s'il mène ou s'il court, et de combien — un classement qu'il
  * faut déchiffrer ne fait courir personne.
  *
- * Le texte ne tombe jamais dans la moquerie du second. « Il te mène de 40 »
- * donne un chiffre à rattraper ; « tu es dernier » n'en donne aucun.
+ * L'écart est annoncé en questions, l'unité que l'enfant peut rattraper :
+ * « il te mène de 4 questions » dit exactement quoi faire ce soir, ce qu'un
+ * écart en points ne dit pas.
+ *
+ * Le texte ne tombe jamais dans la moquerie du second. Un chiffre à
+ * rattraper appelle ; « tu es dernier » n'appelle à rien.
  */
 export default function Duel({ duel, childId }: { duel: DuelData; childId: string }) {
-  const max = Math.max(1, ...duel.concurrents.map((c) => c.etoiles));
+  const max = Math.max(1, ...duel.concurrents.map((c) => c.reussites));
 
   return (
     <section className="rounded-[var(--radius-card)] border border-line bg-white-warm/80 px-4 py-3">
@@ -39,13 +43,18 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
                 <div className="flex items-baseline justify-between gap-2">
                   <p className={'truncate text-kid-sm ' + (moi ? 'font-black' : 'font-bold')}>
                     {c.prenom}
-                    {rang === 0 && c.etoiles > 0 ? (
+                    {rang === 0 && c.reussites > 0 ? (
                       <span aria-label="en tête" className="ml-1">
                         👑
                       </span>
                     ) : null}
                   </p>
-                  <span className="shrink-0 text-kid-xs font-black tabular-nums">{c.etoiles} ★</span>
+                  <span className="shrink-0 text-kid-xs font-black tabular-nums">
+                    {c.reussites}{' '}
+                    <span className="font-bold text-muted">
+                      réussie{c.reussites > 1 ? 's' : ''}
+                    </span>
+                  </span>
                 </div>
                 <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-line">
                   <div
@@ -53,7 +62,7 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
                       'h-full rounded-full transition-[width] duration-700 ' +
                       (moi ? 'bg-clay' : 'bg-gold')
                     }
-                    style={{ width: `${Math.round((c.etoiles / max) * 100)}%` }}
+                    style={{ width: `${Math.round((c.reussites / max) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -68,13 +77,15 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
           : duel.enTete
             ? 'Tu mènes. Garde ton avance !'
             : duel.ecart > 0
-              ? `Il te mène de ${duel.ecart} ★. Rattrapable !`
+              ? `Il te mène de ${duel.ecart} question${duel.ecart > 1 ? 's' : ''}. Rattrapable !`
               : 'La semaine commence. À toi de prendre la tête.'}
       </p>
 
       {duel.gagnantPasse ? (
         <p className="mt-1 text-kid-xs text-muted">
-          La semaine dernière : {duel.gagnantPasse.prenom} avec {duel.gagnantPasse.etoiles} ★.
+          La semaine dernière : {duel.gagnantPasse.prenom}, {duel.gagnantPasse.reussites} question
+          {duel.gagnantPasse.reussites > 1 ? 's' : ''} réussie
+          {duel.gagnantPasse.reussites > 1 ? 's' : ''}.
         </p>
       ) : null}
     </section>
