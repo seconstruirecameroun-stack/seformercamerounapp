@@ -1,0 +1,67 @@
+{
+  "title": "Les bassins hydrographiques du Cameroun",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "talking_characters": false,
+  "through_line": "On remonte un fleuve : d’abord l’eau, puis les régions qu’elle traverse.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "L’hydrographie, c’est l’ensemble des cours d’eau d’une région.",
+      "shot": "Many small blue streams running across a wide green plain, seen from high above, morning light.",
+      "keywords": [
+        "HYDROGRAPHIE"
+      ]
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Un bassin est la région arrosée par un fleuve et ses affluents.",
+      "shot": "A green valley with one wide river in the middle and several small rivers joining it from the hills.",
+      "keywords": [
+        "UN BASSIN"
+      ]
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Un affluent se jette dans un fleuve plus grand pour le grossir.",
+      "shot": "A narrow river flowing into a much wider river, the two waters meeting and swirling together.",
+      "keywords": [
+        "UN AFFLUENT"
+      ]
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "Le Cameroun compte quatre bassins : le Tchad, le Niger, l’Atlantique et le Congo.",
+      "shot": "Four separate blue ribbons of water flowing away in four different directions over soft green land.",
+      "keywords": [
+        "QUATRE BASSINS"
+      ]
+    },
+    {
+      "n": 5,
+      "block_kind": "narration",
+      "vo_line": "Le Logone arrose Maroua, et la Bénoué arrose Garoua.",
+      "shot": "A broad river in a dry savannah passing beside a small town with low houses, acacia trees and boats.",
+      "keywords": [
+        "LOGONE",
+        "BÉNOUÉ"
+      ]
+    },
+    {
+      "n": 6,
+      "block_kind": "narration",
+      "vo_line": "La Sanaga rejoint l’océan, et la Sangha coule dans la forêt.",
+      "shot": "A large river widening towards the ocean on the left, and a dark calm river under tall rainforest trees on the right.",
+      "keywords": [
+        "SANAGA",
+        "SANGHA"
+      ]
+    }
+  ]
+}

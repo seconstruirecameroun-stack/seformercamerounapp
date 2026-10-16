@@ -87,9 +87,14 @@ for (const p of plans) {
 
   // Le mot-clé arrive une demi-seconde après la phrase et reste jusqu'au bout.
   const texte =
+    // Un bandeau sombre derrière le mot, et non un simple contour : les
+    // illustrations sont pastel, et du blanc cerné de sombre sur un fond
+    // clair se lit mal. Le bandeau garantit le contraste quelle que soit
+    // l'image.
     `drawtext=fontfile='${POLICE}':textfile='${motsFichier.replace(/\\/g, '/').replace(/:/g, '\\:')}':` +
-    `fontcolor=white:fontsize=44:borderw=3:bordercolor=0x1b3b3fcc:` +
-    `x=(w-text_w)/2:y=h-120:enable='gte(t,0.5)':alpha='min((t-0.5)/0.4,1)'`;
+    `fontcolor=white:fontsize=44:borderw=2:bordercolor=0x10282bff:` +
+    `box=1:boxcolor=0x10282bbb:boxborderw=18:` +
+    `x=(w-text_w)/2:y=h-130:enable='gte(t,0.5)':alpha='min((t-0.5)/0.4,1)'`;
 
   ff([
     '-loop', '1', '-framerate', String(FPS), '-i', p.scene,
