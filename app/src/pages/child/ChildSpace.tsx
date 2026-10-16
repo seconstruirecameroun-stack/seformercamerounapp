@@ -29,6 +29,8 @@ import Coffre, { Confettis } from '../../components/jeu/Coffre';
 import type { Butin } from '../../components/jeu/Coffre';
 import Mascotte from '../../components/jeu/Mascotte';
 import { jouerSon } from '../../lib/sons';
+import { etatRang } from '../../lib/jeu';
+import type { Rang } from '../../lib/jeu';
 import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
 
@@ -259,6 +261,8 @@ function Etape({
     vignette: string | null;
     /** Cette réponse vient de franchir l'étape : la fenêtre change de rôle. */
     franchie: boolean;
+    /** Le rang atteint à l'instant, s'il vient de changer. */
+    rang: Rang | null;
   } | null>(null);
   const [gagnes, setGagnes] = useState(0);
   const [justes, setJustes] = useState(0);
@@ -432,6 +436,10 @@ function Etape({
       const bonus =
         (valide ? POINTS_NOTION : 0) + (acquise ? POINTS_IMAGE : 0) + (franchie ? POINTS_ETAPE : 0);
 
+      // Le total d'étoiles avant la réponse, lu dans le cache : il sert à
+      // savoir si cette réponse-là fait franchir un rang.
+      const etoilesAvant = qc.getQueryData<number>(['points', childId]) ?? 0;
+
       const bilan = await recordAttempt({
         parentId,
         childId,
@@ -441,7 +449,11 @@ function Etape({
         bonus,
       });
 
-      jouerSon(franchie ? 'etape' : acquise ? 'fete' : reponse.correct ? 'juste' : 'faux');
+      const avant = etatRang(etoilesAvant).rang;
+      const apres = etatRang(etoilesAvant + bilan.points).rang;
+      const rangMonte = apres.nom !== avant.nom ? apres : null;
+
+      jouerSon(rangMonte || franchie ? 'etape' : acquise ? 'fete' : reponse.correct ? 'juste' : 'faux');
 
       const bouts: string[] = [];
       if (question.item.explain) bouts.push(question.item.explain);
@@ -449,14 +461,18 @@ function Etape({
       // Les deux bonnes nouvelles tombent souvent ensemble, sur la dernière
       // notion de l'étape « Maîtrise ». Annoncer la marche et taire l'image
       // priverait l'enfant de ce qu'il vient justement de gagner.
+      if (rangMonte) bouts.push(`Tu es maintenant ${rangMonte.nom} !`);
       if (acquise) bouts.push('Nouvelle image pour ta collection !');
       if (franchie) {
         bouts.push(suivante ? `Tu passes en « ${suivante.nom} » !` : 'Tu connais toute la leçon !');
       } else if (!reponse.correct) bouts.push('On la repose tout à l’heure.');
 
       setRetour({
-        ton: franchie || acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
-        titre: franchie
+        rang: rangMonte,
+        ton: rangMonte || franchie || acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
+        titre: rangMonte
+          ? 'Nouveau rang !'
+          : franchie
           ? 'Étape réussie !'
           : acquise
             ? 'Image gagnée !'
@@ -485,6 +501,7 @@ function Etape({
       if (reponse.correct) setJustes((j) => j + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
       qc.invalidateQueries({ queryKey: ['tableau', childId] });
+      qc.invalidateQueries({ queryKey: ['duel'] });
       qc.invalidateQueries({ queryKey: ['images', childId, lessonId] });
     } catch (err) {
       setErreur(err);
@@ -573,7 +590,14 @@ function Etape({
             }
             onFermer={questionSuivante}
             vignette={
-              retour.franchie ? (
+              retour.rang ? (
+                <Illustration
+                  cle={retour.rang.embleme}
+                  forme="objet"
+                  alt=""
+                  className="halo h-28 w-28 rounded-full object-cover"
+                />
+              ) : retour.franchie ? (
                 <Illustration cle="medaille" forme="objet" alt="" className="h-28 w-28 object-cover" />
               ) : retour.vignette ? (
                 <Illustration

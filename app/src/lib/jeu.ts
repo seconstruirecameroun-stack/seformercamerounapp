@@ -20,6 +20,8 @@
  * qu'on atteint sans s'en apercevoir ne retient personne ; un objectif qu'on
  * rate trois soirs de suite non plus.
  */
+import type { NomIcone } from '../components/jeu/Icone';
+
 export const OBJECTIF_JOUR = 100;
 
 /** Ce qu'on sait d'une question jouée, sans charger son énoncé. */
@@ -159,7 +161,7 @@ export function objectifDuJour(gains: Gain[], cible = OBJECTIF_JOUR): Objectif {
 export type Quete = {
   id: string;
   texte: string;
-  icone: string;
+  icone: NomIcone;
   fait: number;
   cible: number;
 };
@@ -175,25 +177,31 @@ type ContexteJour = {
   etoilesDuJour: number;
 };
 
-const CATALOGUE: Array<{ id: string; texte: string; icone: string; cible: number; mesure: Mesure }> = [
+const CATALOGUE: Array<{
+  id: string;
+  texte: string;
+  icone: NomIcone;
+  cible: number;
+  mesure: Mesure;
+}> = [
   {
     id: 'reussir',
     texte: 'Réussis 12 questions',
-    icone: '✓',
+    icone: 'coche',
     cible: 12,
     mesure: (c) => c.duJour.filter((t) => t.correct).length,
   },
   {
     id: 'image',
     texte: 'Gagne une image',
-    icone: '🖼',
+    icone: 'image',
     cible: 1,
     mesure: (c) => c.imagesDuJour,
   },
   {
     id: 'affilee',
     texte: 'Réussis 5 questions d’affilée',
-    icone: '⚡',
+    icone: 'eclair',
     cible: 5,
     mesure: (c) => {
       let max = 0;
@@ -208,7 +216,7 @@ const CATALOGUE: Array<{ id: string; texte: string; icone: string; cible: number
   {
     id: 'matieres',
     texte: 'Joue dans 2 matières',
-    icone: '📚',
+    icone: 'livres',
     cible: 2,
     mesure: (c) =>
       new Set(
@@ -220,14 +228,14 @@ const CATALOGUE: Array<{ id: string; texte: string; icone: string; cible: number
   {
     id: 'etoiles',
     texte: 'Gagne 60 étoiles',
-    icone: '★',
+    icone: 'etoile',
     cible: 60,
     mesure: (c) => c.etoilesDuJour,
   },
   {
     id: 'defi',
     texte: 'Réussis 3 questions du Défi',
-    icone: '⏱',
+    icone: 'chrono',
     cible: 3,
     mesure: (c) =>
       c.duJour.filter((t) => t.correct && c.repere.get(t.itemId)?.niveau === 4).length,
@@ -280,7 +288,7 @@ export type Trophee = {
   nom: string;
   /** Ce qu'il a fallu faire, dit à l'enfant et non au développeur. */
   condition: string;
-  icone: string;
+  icone: NomIcone;
   obtenu: boolean;
 };
 
@@ -295,17 +303,23 @@ export type EtatJeu = {
 
 export function trophees(e: EtatJeu): Trophee[] {
   const liste: Array<[string, string, string, string, boolean]> = [
-    ['premiere-image', 'Première image', 'Gagner sa première image', '🖼', e.images >= 1],
-    ['dix-images', 'Collectionneur', 'Gagner 10 images', '🏺', e.images >= 10],
-    ['album', 'Album terminé', 'Toutes les images d’une matière', '📗', e.albumsComplets >= 1],
-    ['lecon', 'Leçon au complet', 'Monter les 4 étapes d’une leçon', '🪜', e.leconsTerminees >= 1],
-    ['serie-3', 'Trois jours', 'Jouer 3 jours de suite', '🔥', e.serie >= 3],
-    ['serie-7', 'Une semaine', 'Jouer 7 jours de suite', '🔥', e.serie >= 7],
-    ['serie-30', 'Un mois entier', 'Jouer 30 jours de suite', '🔥', e.serie >= 30],
-    ['mille', 'Mille étoiles', 'Gagner 1 000 étoiles', '★', e.etoiles >= 1000],
-    ['defi', 'Défi parfait', '5 bonnes réponses d’affilée au chrono', '⏱', e.meilleureSerieDefi >= 5],
+    ['premiere-image', 'Première image', 'Gagner sa première image', 'image', e.images >= 1],
+    ['dix-images', 'Collectionneur', 'Gagner 10 images', 'collection', e.images >= 10],
+    ['album', 'Album terminé', 'Toutes les images d’une matière', 'album', e.albumsComplets >= 1],
+    ['lecon', 'Leçon au complet', 'Monter les 4 étapes d’une leçon', 'echelle', e.leconsTerminees >= 1],
+    ['serie-3', 'Trois jours', 'Jouer 3 jours de suite', 'flamme', e.serie >= 3],
+    ['serie-7', 'Une semaine', 'Jouer 7 jours de suite', 'flamme', e.serie >= 7],
+    ['serie-30', 'Un mois entier', 'Jouer 30 jours de suite', 'flamme', e.serie >= 30],
+    ['mille', 'Mille étoiles', 'Gagner 1 000 étoiles', 'etoile', e.etoiles >= 1000],
+    ['defi', 'Défi parfait', '5 bonnes réponses d’affilée au chrono', 'chrono', e.meilleureSerieDefi >= 5],
   ];
-  return liste.map(([id, nom, condition, icone, obtenu]) => ({ id, nom, condition, icone, obtenu }));
+  return liste.map(([id, nom, condition, icone, obtenu]) => ({
+    id,
+    nom,
+    condition,
+    icone: icone as NomIcone,
+    obtenu,
+  }));
 }
 
 // ───────────────────────── ce qu'on dit à l'enfant ─────────────────────────

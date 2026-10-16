@@ -1,4 +1,5 @@
 import type { EtatRang, Objectif, Serie } from '../../lib/jeu';
+import Illustration from '../Illustration';
 
 /**
  * Les trois compteurs qui tirent l'enfant : la série, l'objectif du jour, le
@@ -86,9 +87,12 @@ export function AnneauObjectif({ objectif, taille = 76 }: { objectif: Objectif; 
 export function BandeRang({ rang }: { rang: EtatRang }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gold/30 text-lg">
-        🦁
-      </span>
+      <Illustration
+        cle={rang.rang.embleme}
+        forme="objet"
+        alt={rang.rang.nom}
+        className="h-12 w-12 shrink-0 rounded-full object-cover"
+      />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
           <p className="truncate text-kid-sm font-extrabold">{rang.rang.nom}</p>

@@ -302,6 +302,31 @@ indomptable — 0, 250, 750, 1 800, 3 500 et 7 000 étoiles. Le dernier rang se
 mérite sur un trimestre entier. Au Cameroun, un enfant sait ce qu'est un Lion
 indomptable avant de savoir lire.
 
+Chaque rang porte son médaillon, généré puis détouré en disque : un emblème
+rond se pose aussi bien sur la carte d'accueil que dans la fenêtre de fête,
+et six carrés pastel aux fonds légèrement différents auraient juré entre eux.
+Franchir un rang ouvre sa propre fenêtre, avant même l'étape et l'image —
+c'est la récompense la plus rare du lot.
+
+### Le duel de la semaine
+
+Deux enfants de classes différentes ne peuvent pas être comparés sur ce
+qu'ils savent. Le duel porte donc sur l'effort : les étoiles de la semaine,
+remises à zéro chaque lundi. Un CE1 qui travaille plus bat un CM1 qui
+travaille moins, et c'est tout l'intérêt.
+
+La remise à zéro est la deuxième protection : celui qui perd ne perd que sept
+jours, jamais son avance cumulée. Un classement à vie décourage
+définitivement le second. Le texte ne tombe jamais dans la moquerie — « il te
+mène de 40 » donne un chiffre à rattraper, « tu es dernier » n'en donne
+aucun.
+
+Une réserve à surveiller : une question d'étape 4 vaut quatre fois une
+question d'étape 1. Un enfant qui a terminé ses leçons rejoue au Défi et
+marque donc plus vite qu'un frère encore en Découverte. Si l'écart devient
+décourageant, le duel se compte alors en questions réussies plutôt qu'en
+étoiles — une ligne à changer.
+
 ### Les trophées
 
 Neuf cases sur une étagère, et les vides comptent autant que les pleines :
@@ -328,6 +353,13 @@ qu'aucune statistique ne remplace.
 Dessiné en SVG et non généré en image : il doit cligner des yeux, changer
 d'expression et rester net du pouce au grand écran, sans peser sur le réseau
 ni coûter une génération à chaque nouvelle humeur.
+
+### Les icônes
+
+Dessinées dans l'app, pas prises dans les émojis du système : un émoji change
+de dessin d'un téléphone à l'autre, ignore la palette, et sur certains
+appareils ne s'affiche pas du tout — un trophée remplacé par un carré vide ne
+récompense rien.
 
 ### Les animations et les sons
 

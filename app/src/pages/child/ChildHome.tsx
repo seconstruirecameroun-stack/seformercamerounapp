@@ -12,6 +12,8 @@ import Mascotte from '../../components/jeu/Mascotte';
 import type { Humeur } from '../../components/jeu/Mascotte';
 import { AnneauObjectif, BandeRang, Flamme } from '../../components/jeu/Compteurs';
 import { Quetes, Trophees } from '../../components/jeu/Quetes';
+import Duel from '../../components/jeu/Duel';
+import { chargerDuel } from '../../lib/duel';
 import { ErrorNote, Loading } from '../../components/ui';
 
 const JOURS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -153,6 +155,12 @@ export default function ChildHome() {
     queryFn: () => chargerTableauDeBord(childId!),
   });
 
+  const duel = useQuery({
+    queryKey: ['duel', childId],
+    enabled: Boolean(childId),
+    queryFn: () => chargerDuel(childId!),
+  });
+
   if (enfant.isLoading || bord.isLoading) return <Loading />;
   if (bord.error) return <ErrorNote error={bord.error} />;
 
@@ -278,6 +286,8 @@ export default function ChildHome() {
             <Semaine jours={d.jours} serie={d.serie} />
           </div>
         </section>
+
+        {duel.data ? <Duel duel={duel.data} childId={childId!} /> : null}
 
         <Quetes quetes={d.quetes} />
 

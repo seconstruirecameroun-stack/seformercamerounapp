@@ -1,4 +1,5 @@
 import type { Quete, Trophee } from '../../lib/jeu';
+import Icone from './Icone';
 
 /**
  * Les quêtes du jour et les trophées.
@@ -36,7 +37,7 @@ export function Quetes({ quetes }: { quetes: Quete[] }) {
                   (fini ? 'bg-leaf/25' : 'bg-line/60')
                 }
               >
-                {fini ? '✓' : q.icone}
+                <Icone nom={fini ? 'coche' : q.icone} taille={18} />
               </span>
               <div className="min-w-0 flex-1">
                 <p
@@ -93,10 +94,11 @@ export function Trophees({ trophees }: { trophees: Trophee[] }) {
             }
           >
             <span
-              aria-hidden="true"
-              className={'block text-2xl ' + (t.obtenu ? '' : 'opacity-30 grayscale')}
+              className={
+                'mx-auto block w-fit ' + (t.obtenu ? 'text-clay-dark' : 'text-muted opacity-45')
+              }
             >
-              {t.icone}
+              <Icone nom={t.icone} taille={28} />
             </span>
             <p
               className={
