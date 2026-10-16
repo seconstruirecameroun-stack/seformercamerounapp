@@ -243,6 +243,104 @@ Une notion réussie revient à **J+1, J+3, J+7, J+21**. Une notion échouée
 repart à J+1. C'est ce calendrier, et non le dernier score, qui construit la
 « mission du jour ».
 
+## Ce qui donne envie de revenir
+
+Un enfant de sept ans ne revient pas pour réviser. Il revient pour une série
+qu'il ne veut pas casser, un objectif à vingt étoiles près, un coffre qu'il
+n'a pas encore ouvert. Le système ci-dessous ne sert qu'à ça : transformer le
+travail réellement fait en raisons d'y retourner demain.
+
+Rien n'y est stocké. La série, l'objectif, les quêtes, les rangs et les
+trophées se déduisent du journal des tentatives et des récompenses — les deux
+mêmes journaux que le reste de l'app. Aucun compteur ne peut donc annoncer ce
+que l'enfant n'a pas fait.
+
+### Les étoiles suivent l'étape, pas un chiffre caché
+
+| Ce qui arrive | Étoiles |
+|---|---|
+| Bonne réponse | 5 × le numéro de l'étape (5 à 20) |
+| Notion validée pour l'étape | + 10 |
+| Image gagnée (étape 3) | + 40 |
+| Étape franchie | + 50 |
+
+Une question de Défi vaut quatre fois une question de Découverte, et ça se
+lit sur la barre des étapes. Les étoiles dépendaient auparavant du niveau de
+maîtrise, invisible : une bonne réponse rapportait dix ou soixante étoiles
+sans que rien ne dise pourquoi.
+
+### La série, avec un jour de pardon
+
+La série compte les jours où l'enfant a **répondu**, pas ceux où il a ouvert
+l'app. Elle tolère un seul trou, et seulement au-delà de trois jours tenus :
+une série qui tombe à zéro pour un dimanche de baptême ne motive plus
+personne, car l'enfant qui vient de perdre trente jours n'a plus de raison de
+revenir lundi. Le rattrapage est annoncé à l'écran — le pardon n'est pas une
+permission.
+
+Paliers fêtés : 3, 7, 14, 30 et 100 jours.
+
+### L'objectif du jour
+
+Cent étoiles, soit une dizaine de questions. Assez pour que la journée
+compte, assez peu pour qu'un soir chargé y suffise. L'anneau se remplit, et
+la phrase d'accueil annonce toujours ce qui **manque** — « plus que 20
+étoiles » appelle, « 80 étoiles gagnées » n'appelle à rien.
+
+### Trois défis par jour
+
+Tirés de la date, donc stables toute la journée et différents demain :
+réussir douze questions, gagner une image, enchaîner cinq bonnes réponses,
+jouer dans deux matières, gagner soixante étoiles, réussir trois questions du
+Défi. Trois seulement : une liste qu'on ne finit jamais décourage au lieu
+d'appeler.
+
+### Les rangs
+
+Lionceau, Petite griffe, Griffe d'or, Jeune crinière, Grande crinière, Lion
+indomptable — 0, 250, 750, 1 800, 3 500 et 7 000 étoiles. Le dernier rang se
+mérite sur un trimestre entier. Au Cameroun, un enfant sait ce qu'est un Lion
+indomptable avant de savoir lire.
+
+### Les trophées
+
+Neuf cases sur une étagère, et les vides comptent autant que les pleines :
+c'est la case vide qui donne envie. Une case non gagnée affiche sa condition
+(« Jouer 7 jours de suite »), pas son nom — l'enfant doit savoir quoi faire,
+pas ce qu'il rate.
+
+### Le coffre de fin de séance
+
+Le coffre n'ajoute aucune information : tout son contenu figurait déjà dans
+l'ancien récapitulatif. Il ajoute une seconde d'attente et un geste à faire.
+Il ne s'ouvre jamais seul — un coffre qui s'ouvre sans qu'on y touche n'est
+plus une récompense, c'est une notification. Une étape franchie passe
+désormais par le bilan avant l'étape suivante : c'est le moment de la séance
+où le coffre vaut le plus.
+
+### Niba
+
+Le lionceau est le seul élément de l'app qui parle à l'enfant à la première
+personne, et le seul qui change d'humeur selon ce qui vient de se passer.
+C'est lui qui dit « tu m'as manqué » après trois jours d'absence — une phrase
+qu'aucune statistique ne remplace.
+
+Dessiné en SVG et non généré en image : il doit cligner des yeux, changer
+d'expression et rester net du pouce au grand écran, sans peser sur le réseau
+ni coûter une génération à chaque nouvelle humeur.
+
+### Les animations et les sons
+
+Trois règles tenues partout : une seule chose bouge à la fois, rien ne dure
+plus d'une seconde, tout s'arrête net pour qui demande moins de mouvement.
+Une app d'enfant qui scintille en permanence fatigue au bout de trois jours,
+or c'est au trentième qu'on l'attend.
+
+Les sons sont synthétisés et non chargés : quatre fichiers audio pèseraient
+plus que toute l'application et arriveraient en retard sur une connexion
+camerounaise. Une bonne réponse monte, une erreur descend — sans dissonance :
+on signale une réponse à revoir, on ne gronde pas.
+
 ## 6. Les jeux
 
 Un type de jeu n'est pas un écran dédié : c'est une **façon d'interroger une

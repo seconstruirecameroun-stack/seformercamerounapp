@@ -3,9 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { chargerTableauDeBord } from '../../lib/dashboard';
 import { PALIERS } from '../../lib/paliers';
+import { phraseDAccueil } from '../../lib/jeu';
+import type { Serie } from '../../lib/jeu';
 import CarteMatiere from '../../components/CarteMatiere';
 import type { Autocollant } from '../../lib/dashboard';
 import Illustration from '../../components/Illustration';
+import Mascotte from '../../components/jeu/Mascotte';
+import type { Humeur } from '../../components/jeu/Mascotte';
+import { AnneauObjectif, BandeRang, Flamme } from '../../components/jeu/Compteurs';
+import { Quetes, Trophees } from '../../components/jeu/Quetes';
 import { ErrorNote, Loading } from '../../components/ui';
 
 const JOURS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -25,15 +31,22 @@ function derniersJours(): Array<{ cle: string; lettre: string; aujourdhui: boole
   return sortie;
 }
 
-function Semaine({ jours, serie }: { jours: string[]; serie: number }) {
+function Semaine({ jours, serie }: { jours: string[]; serie: Serie }) {
   const faits = new Set(jours);
   return (
-    <section className="rounded-[var(--radius-card)] border border-line bg-white-warm/80 px-4 py-3">
+    <div>
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-kid-sm font-extrabold">Ta semaine</h2>
-        <span className="text-kid-sm font-bold text-muted">
-          {serie > 0 ? `${serie} jour${serie > 1 ? 's' : ''} !` : 'À toi de jouer'}
-        </span>
+        {serie.pardonUtilise ? (
+          // Le pardon est annoncé : sans ça, l'enfant croit que manquer un
+          // jour ne coûte rien, et la série cesse de tenir quoi que ce soit.
+          <span className="text-kid-xs font-bold text-clay">Un jour rattrapé</span>
+        ) : serie.prochainPalier ? (
+          <span className="text-kid-xs font-bold text-muted">
+            {serie.prochainPalier - serie.jours} jour
+            {serie.prochainPalier - serie.jours > 1 ? 's' : ''} → trophée
+          </span>
+        ) : null}
       </div>
       <ol className="mt-2 flex justify-between gap-1">
         {derniersJours().map((jour) => {
@@ -56,15 +69,15 @@ function Semaine({ jours, serie }: { jours: string[]; serie: number }) {
           );
         })}
       </ol>
-    </section>
+    </div>
   );
 }
-
 
 function Collection({ autocollants }: { autocollants: Autocollant[] }) {
   const avec = autocollants.filter((a) => a.illustration);
   if (avec.length === 0) return null;
   const gagnes = avec.filter((a) => a.acquis).length;
+  const reste = avec.length - gagnes;
 
   return (
     <section>
@@ -75,7 +88,13 @@ function Collection({ autocollants }: { autocollants: Autocollant[] }) {
         </span>
       </div>
       <p className="mt-1 text-kid-sm text-muted">
-        Gagne-les en jouant.
+        {/* Dire ce qui manque, et à quelle condition : « gagne-les en jouant »
+            n'apprend pas à l'enfant comment on les gagne. */}
+        {gagnes === 0
+          ? 'Monte une leçon jusqu’à l’étape 3 pour gagner ta première image.'
+          : reste === 0
+            ? 'Collection complète. Bravo !'
+            : `Encore ${reste} image${reste > 1 ? 's' : ''} à trouver.`}
       </p>
       <ul className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">
         {avec.map((a) => (
@@ -140,11 +159,29 @@ export default function ChildHome() {
   const d = bord.data!;
   const prenom = enfant.data?.first_name ?? '';
   const prochaine = d.lecons.find((l) => l.id === d.prochaineLecon);
+  const restantes = d.autocollants.filter((a) => a.illustration && !a.acquis).length;
+
+  const accueil = phraseDAccueil({
+    serie: d.serie,
+    objectif: d.objectif,
+    imagesRestantes: restantes,
+    reste: d.duesTotal,
+    prenom,
+  });
+
+  // L'humeur de Niba dit en un coup d'œil ce que la phrase explique.
+  const humeur: Humeur = d.objectif.atteint
+    ? 'fete'
+    : d.serie.jours > 0 && !d.serie.joueAujourdhui
+      ? 'encourage'
+      : d.jours.length > 0 && !d.serie.joueAujourdhui && d.serie.jours === 0
+        ? 'manque'
+        : 'content';
 
   return (
     <main className="enfant ciel min-h-screen pb-12">
       <div className="mx-auto grid max-w-2xl gap-4 px-4 pt-4 sm:px-6">
-        <header className="flex items-center justify-between gap-3">
+        <header className="flex items-center justify-between gap-2">
           <Link
             to="/"
             className="flex items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-4 pl-1.5 text-kid-sm font-bold"
@@ -154,11 +191,24 @@ export default function ChildHome() {
             </span>
             {prenom}
           </Link>
-          <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
-            <span aria-hidden="true">★</span>
-            {d.points}
-          </span>
+          <div className="flex items-center gap-2">
+            <Flamme serie={d.serie} />
+            <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
+              <span aria-hidden="true">★</span>
+              {d.points}
+            </span>
+          </div>
         </header>
+
+        {/* Niba parle en premier : c'est lui qui donne la raison de jouer
+            aujourd'hui, avant même de montrer quelle leçon. */}
+        <section className="monte flex items-center gap-3 rounded-[var(--radius-card)] border border-line bg-white-warm/85 px-4 py-3">
+          <Mascotte humeur={humeur} taille={72} className="shrink-0" />
+          <div className="min-w-0">
+            <p className="text-kid-base leading-tight font-black text-balance">{accueil.titre}</p>
+            <p className="mt-0.5 text-kid-sm text-muted">{accueil.sous}</p>
+          </div>
+        </section>
 
         {prochaine ? (
           <Link
@@ -210,7 +260,30 @@ export default function ChildHome() {
           </section>
         )}
 
-        <Semaine jours={d.jours} serie={d.serie} />
+        {/* L'objectif et la semaine dans la même carte : ce sont deux façons de
+            regarder la même habitude, aujourd'hui et sur sept jours. */}
+        <section className="rounded-[var(--radius-card)] border border-line bg-white-warm/80 px-4 py-3">
+          <div className="flex items-center gap-4">
+            <AnneauObjectif objectif={d.objectif} />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-kid-sm font-extrabold">Objectif du jour</h2>
+              <p className="mt-0.5 text-kid-sm text-muted">
+                {d.objectif.atteint
+                  ? 'Atteint ! Tout le reste est du bonus.'
+                  : `Encore ${d.objectif.cible - d.objectif.gagnees} étoiles.`}
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 border-t border-line pt-3">
+            <Semaine jours={d.jours} serie={d.serie} />
+          </div>
+        </section>
+
+        <Quetes quetes={d.quetes} />
+
+        <section className="rounded-[var(--radius-card)] border border-line bg-white-warm/80 px-4 py-3">
+          <BandeRang rang={d.rang} />
+        </section>
 
         {/* Avec une seule leçon, cette liste répéterait la carte du dessus.
             Elle n'apparaît qu'à partir de la deuxième. */}
@@ -228,6 +301,8 @@ export default function ChildHome() {
         ) : null}
 
         <Collection autocollants={d.autocollants} />
+
+        <Trophees trophees={d.trophees} />
       </div>
     </main>
   );

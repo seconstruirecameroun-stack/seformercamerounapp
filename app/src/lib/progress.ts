@@ -15,8 +15,23 @@ import type { ItemRow, MasteryRow } from '../types/db';
 /** Intervalles de révision espacée, en jours, indexés par niveau 1 à 4. */
 const REVIEW_DAYS = [1, 3, 7, 21];
 
-export const POINTS_PER_LEVEL = 10;
-export const POINTS_LEVEL_UP = 50;
+/**
+ * Les étoiles récompensent l'étape que l'enfant voit.
+ *
+ * Elles dépendaient du niveau de maîtrise, invisible à l'écran : une bonne
+ * réponse rapportait dix ou cinquante étoiles sans que rien ne dise pourquoi.
+ * Une récompense dont on ne comprend pas la règle n'encourage rien. Ici une
+ * question de l'étape 4 vaut quatre fois une question de l'étape 1, et ça se
+ * lit sur la barre des étapes.
+ */
+export const POINTS_PAR_ETAPE = 5;
+
+/** Première bonne réponse d'une notion à l'étape en cours. */
+export const POINTS_NOTION = 10;
+/** L'image de la notion, gagnée à l'étape « Maîtrise ». */
+export const POINTS_IMAGE = 40;
+/** La marche franchie : la plus grosse récompense de la séance. */
+export const POINTS_ETAPE = 50;
 
 export type ProgressOutcome = {
   level: number;
@@ -43,7 +58,7 @@ export function computeNext(
 
   if (correct) {
     streak = streak > 0 ? streak + 1 : 1;
-    score = Math.min(100, score + POINTS_PER_LEVEL * level);
+    score = Math.min(100, score + 10 * level);
     if (streak >= 3 && level < 4) {
       level += 1;
       streak = 0;
@@ -76,12 +91,14 @@ export function computeNext(
 export async function recordAttempt(params: {
   parentId: string;
   childId: string;
-  item: Pick<ItemRow, 'id' | 'notion_id'>;
+  item: Pick<ItemRow, 'id' | 'notion_id' | 'level'>;
   answer: unknown;
   correct: boolean;
   durationMs?: number;
+  /** Étoiles de notion validée, d'image gagnée ou d'étape franchie. */
+  bonus?: number;
 }): Promise<ProgressOutcome> {
-  const { parentId, childId, item, answer, correct, durationMs } = params;
+  const { parentId, childId, item, answer, correct, durationMs, bonus = 0 } = params;
 
   const { error: attemptError } = await supabase.from('attempts').insert({
     parent_id: parentId,
@@ -118,11 +135,11 @@ export async function recordAttempt(params: {
   );
   if (masteryError) throw masteryError;
 
-  // Les points récompensent le niveau joué, pas le simple clic : rejouer le
-  // niveau 1 en boucle ne rapporte presque rien.
+  // Les points récompensent l'étape jouée, pas le simple clic : rejouer
+  // l'étape 1 en boucle ne rapporte presque rien.
   let points = 0;
-  if (correct) points += POINTS_PER_LEVEL * current.level;
-  if (next.leveledUp) points += POINTS_LEVEL_UP;
+  if (correct) points += POINTS_PAR_ETAPE * item.level;
+  points += bonus;
 
   if (points > 0) {
     await supabase.from('rewards').insert({

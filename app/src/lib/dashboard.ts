@@ -1,5 +1,14 @@
 import { supabase } from './supabase';
-import { etapeCourante, imageGagnee, reussitesParNiveau } from './paliers';
+import { etapeCourante, etapeImage, imageGagnee, reussitesParNiveau } from './paliers';
+import {
+  calculerSerie,
+  construireContexte,
+  etatRang,
+  objectifDuJour,
+  quetesDuJour,
+  trophees,
+} from './jeu';
+import type { EtatRang, Objectif, Quete, RepereItem, Serie, Trophee } from './jeu';
 
 /**
  * Ce que l'enfant voit en arrivant.
@@ -11,6 +20,7 @@ import { etapeCourante, imageGagnee, reussitesParNiveau } from './paliers';
 
 export type Autocollant = {
   notionId: string;
+  matiereId: string | null;
   statement: string;
   illustration: string | null;
   acquis: boolean;
@@ -72,43 +82,16 @@ export type TableauDeBord = {
   matieres: MatiereResume[];
   duesTotal: number;
   points: number;
-  serie: number;
+  serie: Serie;
+  rang: EtatRang;
+  objectif: Objectif;
+  quetes: Quete[];
+  trophees: Trophee[];
   /** Jours où l'enfant a répondu, du plus récent au plus ancien. */
   jours: string[];
   autocollants: Autocollant[];
   prochaineLecon: string | null;
 };
-
-/**
- * La série, en jours consécutifs de révision.
- *
- * Elle se calcule à partir des jours où l'enfant a réellement répondu. Une
- * série qui compterait les jours d'ouverture de l'app, sans réponse, serait
- * une flatterie : elle doit récompenser l'effort.
- *
- * Le jour en cours ne casse rien tant qu'il n'est pas fini : on part
- * d'aujourd'hui, et à défaut d'hier.
- */
-export function calculerSerie(jours: string[]): number {
-  if (jours.length === 0) return 0;
-  const uniques = [...new Set(jours)].sort().reverse();
-
-  const jour = (decalage: number) => {
-    const d = new Date();
-    d.setDate(d.getDate() - decalage);
-    return d.toISOString().slice(0, 10);
-  };
-
-  const depart = uniques[0] === jour(0) ? 0 : uniques[0] === jour(1) ? 1 : -1;
-  if (depart === -1) return 0;
-
-  let serie = 0;
-  for (let i = depart; ; i++) {
-    if (uniques.includes(jour(i))) serie += 1;
-    else break;
-  }
-  return serie;
-}
 
 export async function chargerTableauDeBord(childId: string): Promise<TableauDeBord> {
   // La classe de l'enfant commande ce qu'il voit. Sans ce filtre, un CM1
@@ -136,16 +119,20 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .or(classe ? `class_id.eq.${classe},class_id.is.null` : 'class_id.is.null')
       .order('sort_order'),
     supabase.from('mastery').select('notion_id, level, next_review').eq('child_id', childId),
-    supabase.from('rewards').select('value').eq('child_id', childId),
+    supabase.from('rewards').select('value, created_at').eq('child_id', childId),
     supabase
       .from('attempts')
-      .select('created_at')
+      .select('item_id, correct, created_at')
       .eq('child_id', childId)
       .order('created_at', { ascending: false })
       .limit(400),
     // Seules les bonnes réponses situent l'étape : la liste reste courte,
     // et elle ne peut pas être tronquée par une limite comme au-dessus.
-    supabase.from('attempts').select('item_id').eq('child_id', childId).eq('correct', true),
+    supabase
+      .from('attempts')
+      .select('item_id, created_at')
+      .eq('child_id', childId)
+      .eq('correct', true),
   ]);
 
   if (lecons.error) throw lecons.error;
@@ -175,6 +162,17 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
 
   const resumes: LeconResume[] = [];
   const autocollants: Autocollant[] = [];
+  const repere = new Map<string, RepereItem>();
+  /** Pour chaque notion gagnée, le jour où son image est tombée. */
+  const jourDesImages = new Map<string, string>();
+
+  // Le premier « juste » de chaque question, pour dater les événements du jour.
+  const premierJuste = new Map<string, string>();
+  for (const j of justes.data ?? []) {
+    const jour = String(j.created_at).slice(0, 10);
+    const connu = premierJuste.get(j.item_id);
+    if (!connu || jour < connu) premierJuste.set(j.item_id, jour);
+  }
 
   for (const lecon of brutes) {
     const notions = lecon.notions.filter((n) => n.status === 'approved');
@@ -190,16 +188,37 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     const reussies = reussitesParNiveau(avecItems, justes.data ?? []);
     const { niveau, termine } = etapeCourante(avecItems, reussies);
 
+    for (const n of avecItems) {
+      for (const i of n.items) {
+        repere.set(i.id, {
+          niveau: i.level,
+          notionId: n.id,
+          matiereId: lecon.subject_id,
+          leconId: lecon.id,
+        });
+      }
+    }
+
     for (const [rang, notion] of notions.entries()) {
       const m = suivi.get(notion.id);
       // L'image se gagne sur l'escalier, et la maîtrise ne sert plus qu'à
       // espacer les révisions : deux comptes différents, deux rôles.
       const acquis = imageGagnee(avecItems[rang], reussies);
-      if (acquis) acquises += 1;
+      if (acquis) {
+        acquises += 1;
+        const niveauImage = etapeImage(avecItems[rang]);
+        const jours = avecItems[rang].items
+          .filter((i) => i.level === niveauImage)
+          .map((i) => premierJuste.get(i.id))
+          .filter((j): j is string => Boolean(j))
+          .sort();
+        if (jours[0]) jourDesImages.set(notion.id, jours[0]);
+      }
       if (!m?.next_review || m.next_review <= aujourdhui) dues += 1;
       if (m?.next_review && m.next_review <= aujourdhui) aRevoir += 1;
       autocollants.push({
         notionId: notion.id,
+        matiereId: lecon.subject_id,
         statement: notion.statement,
         illustration: notion.illustration,
         acquis,
@@ -258,12 +277,68 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     parMatiere.set(l.matiereId, dossier);
   }
 
+  const etoiles = (recompenses.data ?? []).reduce((somme, r) => somme + (r.value ?? 0), 0);
+  const serie = calculerSerie(jours);
+
+  const gains = (recompenses.data ?? []).map((r) => ({
+    value: r.value ?? 0,
+    jour: String(r.created_at).slice(0, 10),
+  }));
+
+  const brutesTentatives = (tentatives.data ?? []) as unknown as Array<{
+    item_id: string;
+    correct: boolean;
+    created_at: string;
+  }>;
+  const journal = brutesTentatives.map((t) => ({
+    itemId: t.item_id,
+    correct: t.correct,
+    jour: String(t.created_at).slice(0, 10),
+    a: String(t.created_at),
+  }));
+
+  const imagesDuJour = [...jourDesImages.values()].filter((j) => j === aujourdhui).length;
+
+  // Un album est complet quand toutes les images d'une matière sont gagnées.
+  const albums = new Map<string, { total: number; gagnes: number }>();
+  for (const a of autocollants) {
+    if (!a.illustration || !a.matiereId) continue;
+    const album = albums.get(a.matiereId) ?? { total: 0, gagnes: 0 };
+    album.total += 1;
+    if (a.acquis) album.gagnes += 1;
+    albums.set(a.matiereId, album);
+  }
+
+  // La plus longue suite de bonnes réponses au chrono, journal remis à
+  // l'endroit : il arrive du plus récent au plus ancien.
+  let meilleureSerieDefi = 0;
+  let suite = 0;
+  for (const t of [...journal].reverse()) {
+    if (repere.get(t.itemId)?.niveau !== 4) continue;
+    suite = t.correct ? suite + 1 : 0;
+    if (suite > meilleureSerieDefi) meilleureSerieDefi = suite;
+  }
+
+  const avecImage = autocollants.filter((a) => a.illustration);
+  const contexte = construireContexte(journal, repere, gains, imagesDuJour);
+
   return {
     lecons: resumes,
     matieres: [...parMatiere.values()],
     duesTotal: resumes.reduce((n, l) => n + l.dues, 0),
-    points: (recompenses.data ?? []).reduce((somme, r) => somme + (r.value ?? 0), 0),
-    serie: calculerSerie(jours),
+    points: etoiles,
+    serie,
+    rang: etatRang(etoiles),
+    objectif: objectifDuJour(gains),
+    quetes: quetesDuJour(contexte),
+    trophees: trophees({
+      etoiles,
+      images: avecImage.filter((a) => a.acquis).length,
+      albumsComplets: [...albums.values()].filter((a) => a.total > 0 && a.gagnes === a.total).length,
+      leconsTerminees: resumes.filter((l) => l.etapeTerminee).length,
+      serie: serie.jours,
+      meilleureSerieDefi,
+    }),
     jours,
     autocollants,
     prochaineLecon: prochaine?.id ?? resumes[0]?.id ?? null,

@@ -3,7 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
-import { recordAttempt } from '../../lib/progress';
+import {
+  POINTS_ETAPE,
+  POINTS_IMAGE,
+  POINTS_NOTION,
+  recordAttempt,
+} from '../../lib/progress';
 import {
   construireSeance,
   estChronometre,
@@ -20,6 +25,10 @@ import type { Reponse } from '../../components/items/ItemPlayer';
 import Illustration from '../../components/Illustration';
 import Fiches from './Fiches';
 import Popup from '../../components/Popup';
+import Coffre, { Confettis } from '../../components/jeu/Coffre';
+import type { Butin } from '../../components/jeu/Coffre';
+import Mascotte from '../../components/jeu/Mascotte';
+import { jouerSon } from '../../lib/sons';
 import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
 
@@ -259,11 +268,19 @@ function Etape({
     Array<{ id: string; illustration: string | null; statement: string }>
   >([]);
   const [erreur, setErreur] = useState<unknown>(null);
+  /** Le bilan ne se montre qu'une fois le coffre ouvert. */
+  const [coffreOuvert, setCoffreOuvert] = useState(false);
 
+  // La séance ne bouge pas sous les yeux de l'enfant : elle est rechargée au
+  // seul moment où on le décide, par « Continuer ». Laissée fraîche, elle se
+  // rechargeait au retour sur l'onglet — et le bilan d'une étape annonçait
+  // alors l'étape suivante, qui n'était pas encore jouée.
   const seance = useQuery({
     queryKey: ['seance', childId, lessonId],
     queryFn: () => construireSeance(childId, lessonId),
-    staleTime: 0,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: 'always',
   });
 
   /** Nouvelle série de questions, à la suite : l'enfant ne retourne pas au menu. */
@@ -275,6 +292,7 @@ function Etape({
     setValidees(new Set());
     setRevelees([]);
     setRetour(null);
+    setCoffreOuvert(false);
     seance.refetch();
   }
 
@@ -298,27 +316,47 @@ function Etape({
 
   if (index >= s.questions.length) {
     const reste = s.total - reussies;
+
+    // Le butin dit la même chose que l'ancien récapitulatif. La différence
+    // tient au geste : l'enfant ouvre, au lieu de lire ce qui est déjà là.
+    const butin: Butin[] = [
+      { icone: '★', texte: `+${gagnes} étoiles` },
+      ...(revelees.length > 0
+        ? [
+            {
+              icone: '🖼',
+              texte:
+                revelees.length > 1
+                  ? `${revelees.length} images pour ta collection`
+                  : 'Une image pour ta collection',
+            },
+          ]
+        : []),
+      ...(etapeFranchie ? [{ icone: '🪜', texte: `Étape ${s.palier.niveau} franchie` }] : []),
+      { icone: '✓', texte: `${justes} bonnes réponses sur ${s.questions.length}` },
+    ];
+
     return (
       <div className="grid gap-3">
+        {coffreOuvert && (etapeFranchie || revelees.length > 0) ? <Confettis /> : null}
         <BarreEtape palier={s.palier} reussies={reussies} total={s.total} termine={s.termine} />
 
         <div className="monte overflow-hidden rounded-[var(--radius-card)] border border-line bg-white-warm text-center shadow-[var(--shadow-card)]">
           <div className={'px-6 py-7 ' + (etapeFranchie ? 'bg-leaf/25' : 'bg-gold/25')}>
-            <Illustration
-              cle='medaille'
-              forme="objet"
-              alt=""
-              className="mx-auto h-28 w-28"
-            />
-            <h2 className="mt-3 text-kid-2xl font-black">
+            <Mascotte humeur="fete" taille={88} className="mx-auto" />
+            <h2 className="mt-2 text-kid-2xl font-black">
               {etapeFranchie ? 'Étape réussie !' : 'Bien joué !'}
             </h2>
-            <p className="mt-1 text-kid font-bold text-ink-2">
-              {justes} sur {s.questions.length} · +{gagnes} points
-            </p>
+            <div className="mt-4">
+              <Coffre
+                butin={butin}
+                titre={etapeFranchie ? 'Ton coffre d’étape' : 'Ton coffre'}
+                onOuvert={() => setCoffreOuvert(true)}
+              />
+            </div>
           </div>
 
-          {revelees.length > 0 ? (
+          {coffreOuvert && revelees.length > 0 ? (
             <div className="border-b border-line px-6 py-5">
               <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
                 {revelees.length > 1 ? `${revelees.length} images gagnées` : 'Une image gagnée'}
@@ -344,27 +382,29 @@ function Etape({
             </div>
           ) : null}
 
-          <div className="px-6 py-5">
-            <p className="text-kid-sm text-muted">
-              {etapeFranchie
-                ? PALIERS[s.palier.niveau]
-                ? `Tu passes en « ${PALIERS[s.palier.niveau].nom} ».`
-                : 'Tu as fini les quatre étapes de cette leçon.'
-                : s.termine
-                  ? 'Tu connais toute la leçon.'
-                  : reste > 0
-                    ? `Encore ${reste} ${reste > 1 ? 'questions' : 'question'} à réussir pour l’étape ${s.palier.niveau + 1}.`
-                    : 'On continue.'}
-            </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <GrosBouton onClick={continuer}>
-                {etapeFranchie ? 'Étape suivante' : 'Continuer'}
-              </GrosBouton>
-              <GrosBouton variante="douce" onClick={() => navigate(`/enfant/${childId}`)}>
-                Mes leçons
-              </GrosBouton>
+          {coffreOuvert ? (
+            <div className="monte px-6 py-5">
+              <p className="text-kid-sm text-muted">
+                {etapeFranchie
+                  ? PALIERS[s.palier.niveau]
+                  ? `Tu passes en « ${PALIERS[s.palier.niveau].nom} ».`
+                  : 'Tu as fini les quatre étapes de cette leçon.'
+                  : s.termine
+                    ? 'Tu connais toute la leçon.'
+                    : reste > 0
+                      ? `Encore ${reste} ${reste > 1 ? 'questions' : 'question'} à réussir pour l’étape ${s.palier.niveau + 1}.`
+                      : 'On continue.'}
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <GrosBouton onClick={continuer}>
+                  {etapeFranchie ? 'Étape suivante' : 'Continuer'}
+                </GrosBouton>
+                <GrosBouton variante="douce" onClick={() => navigate(`/enfant/${childId}`)}>
+                  Mes leçons
+                </GrosBouton>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     );
@@ -377,14 +417,6 @@ function Etape({
     setVerrouille(true);
     setErreur(null);
     try {
-      const bilan = await recordAttempt({
-        parentId,
-        childId,
-        item: question.item,
-        answer: reponse.donnee,
-        correct: reponse.correct,
-      });
-
       // La notion tombe pour cette étape : c'est ce qui fait avancer la barre.
       const valide = reponse.correct && !validees.has(question.notion.id);
       const suite = valide ? new Set(validees).add(question.notion.id) : validees;
@@ -394,6 +426,22 @@ function Etape({
       // L'image tombe quand la notion est validée à son étape « Maîtrise » :
       // le même geste que celui qui fait avancer la barre, donc visible.
       const acquise = valide && s.palier.niveau === etapeImage(question.notion);
+
+      // Les trois bonus partent avec la tentative : une seule écriture, et
+      // le total affiché est celui qui est réellement en base.
+      const bonus =
+        (valide ? POINTS_NOTION : 0) + (acquise ? POINTS_IMAGE : 0) + (franchie ? POINTS_ETAPE : 0);
+
+      const bilan = await recordAttempt({
+        parentId,
+        childId,
+        item: question.item,
+        answer: reponse.donnee,
+        correct: reponse.correct,
+        bonus,
+      });
+
+      jouerSon(franchie ? 'etape' : acquise ? 'fete' : reponse.correct ? 'juste' : 'faux');
 
       const bouts: string[] = [];
       if (question.item.explain) bouts.push(question.item.explain);
@@ -446,9 +494,14 @@ function Etape({
   }
 
   function questionSuivante() {
-    // Une étape franchie arrête la série : la suite se joue au niveau du dessus.
+    // Une étape franchie arrête la série : la suite se joue au niveau du
+    // dessus. On passe d'abord par le bilan — c'est là qu'est le coffre, et
+    // c'est le moment de la séance où il a le plus de valeur. Enchaîner
+    // directement sur l'étape suivante priverait l'enfant de sa récompense.
     if (retour?.franchie) {
-      continuer();
+      setRetour(null);
+      setIndex(seance.data?.questions.length ?? 0);
+      setVerrouille(false);
       return;
     }
     setRetour(null);
@@ -507,6 +560,10 @@ function Etape({
           </div>
         ) : null}
 
+        {/* Les confettis n'accompagnent que la fête : sortis à chaque bonne
+            réponse, ils ne voudraient plus rien dire au bout de dix minutes. */}
+        {retour?.ton === 'fete' ? <Confettis /> : null}
+
         {retour ? (
           <Popup
             ton={retour.ton}
@@ -526,14 +583,14 @@ function Etape({
                   className="h-28 w-28 object-cover"
                 />
               ) : (
-                <Illustration cle="guide" forme="portrait" alt="" className="h-28 w-auto" />
+                <Mascotte humeur={retour.ton === 'faux' ? 'encourage' : 'fete'} taille={112} />
               )
             }
           >
             {retour.texte}
             {retour.points > 0 ? (
-              <span className="mt-3 block text-kid-lg font-black text-gold">
-                +{retour.points} points
+              <span className="grimpe mt-3 block text-kid-lg font-black text-gold">
+                +{retour.points} ★
               </span>
             ) : null}
           </Popup>

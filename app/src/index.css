@@ -219,7 +219,133 @@ body {
   animation: carteEntre 240ms var(--ease-out-quint) both;
 }
 
+
+/* ───────────────── Ce qui récompense ─────────────────
+   Trois règles tenues partout ici : une seule chose bouge à la fois, rien ne
+   dure plus d'une seconde, et tout s'arrête net pour qui demande moins de
+   mouvement. Une app d'enfant qui scintille en permanence fatigue au bout de
+   trois jours — or c'est au trentième qu'on l'attend. */
+
+/* La flamme respire tant que la série est vivante. Lentement : c'est une
+   présence, pas une alarme. */
+@keyframes respire {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+.flamme {
+  animation: respire 2200ms ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+/* L'anneau se remplit depuis le haut, dans le sens d'une horloge. */
+@keyframes remplit {
+  from {
+    stroke-dashoffset: var(--depart, 999);
+  }
+}
+.anneau-actif {
+  animation: remplit 900ms var(--ease-out-quint) both;
+}
+
+/* Le coffre hésite avant de s'ouvrir : l'attente fait la récompense. */
+@keyframes tremble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-6deg);
+  }
+  40% {
+    transform: rotate(5deg);
+  }
+  60% {
+    transform: rotate(-4deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+.tremble {
+  animation: tremble 700ms ease-in-out 2;
+  transform-origin: 50% 90%;
+}
+
+@keyframes eclate {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+.eclate {
+  animation: eclate 650ms var(--ease-out-quint) both;
+}
+
+/* Les confettis : chaque morceau porte ses propres variables, une seule
+   règle suffit donc pour tout l'écran. */
+@keyframes tombe {
+  from {
+    opacity: 1;
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--derive, 0), 105vh, 0) rotate(var(--tour, 540deg));
+  }
+}
+.confetti {
+  animation: tombe var(--duree, 2200ms) linear var(--retard, 0ms) both;
+}
+
+/* Un compteur qui grimpe se remarque ; un compteur qui saute ne se voit pas. */
+@keyframes grimpe {
+  from {
+    transform: translateY(0.35em);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.grimpe {
+  animation: grimpe 320ms var(--ease-out-quint) both;
+}
+
+/* La barre d'une quête qui vient de se terminer. */
+@keyframes pulseOr {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in oklch, var(--color-gold) 45%, transparent);
+  }
+}
+.pulse-or {
+  animation: pulseOr 1200ms ease-in-out 2;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .flamme,
+  .anneau-actif,
+  .tremble,
+  .eclate,
+  .confetti,
+  .grimpe,
+  .pulse-or,
   .carte-entre,
   .monte,
   .gain,
@@ -234,5 +360,9 @@ body {
   .revele {
     opacity: 1;
     filter: none;
+  }
+  /* Et les confettis ne doivent pas rester figés en haut de l'écran. */
+  .confetti {
+    display: none;
   }
 }
