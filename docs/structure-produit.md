@@ -335,6 +335,52 @@ c'est la case vide qui donne envie. Une case non gagnée affiche sa condition
 (« Jouer 7 jours de suite »), pas son nom — l'enfant doit savoir quoi faire,
 pas ce qu'il rate.
 
+### Le rappel du soir
+
+Toute la gamification suppose que l'enfant ouvre l'app. Or un enfant de sept
+ans ne pense pas à ouvrir une application de révision : c'est à elle d'aller
+le chercher.
+
+Un seul message par jour, vers 18 h à Douala — l'école est finie, le dîner
+n'a pas commencé — et **jamais s'il a déjà joué**. Un rappel qui arrive après
+l'effort apprend à l'enfant que le rappel ne veut rien dire.
+
+| Situation | Ce que le téléphone affiche |
+|---|---|
+| A joué hier | « KLEIN, ta série t'attend ! » · *Une leçon avant ce soir, et elle tient.* |
+| Absent 2 jours | « KLEIN, on joue ? » · *Une leçon de cinq minutes, et une image de plus.* |
+| Absent 3 jours ou plus | « Tu m'as manqué, KLEIN ! » · *Niba t'attend pour une leçon.* |
+| N'a jamais joué | « KLEIN, on commence ? » · *Cinq minutes, et tu gagnes ta première image.* |
+| Vendredi ou samedi, mené au duel | « BRAYNE te mène de 4 questions » · *La semaine se termine dimanche soir.* |
+
+Jamais de reproche. « Tu n'as pas travaillé » ne fait revenir personne ; « ta
+série t'attend » donne une raison, et une chose à faire ce soir. Et rien
+n'est promis que l'app ne tienne : chaque message renvoie à ce que l'enfant
+trouvera en ouvrant.
+
+L'abonnement est pris **par enfant et par appareil** : les deux frères
+partagent souvent le même téléphone, et chacun doit recevoir son message,
+avec son prénom. Le réglage vit dans l'espace parent, derrière le code — un
+enfant à qui le navigateur demande « autoriser les notifications ? » répond
+oui sans savoir à quoi.
+
+La chaîne, et ce qu'elle ne détient pas :
+
+1. `pg_cron` réveille `rappels_du_soir()` dans la base. Il choisit lui-même
+   les destinataires et ne calcule que des faits bruts — dernière journée
+   jouée, questions réussies de la semaine.
+2. `pg_net` envoie ces faits à la fonction `rappel-du-soir`, avec un secret
+   partagé.
+3. La fonction trouve la phrase, signe avec la clé VAPID et chiffre l'envoi.
+
+Elle ne lit jamais la base : tout ce dont elle a besoin arrive dans la
+requête. Aucune clé d'administration n'existe donc nulle part dans ce
+chemin, et les phrases restent en TypeScript, là où se trouve déjà le reste
+de la langue de l'app.
+
+L'icône posée sur l'écran d'accueil est le second rappel, celui qui agit sans
+rien envoyer : l'app est installable, et elle porte le visage de Niba.
+
 ### Une nouvelle à la fois
 
 Une seule bonne réponse peut en déclencher trois d'un coup : l'image de la

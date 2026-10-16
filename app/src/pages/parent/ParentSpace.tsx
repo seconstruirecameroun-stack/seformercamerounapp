@@ -3,10 +3,12 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
+import { useSession } from '../../lib/auth';
 import { Button, Card, ErrorNote, Field, Loading, Pill } from '../../components/ui';
 import ImportCourse from './ImportCourse';
 import Validation from './Validation';
 import Illustrations from './Illustrations';
+import Rappels from '../../components/parent/Rappels';
 import { verrouiller } from '../../components/PinGate';
 import type { ClassRow } from '../../types/db';
 
@@ -395,6 +397,7 @@ function Documents() {
 
 export default function ParentSpace() {
   const navigate = useNavigate();
+  const { session } = useSession();
   const classes = useQuery({
     queryKey: ['classes'],
     queryFn: async () => {
@@ -474,6 +477,9 @@ export default function ParentSpace() {
         ) : null}
       </Card>
 
+      {session?.user.id ? (
+        <Rappels parentId={session.user.id} enfants={children.data ?? []} />
+      ) : null}
       {classes.data ? <AddChild classes={classes.data} /> : null}
       <ImportCourse enfants={children.data ?? []} />
       <Documents />
