@@ -34,3 +34,6 @@ __pycache__/
 
 # Les photos des emplois du temps : la transcription fait foi.
 work/emplois/
+
+# Les photos de cahier : la transcription fait foi.
+work/cahier-*/

@@ -1,0 +1,1271 @@
+{
+ "lecons": [
+  {
+   "titre": "Les bassins hydrographiques du Cameroun",
+   "matiere": "Histoire-Géographie",
+   "chapitre": "Géographie physique",
+   "date": "2026-10-16",
+   "resume": "L’hydrographie est l’ensemble des cours d’eau d’une région. Un bassin hydrographique est une région arrosée par un fleuve principal et ses affluents. Le Cameroun compte quatre bassins : le Tchad, le Niger, l’Atlantique et le Congo.",
+   "illustration": "bh-bassins",
+   "prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A wide calm river seen from above, winding through green hills, with three smaller streams joining it, soft morning light.",
+   "notions": [
+    {
+     "kind": "definition",
+     "statement": "L’hydrographie est l’ensemble des cours d’eau d’une région.",
+     "illustration": "bh-hydrographie",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. Several small blue streams running across a green plain, seen from above.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "L’hydrographie, c’est tous les cours d’eau d’une région réunis."
+      }
+     ]
+    },
+    {
+     "kind": "definition",
+     "statement": "Un bassin hydrographique est une région arrosée par un fleuve principal et ses affluents.",
+     "illustration": "bh-bassin",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A green valley with one big river in the middle and small rivers joining it from the hills.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "Un bassin, c’est toute la région qu’un fleuve et ses affluents arrosent."
+      },
+      {
+       "register": "analogie",
+       "body": "C’est comme un arbre couché : le tronc est le fleuve, les branches sont les affluents."
+      }
+     ]
+    },
+    {
+     "kind": "definition",
+     "statement": "Un affluent est un fleuve qui se jette dans un fleuve plus grand que lui pour le grossir.",
+     "illustration": "bh-affluent",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A narrow river flowing into a much wider river, the two waters meeting.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "L’affluent rejoint un plus grand fleuve et lui apporte son eau."
+      }
+     ]
+    },
+    {
+     "kind": "liste",
+     "statement": "Le Cameroun compte quatre bassins hydrographiques : le Tchad, le Niger, l’Atlantique et le Congo.",
+     "illustration": "bh-quatre",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. Four separate blue ribbons of water flowing in four different directions on a soft background.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "Quatre bassins : Tchad, Niger, Atlantique, Congo."
+      }
+     ]
+    },
+    {
+     "kind": "relation",
+     "statement": "Le bassin du Tchad a pour fleuve principal le Logone, qui arrose la ville de Maroua.",
+     "illustration": "bh-tchad",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A river arriving into a wide shallow lake in a dry savannah, acacia trees on the banks.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "Le Logone arrose Maroua. Ses affluents : le Chari, la Vina, le Mbéré."
+      }
+     ]
+    },
+    {
+     "kind": "relation",
+     "statement": "Le bassin du Niger a pour fleuve principal la Bénoué, qui arrose la ville de Garoua.",
+     "illustration": "bh-niger",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A broad river passing beside a small savannah town with low houses and boats on the bank.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "La Bénoué arrose Garoua. Ses affluents : le Faro et le Mayo Kébi."
+      }
+     ]
+    },
+    {
+     "kind": "relation",
+     "statement": "Le bassin de l’Atlantique a pour fleuve principal la Sanaga, qui traverse trois régions et arrose la ville d’Édéa.",
+     "illustration": "bh-atlantique",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A large river widening towards the ocean, palm trees and a waterfall on the way.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "La Sanaga traverse trois régions et arrose Édéa. Ses affluents : le Wouri, le Mbam."
+      }
+     ]
+    },
+    {
+     "kind": "relation",
+     "statement": "Le bassin du Congo a pour fleuve principal la Sangha, qui arrose la ville de Berbérati.",
+     "illustration": "bh-congo",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A dark calm river flowing through a dense green rainforest, tall trees on both banks.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "La Sangha arrose Berbérati. Ses affluents : la Kadeï, le Dja, la Boumba et le Ngoko."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "titre": "Les activités de l’homme au village et en ville",
+   "matiere": "Histoire-Géographie",
+   "chapitre": "Géographie",
+   "date": "2026-10-15",
+   "resume": "Au village, les activités de l’homme sont nombreuses et variées : l’artisanat, la pêche, l’élevage, l’agriculture, les danses traditionnelles et la cuisine. En ville, on travaille dans l’administration, le transport, l’industrie, l’éducation, le commerce et la santé, ainsi que dans les petits métiers.",
+   "illustration": "av-village-ville",
+   "prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. On the left a small village with fields and a fisherman, on the right a town with low buildings and a bus, a road joining the two.",
+   "notions": [
+    {
+     "kind": "liste",
+     "statement": "Au village, les activités de l’homme sont l’artisanat, la pêche, l’élevage, l’agriculture, les danses traditionnelles et la cuisine.",
+     "illustration": "av-village",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A village scene with a potter at work, a fisherman with a net, goats, and a field being hoed.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "Au village : artisanat, pêche, élevage, agriculture, danses, cuisine."
+      }
+     ]
+    },
+    {
+     "kind": "liste",
+     "statement": "En ville, l’homme travaille dans l’administration, le transport, l’industrie, l’éducation, le commerce et la santé.",
+     "illustration": "av-ville",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A town street with an office building, a bus, a school, a shop and a small clinic side by side.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "En ville : bureaux, transport, usines, écoles, boutiques, hôpitaux."
+      }
+     ]
+    },
+    {
+     "kind": "liste",
+     "statement": "En ville, on trouve aussi les petits métiers : le call box, les vendeurs ambulants, les gardiens et les ménagères.",
+     "illustration": "av-petits-metiers",
+     "illustration_prompt": "Pastel flat 2D children illustration, soft gradient background, sand, mint and lilac palette, no black outlines, rounded friendly shapes, gentle shading, no text, no letters, no numbers, no watermark, no real person, no brand, no map, no country outline. A street corner with a small phone booth stand with a parasol, a vendor carrying goods on his head, and a guard at a gate.",
+     "explications": [
+      {
+       "register": "simple",
+       "body": "Les petits métiers : call box, vendeurs ambulants, gardiens, ménagères."
+      },
+      {
+       "register": "analogie",
+       "body": "Ce sont les métiers du trottoir : on les croise tous les jours en allant à l’école."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "L’hydrographie, c’est l’ensemble des…",
+    "options": [
+     "cours d’eau",
+     "montagnes",
+     "routes"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Tous les cours d’eau d’une région."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "L’hydrographie concerne…",
+    "options": [
+     "une région",
+     "une maison",
+     "une école"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Une région entière."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Que regroupe l’hydrographie d’une région ?",
+    "options": [
+     "Tous ses cours d’eau",
+     "Tous ses villages",
+     "Toutes ses routes",
+     "Tous ses arbres"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "L’ensemble des cours d’eau."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 1,
+   "kind": "dictee",
+   "level": 3,
+   "payload": {
+    "phrase": "L’hydrographie est l’ensemble des cours d’eau.",
+    "langue": "fr"
+   },
+   "answer": {
+    "phrase": "L’hydrographie est l’ensemble des cours d’eau."
+   },
+   "explain": "La phrase du cahier."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 1,
+   "kind": "texte_a_trous",
+   "level": 3,
+   "payload": {
+    "text": "L’{{1}} est l’ensemble des cours d’{{2}} d’une région.",
+    "blanks": 2
+   },
+   "answer": {
+    "values": [
+     "hydrographie",
+     "eau"
+    ]
+   },
+   "explain": "Hydrographie, eau."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 1,
+   "kind": "vrai_faux",
+   "level": 4,
+   "payload": {
+    "statement": "L’hydrographie étudie les montagnes."
+   },
+   "answer": {
+    "value": false
+   },
+   "explain": "Non : les cours d’eau."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 2,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Un bassin hydrographique est une région…",
+    "options": [
+     "arrosée par un fleuve",
+     "couverte de sable",
+     "sans eau"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Arrosée par un fleuve et ses affluents."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 2,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Clique sur un bassin : un fleuve et ses affluents.",
+    "images": [
+     "bh-bassin",
+     "bh-quatre",
+     "bh-hydrographie"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le fleuve et tout ce qu’il arrose."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 2,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Qu’est-ce qui arrose un bassin hydrographique ?",
+    "options": [
+     "Un fleuve principal et ses affluents",
+     "La pluie seulement",
+     "Un lac sans rivière",
+     "La mer"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le fleuve principal et ses affluents."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 2,
+   "kind": "chronologie",
+   "level": 3,
+   "payload": {
+    "question": "Remets la phrase dans le bon ordre.",
+    "tokens": [
+     "Un bassin",
+     "est arrosé",
+     "par un fleuve",
+     "et ses affluents"
+    ],
+    "consigne": "Touche les mots dans l’ordre de la phrase."
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2,
+     3
+    ]
+   },
+   "explain": "La définition du cahier."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 2,
+   "kind": "vrai_faux",
+   "level": 4,
+   "payload": {
+    "statement": "Un bassin hydrographique peut n’avoir aucun cours d’eau."
+   },
+   "answer": {
+    "value": false
+   },
+   "explain": "Il est arrosé par un fleuve."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Un affluent se jette dans…",
+    "options": [
+     "un fleuve plus grand",
+     "la forêt",
+     "un puits"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Dans un fleuve plus grand que lui."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "À quoi sert un affluent ?",
+    "options": [
+     "À grossir un fleuve",
+     "À vider un fleuve",
+     "À arrêter un fleuve"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Il apporte son eau."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Lequel est vrai pour un affluent ?",
+    "options": [
+     "Il rejoint un fleuve plus grand",
+     "Il rejoint la mer directement",
+     "Il reste tout seul",
+     "Il coule à l’envers"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Il rejoint un plus grand que lui."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Clique sur l’affluent qui rejoint un grand fleuve.",
+    "images": [
+     "bh-affluent",
+     "bh-tchad",
+     "bh-congo"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La petite rivière rejoint la grande."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "dictee",
+   "level": 3,
+   "payload": {
+    "phrase": "Un affluent se jette dans un fleuve plus grand.",
+    "langue": "fr"
+   },
+   "answer": {
+    "phrase": "Un affluent se jette dans un fleuve plus grand."
+   },
+   "explain": "La phrase du cahier."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "texte_a_trous",
+   "level": 3,
+   "payload": {
+    "text": "Un {{1}} se jette dans un fleuve plus {{2}} que lui.",
+    "blanks": 2
+   },
+   "answer": {
+    "values": [
+     "affluent",
+     "grand"
+    ]
+   },
+   "explain": "Affluent, grand."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Le Faro rejoint la Bénoué. Le Faro est donc…",
+    "options": [
+     "un affluent",
+     "un fleuve principal",
+     "un lac"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Il se jette dans plus grand que lui."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 4,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Combien de bassins hydrographiques au Cameroun ?",
+    "options": [
+     "Quatre",
+     "Deux",
+     "Dix"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Quatre."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 4,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Quels sont les quatre bassins du Cameroun ?",
+    "options": [
+     "Tchad, Niger, Atlantique, Congo",
+     "Tchad, Niger, Nil, Congo",
+     "Niger, Congo, Nil, Zambèze",
+     "Tchad, Atlantique, Sahara, Congo"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Tchad, Niger, Atlantique, Congo."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 4,
+   "kind": "chronologie",
+   "level": 3,
+   "payload": {
+    "question": "Remets les quatre bassins dans l’ordre du cahier.",
+    "tokens": [
+     "Le Tchad",
+     "Le Niger",
+     "L’Atlantique",
+     "Le Congo"
+    ]
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2,
+     3
+    ]
+   },
+   "explain": "L’ordre de la leçon."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 4,
+   "kind": "vrai_faux",
+   "level": 4,
+   "payload": {
+    "statement": "Le Cameroun compte quatre bassins hydrographiques."
+   },
+   "answer": {
+    "value": true
+   },
+   "explain": "Oui : Tchad, Niger, Atlantique, Congo."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 5,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Quel est le fleuve principal du bassin du Tchad ?",
+    "options": [
+     "Le Logone",
+     "La Sanaga",
+     "La Sangha"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le Logone."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 5,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Quelle ville le Logone arrose-t-il ?",
+    "options": [
+     "Maroua",
+     "Garoua",
+     "Édéa",
+     "Douala"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Maroua."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 5,
+   "kind": "association",
+   "level": 2,
+   "payload": {
+    "question": "Relie le bassin du Tchad à ce qui lui appartient.",
+    "gauche": [
+     "Son fleuve principal",
+     "Sa ville",
+     "Un de ses affluents"
+    ],
+    "droite": [
+     "Le Logone",
+     "Maroua",
+     "Le Chari"
+    ]
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2
+    ]
+   },
+   "explain": "Logone, Maroua, Chari."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 5,
+   "kind": "texte_a_trous",
+   "level": 3,
+   "payload": {
+    "text": "Le bassin du Tchad a pour fleuve principal le {{1}}, qui arrose {{2}}.",
+    "blanks": 2
+   },
+   "answer": {
+    "values": [
+     "Logone",
+     "Maroua"
+    ]
+   },
+   "explain": "Logone, Maroua."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 5,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Tu es à Maroua, au bord du fleuve. Quel bassin ?",
+    "options": [
+     "Le Tchad",
+     "Le Congo",
+     "L’Atlantique"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Maroua est arrosée par le Logone."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Quel est le fleuve principal du bassin du Niger ?",
+    "options": [
+     "La Bénoué",
+     "Le Logone",
+     "La Sangha"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La Bénoué."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Quelle ville la Bénoué arrose-t-elle ?",
+    "options": [
+     "Garoua",
+     "Maroua",
+     "Édéa",
+     "Yaoundé"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Garoua."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
+   "kind": "association",
+   "level": 2,
+   "payload": {
+    "question": "Relie le bassin du Niger à ce qui lui appartient.",
+    "gauche": [
+     "Son fleuve principal",
+     "Sa ville",
+     "Un de ses affluents"
+    ],
+    "droite": [
+     "La Bénoué",
+     "Garoua",
+     "Le Faro"
+    ]
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2
+    ]
+   },
+   "explain": "Bénoué, Garoua, Faro."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
+   "kind": "dictee",
+   "level": 3,
+   "payload": {
+    "phrase": "La Bénoué arrose la ville de Garoua.",
+    "langue": "fr"
+   },
+   "answer": {
+    "phrase": "La Bénoué arrose la ville de Garoua."
+   },
+   "explain": "La phrase du cahier."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 6,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Un bateau descend la Bénoué depuis Garoua. Quel bassin ?",
+    "options": [
+     "Le Niger",
+     "Le Tchad",
+     "Le Congo"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La Bénoué appartient au bassin du Niger."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 7,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Quel est le fleuve principal du bassin de l’Atlantique ?",
+    "options": [
+     "La Sanaga",
+     "Le Logone",
+     "La Bénoué"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La Sanaga."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 7,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Combien de régions la Sanaga traverse-t-elle ?",
+    "options": [
+     "Trois",
+     "Une",
+     "Dix",
+     "Deux"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Trois régions."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 7,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Quelle ville la Sanaga arrose-t-elle ?",
+    "options": [
+     "Édéa",
+     "Garoua",
+     "Maroua",
+     "Bertoua"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Édéa."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 7,
+   "kind": "texte_a_trous",
+   "level": 3,
+   "payload": {
+    "text": "La {{1}} traverse trois régions et arrose la ville d’{{2}}.",
+    "blanks": 2
+   },
+   "answer": {
+    "values": [
+     "Sanaga",
+     "Édéa"
+    ]
+   },
+   "explain": "Sanaga, Édéa."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 7,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Un fleuve finit dans l’océan près d’Édéa. Lequel ?",
+    "options": [
+     "La Sanaga",
+     "Le Logone",
+     "La Sangha"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La Sanaga, bassin de l’Atlantique."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 8,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Quel est le fleuve principal du bassin du Congo ?",
+    "options": [
+     "La Sangha",
+     "La Sanaga",
+     "La Bénoué"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La Sangha."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 8,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Lequel est un affluent de la Sangha ?",
+    "options": [
+     "Le Dja",
+     "Le Chari",
+     "Le Faro",
+     "Le Mbam"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le Dja, avec la Kadeï, la Boumba et le Ngoko."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 8,
+   "kind": "association",
+   "level": 2,
+   "payload": {
+    "question": "Relie chaque bassin à son fleuve principal.",
+    "gauche": [
+     "Le Tchad",
+     "Le Niger",
+     "L’Atlantique",
+     "Le Congo"
+    ],
+    "droite": [
+     "Le Logone",
+     "La Bénoué",
+     "La Sanaga",
+     "La Sangha"
+    ]
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2,
+     3
+    ]
+   },
+   "explain": "Les quatre fleuves principaux."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 8,
+   "kind": "chronologie",
+   "level": 3,
+   "payload": {
+    "question": "Remets la phrase dans le bon ordre.",
+    "tokens": [
+     "La Sangha",
+     "est le fleuve",
+     "du bassin",
+     "du Congo"
+    ],
+    "consigne": "Touche les mots dans l’ordre de la phrase."
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2,
+     3
+    ]
+   },
+   "explain": "La Sangha, bassin du Congo."
+  },
+  {
+   "lecon": "Les bassins hydrographiques du Cameroun",
+   "rang": 8,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Attention : Sanaga ou Sangha ? Laquelle est dans le bassin du Congo ?",
+    "options": [
+     "La Sangha",
+     "La Sanaga"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "La Sangha, au Congo. La Sanaga va à l’Atlantique."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Au village, on pratique…",
+    "options": [
+     "la pêche",
+     "l’industrie",
+     "l’administration"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Pêche, artisanat, élevage, agriculture."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Fabriquer un panier à la main, c’est…",
+    "options": [
+     "l’artisanat",
+     "le commerce",
+     "le transport"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "C’est l’artisanat."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Laquelle n’est PAS une activité du village ?",
+    "options": [
+     "L’industrie",
+     "La pêche",
+     "L’élevage",
+     "L’agriculture"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "L’industrie est en ville."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "association",
+   "level": 2,
+   "payload": {
+    "question": "Relie chaque activité du village à son geste.",
+    "gauche": [
+     "L’agriculture",
+     "L’élevage",
+     "La pêche"
+    ],
+    "droite": [
+     "Cultiver un champ",
+     "Garder des animaux",
+     "Prendre du poisson"
+    ]
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2
+    ]
+   },
+   "explain": "Trois activités du village."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "dictee",
+   "level": 3,
+   "payload": {
+    "phrase": "Au village, les activités sont nombreuses et variées.",
+    "langue": "fr"
+   },
+   "answer": {
+    "phrase": "Au village, les activités sont nombreuses et variées."
+   },
+   "explain": "La phrase du cahier."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "chronologie",
+   "level": 3,
+   "payload": {
+    "question": "Remets la phrase dans le bon ordre.",
+    "tokens": [
+     "Au village",
+     "on pratique",
+     "l’artisanat",
+     "et la pêche"
+    ],
+    "consigne": "Touche les mots dans l’ordre de la phrase."
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2,
+     3
+    ]
+   },
+   "explain": "Des activités du village."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 1,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Ton oncle garde des chèvres au village. Quelle activité ?",
+    "options": [
+     "L’élevage",
+     "La pêche",
+     "L’artisanat"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Garder des animaux, c’est l’élevage."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 2,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "En ville, on travaille dans…",
+    "options": [
+     "l’administration",
+     "la cueillette",
+     "la chasse"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Administration, transport, industrie, éducation, commerce, santé."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 2,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Quel secteur soigne les malades ?",
+    "options": [
+     "La santé",
+     "Le commerce",
+     "Le transport",
+     "L’industrie"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le secteur de la santé."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 2,
+   "kind": "association",
+   "level": 2,
+   "payload": {
+    "question": "Relie chaque secteur de la ville à son lieu.",
+    "gauche": [
+     "L’éducation",
+     "La santé",
+     "Le commerce"
+    ],
+    "droite": [
+     "L’école",
+     "L’hôpital",
+     "Le marché"
+    ]
+   },
+   "answer": {
+    "order": [
+     0,
+     1,
+     2
+    ]
+   },
+   "explain": "Trois secteurs de la ville."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 2,
+   "kind": "texte_a_trous",
+   "level": 3,
+   "payload": {
+    "text": "En ville, on travaille dans l’{{1}}, le transport et l’{{2}}.",
+    "blanks": 2
+   },
+   "answer": {
+    "values": [
+     "administration",
+     "industrie"
+    ]
+   },
+   "explain": "Administration, industrie."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 2,
+   "kind": "qcm",
+   "level": 4,
+   "payload": {
+    "question": "Un chauffeur de bus travaille dans quel secteur ?",
+    "options": [
+     "Le transport",
+     "La santé",
+     "L’éducation"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le transport."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 1,
+   "payload": {
+    "question": "Le call box est…",
+    "options": [
+     "un petit métier",
+     "une usine",
+     "une école"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Un petit métier de la ville."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Clique sur les petits métiers de la ville.",
+    "images": [
+     "av-petits-metiers",
+     "av-village",
+     "av-ville"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Call box, vendeurs ambulants, gardiens."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 3,
+   "kind": "qcm",
+   "level": 2,
+   "payload": {
+    "question": "Lequel est un petit métier ?",
+    "options": [
+     "Le vendeur ambulant",
+     "Le médecin",
+     "L’ingénieur",
+     "Le professeur"
+    ]
+   },
+   "answer": {
+    "index": 0
+   },
+   "explain": "Le vendeur ambulant."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 3,
+   "kind": "dictee",
+   "level": 3,
+   "payload": {
+    "phrase": "Le call box est un petit métier de la ville.",
+    "langue": "fr"
+   },
+   "answer": {
+    "phrase": "Le call box est un petit métier de la ville."
+   },
+   "explain": "La phrase du cahier."
+  },
+  {
+   "lecon": "Les activités de l’homme au village et en ville",
+   "rang": 3,
+   "kind": "vrai_faux",
+   "level": 4,
+   "payload": {
+    "statement": "Le gardien fait partie des petits métiers."
+   },
+   "answer": {
+    "value": true
+   },
+   "explain": "Oui, comme le call box."
+  }
+ ]
+}

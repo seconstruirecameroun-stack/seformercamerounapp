@@ -1,0 +1,13 @@
+bh-bassins 235613 a699b83a-2da0-408e-9810-85790af500ef
+av-village-ville 235618 3ab8d357-1441-4887-b9ab-4febd6e666bd
+bh-hydrographie 235703 2c857c8c-e172-4e37-8201-1f10b61d53c0
+bh-bassin 235708 fec06c3f-fedd-4b76-a423-42b7a2cf83a2
+bh-affluent 235714 80f18e0c-26f1-4c59-9369-2355d74d33cc
+bh-quatre 235719 2ed1318a-40e9-4ded-8def-5888b7b64390
+bh-tchad 235746 0e724b97-9d17-43bf-bf9c-d49f35deb260
+bh-niger 235751 ae7a43e7-1cef-4d7b-8f4f-83aedefeecef
+bh-atlantique 235756 7fc17a03-dc0d-4aa6-8d9d-e8aef0643a05
+bh-congo 235802 0284f399-8280-43b4-8c1f-77e449c6e1ca
+av-village 235824 6c3b5da2-e20e-4ab6-813b-9ecc991ba81b
+av-ville 235829 a57f6bdf-5e95-4a89-b991-19b82eadf842
+av-petits-metiers 235835 327cdcb3-e90a-4fac-83b3-26e21e5c164a
