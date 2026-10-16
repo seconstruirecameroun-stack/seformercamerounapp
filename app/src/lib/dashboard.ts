@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { etapeCourante, reussitesParNiveau } from './paliers';
+import { etapeCourante, imageGagnee, reussitesParNiveau } from './paliers';
 
 /**
  * Ce que l'enfant voit en arrivant.
@@ -8,9 +8,6 @@ import { etapeCourante, reussitesParNiveau } from './paliers';
  * stocké en double. Si la formule de progression change un jour, ce tableau
  * change avec elle sans migration.
  */
-
-/** Une notion est « acquise » à partir du niveau 3, celui où l'on produit. */
-export const NIVEAU_ACQUIS = 3;
 
 export type Autocollant = {
   notionId: string;
@@ -185,9 +182,19 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     let dues = 0;
     let aRevoir = 0;
 
-    for (const notion of notions) {
+    // L'étape se lit avec la règle de la salle de jeu, importée telle quelle.
+    const avecItems = notions.map((n) => ({
+      id: n.id,
+      items: (n.items ?? []).filter((i) => i.status === 'approved'),
+    }));
+    const reussies = reussitesParNiveau(avecItems, justes.data ?? []);
+    const { niveau, termine } = etapeCourante(avecItems, reussies);
+
+    for (const [rang, notion] of notions.entries()) {
       const m = suivi.get(notion.id);
-      const acquis = (m?.level ?? 1) >= NIVEAU_ACQUIS;
+      // L'image se gagne sur l'escalier, et la maîtrise ne sert plus qu'à
+      // espacer les révisions : deux comptes différents, deux rôles.
+      const acquis = imageGagnee(avecItems[rang], reussies);
       if (acquis) acquises += 1;
       if (!m?.next_review || m.next_review <= aujourdhui) dues += 1;
       if (m?.next_review && m.next_review <= aujourdhui) aRevoir += 1;
@@ -198,14 +205,6 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
         acquis,
       });
     }
-
-    // L'étape se lit avec la règle de la salle de jeu, importée telle quelle.
-    const avecItems = notions.map((n) => ({
-      id: n.id,
-      items: (n.items ?? []).filter((i) => i.status === 'approved'),
-    }));
-    const reussies = reussitesParNiveau(avecItems, justes.data ?? []);
-    const { niveau, termine } = etapeCourante(avecItems, reussies);
     const aValider = avecItems.filter((n) => n.items.some((i) => i.level === niveau));
 
     resumes.push({

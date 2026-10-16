@@ -193,6 +193,27 @@ retenir la position de la bonne case.
 Rater ne fait pas reculer : ça fait revenir. Perdre un acquis décourage un
 enfant de primaire bien plus que ça ne le motive.
 
+### L'image se gagne à la troisième marche
+
+Chaque notion porte une image, et l'enfant la gagne en validant cette notion
+à l'étape **Maîtrise**. Pas avant : aux deux premières marches, il reconnaît
+et il comprend, il n'a encore rien produit. Pas après non plus : le Défi joue
+la vitesse d'une notion déjà sue, et faire attendre l'image jusque-là
+reviendrait à la faire payer deux fois.
+
+La collection suit donc l'escalier que l'enfant voit, et rien d'autre. Elle a
+d'abord dépendu d'un second compte, invisible à l'écran, qui réclamait six
+bonnes réponses sur la même notion : un enfant pouvait gravir les quatre
+étapes d'une leçon entière et garder « 0 sur 19 ». Une récompense dont la
+règle ne se voit pas ne récompense rien.
+
+La maîtrise, elle, reste — mais seulement pour espacer les révisions. Deux
+comptes, deux rôles : l'un fait avancer le jeu, l'autre décide du jour où la
+notion revient.
+
+Une leçon importée qui n'aurait que deux niveaux de questions donne son image
+à la plus haute marche qu'elle porte, sinon l'image serait hors d'atteinte.
+
 Deux erreurs sur la même notion déclenchent une autre explication. C'est la
 réponse directe à « générer encore et encore des textes différents pour que
 l'enfant comprenne mieux » : l'échec ne punit pas, il déclenche une nouvelle

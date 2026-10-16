@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import Illustration, { sourceIllustration } from '../../components/Illustration';
 import { lire, peutParler, stopper } from '../../lib/voix';
-import { NIVEAU_ACQUIS } from '../../lib/dashboard';
 import type { ExplanationRow, NotionRow } from '../../types/db';
 
 /**
@@ -36,7 +35,7 @@ export default function Fiches({
   illustration,
   notions,
   langue,
-  niveaux,
+  acquises,
   onJouer,
 }: {
   film: Film | null;
@@ -44,7 +43,8 @@ export default function Fiches({
   illustration: string | null;
   notions: NotionFiche[];
   langue: string;
-  niveaux: Map<string, number>;
+  /** Les notions dont l'image est déjà dans la collection. */
+  acquises: Set<string>;
   onJouer: () => void;
 }) {
   type Fiche = 'film' | 'resume' | NotionFiche;
@@ -72,7 +72,7 @@ export default function Fiches({
   const notion = typeof fiche === 'string' ? null : fiche;
   const explications = notion?.explanations ?? [];
   const courante = explications.length > 0 ? explications[registre % explications.length] : null;
-  const acquise = notion ? (niveaux.get(notion.id) ?? 1) >= NIVEAU_ACQUIS : false;
+  const acquise = notion ? acquises.has(notion.id) : false;
   const aLire = notion ? notion.statement + '. ' + (courante?.body ?? '') : (resume ?? '');
 
   // Changer de fiche coupe le film : deux sons ne doivent pas se superposer.

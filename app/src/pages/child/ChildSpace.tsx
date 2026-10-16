@@ -4,8 +4,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
 import { recordAttempt } from '../../lib/progress';
-import { construireSeance, estChronometre, PALIERS, SECONDES_DEFI } from '../../lib/paliers';
-import { NIVEAU_ACQUIS } from '../../lib/dashboard';
+import {
+  construireSeance,
+  estChronometre,
+  etapeImage,
+  imageGagnee,
+  PALIERS,
+  reussitesParNiveau,
+  SECONDES_DEFI,
+} from '../../lib/paliers';
 import { stopper } from '../../lib/voix';
 import type { Palier } from '../../lib/paliers';
 import ItemPlayer from '../../components/items/ItemPlayer';
@@ -384,16 +391,20 @@ function Etape({
       if (valide) setValidees(suite);
 
       const franchie = !s.termine && s.reussies + suite.size >= s.total;
-      const acquise = bilan.previousLevel < NIVEAU_ACQUIS && bilan.level >= NIVEAU_ACQUIS;
+      // L'image tombe quand la notion est validée à son étape « Maîtrise » :
+      // le même geste que celui qui fait avancer la barre, donc visible.
+      const acquise = valide && s.palier.niveau === etapeImage(question.notion);
 
       const bouts: string[] = [];
       if (question.item.explain) bouts.push(question.item.explain);
       const suivante = PALIERS[s.palier.niveau];
+      // Les deux bonnes nouvelles tombent souvent ensemble, sur la dernière
+      // notion de l'étape « Maîtrise ». Annoncer la marche et taire l'image
+      // priverait l'enfant de ce qu'il vient justement de gagner.
+      if (acquise) bouts.push('Nouvelle image pour ta collection !');
       if (franchie) {
         bouts.push(suivante ? `Tu passes en « ${suivante.nom} » !` : 'Tu connais toute la leçon !');
-      }
-      else if (acquise) bouts.push('Nouvelle image pour ta collection !');
-      else if (!reponse.correct) bouts.push('On la repose tout à l’heure.');
+      } else if (!reponse.correct) bouts.push('On la repose tout à l’heure.');
 
       setRetour({
         ton: franchie || acquise ? 'fete' : reponse.correct ? 'juste' : 'faux',
@@ -426,7 +437,7 @@ function Etape({
       if (reponse.correct) setJustes((j) => j + 1);
       qc.invalidateQueries({ queryKey: ['points', childId] });
       qc.invalidateQueries({ queryKey: ['tableau', childId] });
-      qc.invalidateQueries({ queryKey: ['maitrise', childId, lessonId] });
+      qc.invalidateQueries({ queryKey: ['images', childId, lessonId] });
     } catch (err) {
       setErreur(err);
       setRetour(null);
@@ -578,16 +589,33 @@ export default function ChildSpace() {
     },
   });
 
-  const maitrise = useQuery({
-    queryKey: ['maitrise', childId, lessonId],
+  // Les notions dont l'image est gagnée, lues au même endroit que la
+  // collection : le paquet de fiches et le tableau de bord ne peuvent pas
+  // afficher deux vérités différentes de la même leçon.
+  const images = useQuery({
+    queryKey: ['images', childId, lessonId],
     enabled: Boolean(childId && lessonId),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('mastery')
-        .select('notion_id, level')
-        .eq('child_id', childId!);
+        .from('notions')
+        .select('id, items(id, level, status)')
+        .eq('lesson_id', lessonId!)
+        .eq('status', 'approved');
       if (error) throw error;
-      return new Map((data ?? []).map((m) => [m.notion_id as string, m.level as number]));
+      const notions = ((data ?? []) as unknown as Array<{
+        id: string;
+        items: Array<{ id: string; level: number; status: string }>;
+      }>).map((n) => ({ id: n.id, items: (n.items ?? []).filter((i) => i.status === 'approved') }));
+
+      const justes = await supabase
+        .from('attempts')
+        .select('item_id')
+        .eq('child_id', childId!)
+        .eq('correct', true);
+      if (justes.error) throw justes.error;
+
+      const reussies = reussitesParNiveau(notions, justes.data ?? []);
+      return new Set(notions.filter((n) => imageGagnee(n, reussies)).map((n) => n.id));
     },
   });
 
@@ -722,7 +750,7 @@ export default function ChildSpace() {
                     illustration={bundle.illustration}
                     notions={notions}
                     langue={bundle.lang}
-                    niveaux={maitrise.data ?? new Map()}
+                    acquises={images.data ?? new Set()}
                     onJouer={() => setOnglet('mission')}
                   />
                 </div>

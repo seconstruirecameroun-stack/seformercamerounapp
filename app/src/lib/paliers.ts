@@ -53,6 +53,43 @@ export function estChronometre(niveau: number): boolean {
 
 export const TAILLE_SEANCE = 6;
 
+/**
+ * L'étape qui fait gagner l'image de la notion.
+ *
+ * « Maîtrise » : l'enfant a reconnu, compris, puis écrit la notion. C'est le
+ * moment juste — plus tôt l'image se donnerait sans effort, plus tard elle
+ * arriverait après le chronomètre, qui joue la vitesse et non le savoir.
+ *
+ * Cette règle est volontairement la même que celle de l'escalier. L'image a
+ * longtemps dépendu d'un autre compte, caché, qui demandait six bonnes
+ * réponses sur la même notion : un enfant pouvait gravir les quatre étapes
+ * d'une leçon et garder une collection vide.
+ */
+export const ETAPE_IMAGE = 3;
+
+/**
+ * L'étape à laquelle cette notion donne son image.
+ *
+ * Normalement la troisième. Mais une leçon importée peut n'avoir que deux
+ * niveaux de questions : l'image se gagne alors à la plus haute étape qu'elle
+ * porte, sinon elle resterait hors d'atteinte.
+ */
+export function etapeImage(notion: NotionNiveaux): number | null {
+  const niveaux = notion.items.map((i) => i.level);
+  if (niveaux.length === 0) return null;
+  const jusqua = niveaux.filter((n) => n <= ETAPE_IMAGE);
+  return jusqua.length > 0 ? Math.max(...jusqua) : Math.min(...niveaux);
+}
+
+/** L'image de cette notion est-elle gagnée, d'après le journal ? */
+export function imageGagnee(
+  notion: NotionNiveaux,
+  reussiesParNiveau: Map<number, Set<string>>,
+): boolean {
+  const etape = etapeImage(notion);
+  return etape !== null && (reussiesParNiveau.get(etape)?.has(notion.id) ?? false);
+}
+
 export type NotionAvecItems = NotionRow & { items: ItemRow[] };
 
 export type Question = {
