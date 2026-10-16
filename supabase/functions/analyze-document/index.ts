@@ -20,8 +20,6 @@
  */
 
 import Anthropic from 'npm:@anthropic-ai/sdk@0.74.0';
-import { zodOutputFormat } from 'npm:@anthropic-ai/sdk@0.74.0/helpers/zod';
-import { z } from 'npm:zod@3.25.76';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 
 const CORS = {
@@ -44,46 +42,48 @@ const STYLE =
   'lilac palette, no black outlines, rounded friendly shapes, gentle shading, ' +
   'no text, no letters, no numbers, no watermark, no real person, no brand.';
 
-const Extraction = z.object({
-  langue: z.enum(['fr', 'en']).describe('Langue du cours, telle qu’elle est écrite.'),
-  lisibilite: z.enum(['bonne', 'moyenne', 'mauvaise']),
-  titre: z.string().describe('Titre de la leçon, repris du document si présent.'),
-  chapitre: z.string().describe('Chapitre ou thème, ou chaîne vide si absent.'),
-  matiere_suggeree: z
-    .string()
-    .describe('Intitulé de la matière tel qu’il apparaît sur le document.'),
-  resume: z
-    .string()
-    .describe(
-      'Le résumé à retenir, en deux ou trois phrases courtes. 300 caractères au maximum.',
-    ),
-  illustration_scene: z
-    .string()
-    .describe(
-      'Consigne d’image en anglais pour la scène d’ouverture de la leçon, ' +
-        'format 16:9, sans texte. Décrit un lieu ou une situation, pas un concept.',
-    ),
-  notions: z
-    .array(
-      z.object({
-        type: z.enum(['definition', 'date', 'liste', 'relation']),
-        enonce: z
-          .string()
-          .describe('Une seule chose à savoir, en une phrase courte. 110 caractères au maximum.'),
-        illustration: z
-          .string()
-          .describe(
-            'Consigne d’image en anglais pour une vignette carrée illustrant ' +
-              'cette notion : un objet ou un petit groupe d’objets sur fond ' +
-              'uni, sans texte.',
-          ),
-      }),
-    )
-    .describe('Entre 3 et 10 notions, dans l’ordre du cours.'),
-  avertissements: z
-    .array(z.string())
-    .describe('Passages illisibles, douteux ou pédagogiquement discutables.'),
-});
+/**
+ * Le format attendu, décrit en clair plutôt que par un schéma.
+ *
+ * Le greffon zodOutputFormat de l'SDK résout sa propre copie de Zod — en v3,
+ * où `z.toJSONSchema` n'existe pas — et la fonction échouait au premier appel
+ * quelle que soit la version importée ici. La consigne décrit donc le JSON
+ * attendu, et la réponse est vérifiée à la main : une dépendance de moins,
+ * et le même procédé que la lecture des bulletins, qui tourne déjà.
+ */
+const FORMAT = `Tu réponds par un unique objet JSON, sans texte autour :
+
+{
+  "langue": "fr ou en, la langue dans laquelle le cours est écrit",
+  "lisibilite": "bonne, moyenne ou mauvaise",
+  "titre": "le titre de la leçon, repris du document s'il y figure",
+  "chapitre": "le chapitre ou le thème, chaîne vide si absent",
+  "matiere_suggeree": "l'intitulé de la matière tel qu'il apparaît",
+  "resume": "ce qu'il faut retenir, deux ou trois phrases courtes, 300 caractères au plus",
+  "illustration_scene": "consigne d'image EN ANGLAIS pour la scène d'ouverture, 16:9, sans texte : un lieu ou une situation, jamais un concept",
+  "notions": [
+    {
+      "type": "definition | date | liste | relation",
+      "enonce": "une seule chose à savoir, une phrase, 110 caractères au plus",
+      "illustration": "consigne d'image EN ANGLAIS pour une vignette carrée : un objet ou un petit groupe d'objets sur fond uni, sans texte"
+    }
+  ],
+  "avertissements": ["ce qui est illisible, douteux ou pédagogiquement discutable"]
+}
+
+Entre 3 et 10 notions, dans l'ordre du cours.`;
+
+type Extraction = {
+  langue: 'fr' | 'en';
+  lisibilite: string;
+  titre: string;
+  chapitre: string;
+  matiere_suggeree: string;
+  resume: string;
+  illustration_scene: string;
+  notions: Array<{ type: string; enonce: string; illustration: string }>;
+  avertissements: string[];
+};
 
 const SYSTEM = `Tu transcris et structures des cours du primaire camerounais pour une application de révision.
 
@@ -110,7 +110,9 @@ Pour chaque notion, écris aussi une consigne d'image en anglais. Elle doit
 décrire une chose concrète et montrable, jamais une idée abstraite : pour
 « l'écriture marque la fin de la Préhistoire », décris une tablette d'argile
 gravée et un stylet, pas « la fin d'une époque ». Aucune image ne contient de
-texte : les mots sont posés par l'application par-dessus.`;
+texte : les mots sont posés par l'application par-dessus.
+
+` + FORMAT;
 
 function base64(bytes: Uint8Array): string {
   let binaire = '';
@@ -206,12 +208,10 @@ Deno.serve(async (req) => {
     });
 
     const anthropic = new Anthropic({ apiKey: cle });
-    const reponse = await anthropic.messages.parse({
+    const reponse = await anthropic.messages.create({
       model: 'claude-opus-5-5',
       max_tokens: 16000,
       system: SYSTEM,
-      thinking: { type: 'adaptive' },
-      output_config: { effort: 'medium', format: zodOutputFormat(Extraction) },
       messages: [{ role: 'user', content: contenu }],
     });
 
@@ -219,8 +219,32 @@ Deno.serve(async (req) => {
       throw new Error('Le modèle a refusé de traiter ce document.');
     }
 
-    const extrait = reponse.parsed_output;
-    if (!extrait) throw new Error('Réponse illisible du modèle.');
+    const texte = reponse.content
+      .map((bloc) => (bloc.type === 'text' ? bloc.text : ''))
+      .join('')
+      .trim();
+
+    // Le modèle entoure parfois son JSON d'une clôture de code : on prend ce
+    // qui va de la première accolade à la dernière.
+    const ouvre = texte.indexOf('{');
+    const ferme = texte.lastIndexOf('}');
+    let extrait: Extraction;
+    try {
+      extrait = JSON.parse(texte.slice(ouvre, ferme + 1)) as Extraction;
+    } catch {
+      throw new Error('Réponse illisible du modèle : ' + texte.slice(0, 200));
+    }
+
+    // Une vérification tient lieu de schéma : mieux vaut refuser une lecture
+    // incomplète que déposer une leçon vide dans la file de validation.
+    if (!extrait?.titre?.trim()) throw new Error('Lecture sans titre.');
+    if (!Array.isArray(extrait.notions) || extrait.notions.length === 0) {
+      throw new Error('Lecture sans notion exploitable.');
+    }
+    extrait.langue = extrait.langue === 'en' ? 'en' : 'fr';
+    extrait.chapitre = extrait.chapitre ?? '';
+    extrait.matiere_suggeree = extrait.matiere_suggeree ?? '';
+    extrait.avertissements = Array.isArray(extrait.avertissements) ? extrait.avertissements : [];
 
     // La matière suggérée ne s'impose pas : si le parent en avait déjà choisi
     // une à l'import, elle reste. L'intitulé de l'école prime toujours.
