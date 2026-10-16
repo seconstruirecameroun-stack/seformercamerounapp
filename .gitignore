@@ -33,6 +33,8 @@ work/images-*/
 # Idem pour les emblèmes de rang : seuls les prompts et les .webp détourés
 # méritent l'historique.
 work/rangs/*.png
+# Et les planches d'aperçu, qui se refont d'une capture d'écran.
+work/apercu/
 __pycache__/
 
 # Les photos des emplois du temps : la transcription fait foi.
