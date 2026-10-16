@@ -4,44 +4,49 @@
   "style": "Pastel Flat 2D",
   "aspect_ratio": "16:9",
   "language": "fr",
-  "talking_characters": false,
+  "talking_characters": true,
+  "narrator": "Niba",
   "through_line": "Une journée qui commence au village et finit en ville.",
   "blocks": [
     {
       "n": 1,
       "block_kind": "narration",
       "vo_line": "Au village, on pêche, on élève des animaux et on cultive la terre.",
-      "shot": "A village by a river with a fisherman casting a net, goats grazing and a man hoeing a field.",
+      "shot": "A Cameroonian village on a river bank with red laterite earth and oil palms, a fisherman casting a net from a wooden pirogue, goats grazing, a man hoeing a field.",
       "keywords": [
         "AU VILLAGE"
-      ]
+      ],
+      "niba": "content"
     },
     {
       "n": 2,
       "block_kind": "narration",
       "vo_line": "On y fait aussi l’artisanat, les danses traditionnelles et la cuisine.",
-      "shot": "A village square with a potter shaping a jar, dancers in traditional clothes and a woman cooking on a fire.",
+      "shot": "A Cameroonian village square under a mango tree: a potter shaping a clay jar, dancers in traditional cloth, a woman cooking over a wood fire with a large pot.",
       "keywords": [
         "ARTISANAT"
-      ]
+      ],
+      "niba": "content"
     },
     {
       "n": 3,
       "block_kind": "narration",
       "vo_line": "En ville, on travaille dans les bureaux, les écoles et les hôpitaux.",
-      "shot": "A calm town street with plain buildings without any sign, a bus, and people walking to work.",
+      "shot": "A calm Cameroonian town street with low concrete buildings without any sign, red earth at the roadside, a yellow shared taxi, people walking to work.",
       "keywords": [
         "EN VILLE"
-      ]
+      ],
+      "niba": "content"
     },
     {
       "n": 4,
       "block_kind": "narration",
       "vo_line": "Il y a aussi les petits métiers : le call box et les vendeurs ambulants.",
-      "shot": "A street corner with a small phone booth stand under a parasol and a vendor carrying goods on his head.",
+      "shot": "A Cameroonian street corner with a small call box stand under a parasol and a street vendor carrying goods on his head.",
       "keywords": [
         "PETITS MÉTIERS"
-      ]
+      ],
+      "niba": "fete"
     }
   ]
 }
