@@ -8,14 +8,32 @@ famille, dans un salon très clair, l'écran en partie au soleil.
 Cette phrase tranche le reste : **thème clair**, contraste élevé, typographie
 large, cibles tactiles d'au moins 54 px, et aucun glisser-déposer.
 
-## Deux registres
+## Trois registres
 
-| | Espace parent | Espace enfant |
-|---|---|---|
-| Rôle du design | servir la tâche | donner envie d'ouvrir l'app |
-| Couleur | sobre, un accent | engagée : l'illustration porte l'écran |
-| Densité | compacte | aérée, une chose à la fois |
-| Typographie | échelle normale | échelle `kid`, un cran au-dessus |
+Il y en avait deux ; la page d'accueil publique en a ajouté un troisième, qui
+n'est ni l'un ni l'autre : il accueille quelqu'un qui ne connaît pas encore
+l'app.
+
+| | Porte d'entrée | Espace parent | Espace enfant |
+|---|---|---|---|
+| Où | accueil public, connexion, choix du profil, verrou | import, validation, réglages | leçons et jeu |
+| Rôle du design | donner envie d'entrer | servir la tâche | donner envie de revenir |
+| Couleur | fond `ciel`, illustrations | sobre, un accent | engagée : l'illustration porte l'écran |
+| Densité | aérée | compacte | aérée, une chose à la fois |
+| Typographie | Fredoka, échelle `kid` | système, échelle normale | Fredoka, échelle `kid` |
+| Mascotte | grande, elle parle | petite, elle signe | grande, elle réagit |
+
+Les trois partagent les mêmes surfaces : `--radius-card`, le filet `line`, le
+fond `white-warm`, et des boutons ronds dont seul le principal porte le relief
+`clay`. L'app doit rester une seule maison, vue de trois pièces.
+
+**Plus aucune étiquette sous 14 px, nulle part.** Les petites capitales grises
+de 12 px tenaient encore dans l'espace parent ; elles sont parties. Le parent
+lit sur le même téléphone que l'enfant, dans le même salon au soleil.
+
+**Chaque section dit à quoi elle sert.** Le composant `Card` prend un `titre`
+et un `sous` : une ligne sous le titre qui explique la fonction. Sans elle, un
+parent découvre à quoi sert une section en cliquant dedans.
 
 ## Couleur
 

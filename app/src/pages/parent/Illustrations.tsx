@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { preparerIllustration } from '../../lib/image';
 import type { FormeImage } from '../../lib/image';
-import { Card, ErrorNote, Loading, Pill } from '../../components/ui';
+import { Card, ErrorNote, Loading, Pill, Vide } from '../../components/ui';
 
 /**
  * Les illustrations des cours importés.
@@ -40,10 +40,10 @@ function Consigne({ texte }: { texte: string }) {
   const [copie, setCopie] = useState(false);
   return (
     <div className="mt-2 rounded-2xl bg-paper px-3 py-2">
-      <p className="text-xs leading-relaxed text-muted">{texte}</p>
+      <p className="text-sm leading-relaxed text-muted">{texte}</p>
       <button
         type="button"
-        className="mt-1 text-xs font-bold text-clay underline"
+        className="mt-1 text-sm font-bold text-clay underline"
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(texte);
@@ -121,15 +121,15 @@ function Depot({
         ref={input}
         type="file"
         accept="image/*"
-        className="max-w-[16rem] text-xs"
+        className="max-w-[16rem] text-sm"
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) envoi.mutate(f);
         }}
       />
-      {envoi.isPending ? <span className="text-xs text-muted">Préparation…</span> : null}
+      {envoi.isPending ? <span className="text-sm text-muted">Préparation…</span> : null}
       {envoi.isSuccess ? (
-        <span className="text-xs text-leaf">
+        <span className="text-sm text-leaf">
           Déposée · {(envoi.data.poids / 1024).toFixed(0)} ko
         </span>
       ) : null}
@@ -165,21 +165,20 @@ export default function Illustrations() {
 
   if (aIllustrer.length === 0) {
     return (
-      <Card>
-        <h2 className="text-xl font-bold">Illustrations</h2>
-        <p className="mt-2 text-sm text-muted">
-          Rien à illustrer pour l’instant. Chaque cours importé puis lu reçoit une consigne
-          d’image par leçon et par notion ; elles apparaîtront ici.
-        </p>
+      <Card titre="Illustrations" sous="Les consignes d’image, à produire puis à déposer.">
+        <Vide
+          titre="Rien à illustrer pour l’instant"
+          texte="Chaque cours importé puis lu reçoit une consigne d’image par leçon et par notion ; elles apparaîtront ici."
+        />
       </Card>
     );
   }
 
   return (
     <section className="grid gap-4">
-      <div>
-        <h2 className="text-xl font-bold">Illustrations à produire</h2>
-        <p className="mt-1 text-sm text-muted">
+      <div className="rounded-[var(--radius-card)] border border-line bg-white-warm/85 px-5 py-4 sm:px-6">
+        <h2 className="text-lg font-extrabold">Illustrations à produire</h2>
+        <p className="mt-0.5 text-sm text-muted">
           Copiez la consigne dans votre générateur d’images, puis déposez le résultat. L’image est
           réduite et convertie avant l’envoi, pour rester légère chez l’enfant.
         </p>
@@ -194,7 +193,7 @@ export default function Illustrations() {
 
           {lecon.illustration_prompt ? (
             <div className="mt-4 rounded-2xl border border-line p-3">
-              <p className="text-xs font-bold tracking-wide text-muted uppercase">
+              <p className="text-sm font-bold text-muted">
                 Scène d’ouverture · 16:9
               </p>
               <Consigne texte={lecon.illustration_prompt} />

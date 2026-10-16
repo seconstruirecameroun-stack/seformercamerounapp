@@ -309,6 +309,30 @@ body {
   animation: tombe var(--duree, 2200ms) linear var(--retard, 0ms) both;
 }
 
+/* Un code refusé se secoue : le geste dit « non » avant que le mot ne soit
+   lu, et il désigne le champ à corriger sans qu'on le cherche. */
+@keyframes secoue {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+.secoue {
+  animation: secoue 420ms ease-in-out;
+}
+
 /* Un compteur qui grimpe se remarque ; un compteur qui saute ne se voit pas. */
 @keyframes grimpe {
   from {
@@ -379,6 +403,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .defile,
   .flamme,
+  .secoue,
   .anneau-actif,
   .tremble,
   .eclate,

@@ -55,15 +55,14 @@ export default function Rappels({
   }
 
   return (
-    <Card>
-      <h2 className="text-xl font-bold">Rappels du soir</h2>
-      <p className="mt-1 text-sm text-muted">
-        Un seul message par jour, vers 18 h, et uniquement si l’enfant n’a pas encore joué.
-        Rien le week-end s’il a déjà travaillé, rien deux fois.
-      </p>
-
+    <Card
+      titre="Rappels du soir"
+      sous="Un seul message par jour, vers 18 h, et uniquement si l’enfant n’a pas encore joué."
+    >
       {EXPLICATIONS[general] ? (
-        <p className="mt-3 rounded-xl bg-sand px-4 py-3 text-sm">{EXPLICATIONS[general]}</p>
+        <p className="rounded-2xl bg-gold/25 px-4 py-3 text-sm font-semibold text-ink-2">
+          {EXPLICATIONS[general]}
+        </p>
       ) : null}
 
       {erreur ? (
@@ -74,7 +73,7 @@ export default function Rappels({
 
       {abonnes.isLoading ? <Loading /> : null}
 
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+      <ul className="mt-3 grid gap-3 sm:grid-cols-2">
         {enfants.map((enfant) => {
           const actif = abonnes.data?.has(enfant.id) ?? false;
           return (
@@ -83,7 +82,7 @@ export default function Rappels({
               className="flex items-center justify-between gap-3 rounded-2xl border border-line px-4 py-3"
             >
               <div className="min-w-0">
-                <strong>{enfant.first_name}</strong>
+                <strong className="block truncate">{enfant.first_name}</strong>
                 <small className="block text-muted">
                   {actif ? 'Rappels activés sur cet appareil' : 'Aucun rappel sur cet appareil'}
                 </small>

@@ -128,24 +128,19 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
   const pret = childId !== '' && fichiers.length > 0 && !envoi.isPending;
 
   return (
-    <Card>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-bold">Importer un cours</h2>
-        <Pill>photos ou PDF</Pill>
-      </div>
-      <p className="mt-2 text-sm text-muted">
-        Photographiez chaque page du cahier. Plusieurs photos envoyées ensemble forment un seul
-        cours, dans l’ordre où vous les choisissez.
-      </p>
-
-      <form onSubmit={submit} className="mt-4 grid gap-4">
+    <Card
+      titre="Importer un cours"
+      sous="Photographiez chaque page du cahier. Plusieurs photos envoyées ensemble forment un seul cours, dans l’ordre où vous les choisissez."
+      actions={<Pill>photos ou PDF</Pill>}
+    >
+      <form onSubmit={submit} className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="block">
-            <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+            <span className="mb-1.5 block text-sm font-bold">
               Pour quel enfant
             </span>
             <select
-              className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
               value={childId}
               onChange={(e) => setChildId(e.target.value)}
               required
@@ -160,11 +155,11 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+            <span className="mb-1.5 block text-sm font-bold">
               Matière
             </span>
             <select
-              className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2 disabled:opacity-50"
+              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay disabled:opacity-50"
               value={matiere}
               onChange={(e) => setMatiere(e.target.value)}
               disabled={!classe.data}
@@ -182,14 +177,14 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
             </select>
             {matiere === 'autre' ? (
               <input
-                className="mt-2 w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+                className="mt-2 w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
                 value={nouvelle}
                 onChange={(e) => setNouvelle(e.target.value)}
                 placeholder="Intitulé du cahier"
                 autoFocus
               />
             ) : null}
-            <span className="mt-1 block text-xs text-muted">
+            <span className="mt-1 block text-sm text-muted">
               {matiere === 'autre'
                 ? 'Elle sera ajoutée aux matières de cette classe.'
                 : 'Les matières de la classe, telles que l’école les nomme.'}
@@ -197,27 +192,27 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+            <span className="mb-1.5 block text-sm font-bold">
               Date du cours
             </span>
             <input
               type="date"
-              className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().slice(0, 10)}
             />
-            <span className="mt-1 block text-xs text-muted">
+            <span className="mt-1 block text-sm text-muted">
               Celle du cahier. Laissez vide si la page n’en porte pas.
             </span>
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+            <span className="mb-1.5 block text-sm font-bold">
               Type
             </span>
             <select
-              className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
               value={kind}
               onChange={(e) => setKind(e.target.value as 'cours' | 'devoir' | 'autre')}
             >
@@ -230,7 +225,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
 
         {(duJour.data ?? []).length > 0 ? (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold tracking-wide text-muted uppercase">
+            <span className="text-sm font-bold text-muted">
               Au programme aujourd’hui
             </span>
             {(duJour.data ?? []).map((id) => {
@@ -256,7 +251,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
         ) : null}
 
         <label className="block">
-          <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+          <span className="mb-1.5 block text-sm font-bold">
             Fichiers
           </span>
           <input
@@ -267,7 +262,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
             onChange={(e) => setFichiers([...(e.target.files ?? [])])}
             className="w-full rounded-2xl border border-dashed border-line bg-white-warm px-4 py-6 text-sm"
           />
-          <span className="mt-1 block text-xs text-muted">
+          <span className="mt-1 block text-sm text-muted">
             JPEG, PNG, WebP, HEIC ou PDF · 20 Mo maximum par fichier
           </span>
         </label>
@@ -284,7 +279,7 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
                 </span>
               </li>
             ))}
-            <li className="mt-1 text-xs text-muted">
+            <li className="mt-1 text-sm text-muted">
               {fichiers.length} fichier{fichiers.length > 1 ? 's' : ''} ·{' '}
               {(total / 1024 / 1024).toFixed(1)} Mo au total
             </li>

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { Button, Card, ErrorNote, Field, Loading } from './ui';
+import { ErrorNote, Loading } from './ui';
+import Mascotte from './jeu/Mascotte';
 
 /**
  * Verrou de l'espace parent, posé sur la route et non sur un bouton.
@@ -48,6 +49,13 @@ export default function PinGate({ children }: { children: ReactNode }) {
   const [erreur, setErreur] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ouvert, setOuvert] = useState(estDeverrouille());
+  const champ = useRef<HTMLInputElement>(null);
+
+  // Quatre chiffres posés : on vérifie sans attendre le bouton. Sur un
+  // téléphone, le clavier cache justement ce bouton.
+  useEffect(() => {
+    if (pin.length === 4 && !busy) champ.current?.form?.requestSubmit();
+  }, [pin, busy]);
 
   const codeDefini = useQuery({
     queryKey: ['pin-set'],
@@ -85,32 +93,80 @@ export default function PinGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <main className="mx-auto grid min-h-screen max-w-sm place-items-center p-6">
-      <Card className="w-full">
-        <form onSubmit={soumettre} className="grid gap-4">
-          <div>
-            <h1 className="text-xl font-bold">Espace parent</h1>
-            <p className="mt-1 text-sm text-muted">Entre le code à quatre chiffres.</p>
-          </div>
-          <Field
-            label="Code"
-            inputMode="numeric"
-            maxLength={4}
-            autoFocus
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-          />
-          {erreur ? <ErrorNote error={new Error(erreur)} /> : null}
-          <div className="flex gap-2">
-            <Button type="submit" disabled={busy || pin.length !== 4}>
-              Entrer
-            </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate('/')}>
+    <main className="enfant ciel flex min-h-screen flex-col items-center justify-center px-4 py-8">
+      <div className="w-full max-w-sm text-center">
+        <Mascotte humeur={erreur ? 'encourage' : 'content'} taille={76} className="mx-auto" />
+        <h1 className="mt-2 text-kid-xl font-black">Espace parent</h1>
+        <p className="mt-1 text-kid-sm text-ink-2">Entrez votre code à quatre chiffres.</p>
+
+        <form onSubmit={soumettre} className={'mt-6 ' + (erreur ? 'secoue' : '')}>
+          {/* Quatre pastilles, et un champ invisible par-dessus : l'enfant qui
+              regarde par-dessus l'épaule ne lit rien, et le parent voit tout
+              de suite combien de chiffres il a posés. */}
+          <label className="relative block">
+            <span className="sr-only">Code à quatre chiffres</span>
+            <span aria-hidden="true" className="flex justify-center gap-3">
+              {[0, 1, 2, 3].map((i) => (
+                <span
+                  key={i}
+                  className={
+                    'grid h-16 w-14 place-items-center rounded-2xl border-2 text-kid-xl font-black transition ' +
+                    (pin.length === i && !erreur
+                      ? 'border-clay bg-white-warm'
+                      : pin.length > i
+                        ? 'border-line bg-white-warm'
+                        : 'border-line bg-white-warm/60')
+                  }
+                >
+                  {pin.length > i ? '•' : ''}
+                </span>
+              ))}
+            </span>
+            <input
+              ref={champ}
+              type="password"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={4}
+              autoFocus
+              value={pin}
+              onChange={(e) => {
+                setErreur(null);
+                setPin(e.target.value.replace(/\D/g, '').slice(0, 4));
+              }}
+              className="absolute inset-0 h-full w-full cursor-pointer rounded-2xl bg-transparent text-transparent caret-transparent outline-none"
+            />
+          </label>
+
+          {erreur ? (
+            <p className="mt-4 text-kid-sm font-bold text-clay-dark" role="alert">
+              {erreur}
+            </p>
+          ) : null}
+
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <button
+              type="submit"
+              disabled={busy || pin.length !== 4}
+              className="tuile rounded-full bg-clay px-7 py-3.5 text-kid font-black text-white-warm shadow-[0_3px_0_var(--color-clay-dark)] disabled:opacity-50"
+            >
+              {busy ? 'Un instant…' : 'Entrer'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="tuile rounded-full border-2 border-line bg-white-warm px-7 py-3.5 text-kid font-bold shadow-[var(--shadow-tile)]"
+            >
               Retour
-            </Button>
+            </button>
           </div>
         </form>
-      </Card>
+
+        <p className="mt-6 text-kid-xs text-muted text-balance">
+          Ce code protège l’import des cours, la validation et les réglages. Il se redemande à
+          chaque nouvel onglet.
+        </p>
+      </div>
     </main>
   );
 }

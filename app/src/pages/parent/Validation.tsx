@@ -115,7 +115,7 @@ function LessonCard({ lecon }: { lecon: LessonPending }) {
             {lecon.subjects?.label ?? 'Matière à définir'} · {lecon.lang.toUpperCase()}
           </Pill>
           <input
-            className="mt-2 w-full rounded-2xl border border-line bg-white-warm px-4 py-2 text-xl font-bold outline-none focus:border-ink-2"
+            className="mt-2 w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-2.5 text-xl font-bold outline-none transition focus:border-clay"
             value={titre}
             onChange={(e) => setTitre(e.target.value)}
             aria-label="Titre de la leçon"
@@ -124,18 +124,18 @@ function LessonCard({ lecon }: { lecon: LessonPending }) {
       </div>
 
       <label className="mt-4 block">
-        <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
+        <span className="mb-1.5 block text-sm font-bold">
           Résumé à retenir
         </span>
         <textarea
-          className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
+          className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
           rows={4}
           value={resume}
           onChange={(e) => setResume(e.target.value)}
         />
       </label>
 
-      <p className="mt-4 text-xs font-bold tracking-wide text-muted uppercase">
+      <p className="mt-4 text-sm font-bold text-muted">
         {gardees} notion{gardees > 1 ? 's' : ''} sur {notions.length}
       </p>
 
@@ -151,12 +151,12 @@ function LessonCard({ lecon }: { lecon: LessonPending }) {
               }
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-bold text-muted uppercase">
+                <span className="text-sm font-bold text-muted">
                   {TYPES[n.kind] ?? n.kind}
                 </span>
                 <button
                   type="button"
-                  className="text-xs font-semibold text-clay underline"
+                  className="text-sm font-semibold text-clay underline"
                   onClick={() =>
                     setRetirees(retiree ? retirees.filter((x) => x !== n.id) : [...retirees, n.id])
                   }

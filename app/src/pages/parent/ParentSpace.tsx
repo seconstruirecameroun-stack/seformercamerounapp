@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useSession } from '../../lib/auth';
-import { Button, Card, ErrorNote, Field, Loading, Pill } from '../../components/ui';
+import { Button, Card, ErrorNote, Field, Loading, Pill, Vide } from '../../components/ui';
 import ImportCourse from './ImportCourse';
 import Validation from './Validation';
 import Illustrations from './Illustrations';
 import Rappels from '../../components/parent/Rappels';
 import { verrouiller } from '../../components/PinGate';
+import Mascotte from '../../components/jeu/Mascotte';
 import type { ClassRow } from '../../types/db';
 
 const ETAPES: Record<string, string> = {
@@ -28,7 +28,29 @@ type ChildWithClass = {
   classes: { code: string; subsystem: string } | null;
 };
 
-function AddChild({ classes }: { classes: ClassRow[] }) {
+const SELECT =
+  'w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink ' +
+  'outline-none transition focus:border-clay';
+
+/**
+ * Les enfants : la liste et l'ajout au même endroit.
+ *
+ * C'étaient deux cartes voisines, « Profils » puis « Ajouter un enfant ». Un
+ * parent qui vient d'en ajouter un cherchait ensuite où il était passé. Le
+ * formulaire est maintenant replié sous la liste : on le déplie quand on en a
+ * besoin, et le résultat apparaît juste au-dessus.
+ */
+function Enfants({
+  classes,
+  enfants,
+  chargement,
+  erreur,
+}: {
+  classes: ClassRow[];
+  enfants: ChildWithClass[];
+  chargement: boolean;
+  erreur: unknown;
+}) {
   const qc = useQueryClient();
   const [firstName, setFirstName] = useState('');
   const [classId, setClassId] = useState('');
@@ -55,64 +77,104 @@ function AddChild({ classes }: { classes: ClassRow[] }) {
     },
   });
 
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    add.mutate();
-  }
-
   const francophone = classes.filter((c) => c.subsystem === 'francophone');
   const anglophone = classes.filter((c) => c.subsystem === 'anglophone');
 
   return (
-    <Card>
-      <h2 className="text-xl font-bold">Ajouter un enfant</h2>
-      <form onSubmit={submit} className="mt-4 grid gap-4 sm:grid-cols-3">
-        <Field
-          label="Prénom"
-          required
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+    <Card
+      titre="Vos enfants"
+      sous="Un profil par enfant : chacun sa classe, sa progression et sa collection."
+    >
+      {chargement ? <Loading /> : null}
+      {erreur ? <ErrorNote error={erreur} /> : null}
+
+      {enfants.length > 0 ? (
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {enfants.map((child) => (
+            <li
+              key={child.id}
+              className="flex items-center gap-3 rounded-2xl border border-line px-4 py-3"
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gold/30 text-xl">
+                {child.avatar ?? child.first_name.slice(0, 1).toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <strong className="block truncate">{child.first_name}</strong>
+                <small className="block text-muted">
+                  {child.classes ? child.classes.code : 'Classe à définir'}
+                </small>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {!chargement && enfants.length === 0 ? (
+        <Vide
+          titre="Aucun profil pour l’instant"
+          texte="Ajoutez un premier enfant : c’est lui qui recevra les cours que vous importerez."
         />
-        <label className="block">
-          <span className="mb-1 block text-xs font-bold tracking-wide text-muted uppercase">
-            Classe
+      ) : null}
+
+      <details className="group mt-4">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-full border-2 border-line bg-white-warm px-5 py-2.5 text-base font-bold marker:content-['']">
+          <span aria-hidden="true" className="text-clay">
+            +
           </span>
-          <select
-            className="w-full rounded-2xl border border-line bg-white-warm px-4 py-3 text-ink outline-none focus:border-ink-2"
-            value={classId}
-            onChange={(e) => setClassId(e.target.value)}
-          >
-            <option value="">À définir</option>
-            <optgroup label="Francophone">
-              {francophone.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.code}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="Anglophone">
-              {anglophone.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.code}
-                </option>
-              ))}
-            </optgroup>
-          </select>
-        </label>
-        <Field
-          label="Avatar"
-          value={avatar}
-          onChange={(e) => setAvatar(e.target.value)}
-          hint="Un emoji, par exemple 🦁"
-          maxLength={4}
-        />
-        <div className="sm:col-span-3">
-          {add.error ? <ErrorNote error={add.error} /> : null}
-          <Button type="submit" disabled={add.isPending || firstName.trim().length === 0}>
-            {add.isPending ? 'Enregistrement…' : 'Ajouter'}
-          </Button>
-        </div>
-      </form>
+          Ajouter un enfant
+        </summary>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            add.mutate();
+          }}
+          className="mt-4 grid gap-4 sm:grid-cols-3"
+        >
+          <Field
+            label="Prénom"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-bold">Classe</span>
+            <select className={SELECT} value={classId} onChange={(e) => setClassId(e.target.value)}>
+              <option value="">À définir</option>
+              <optgroup label="Francophone">
+                {francophone.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Anglophone">
+                {anglophone.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+          </label>
+          <Field
+            label="Avatar"
+            value={avatar}
+            onChange={(e) => setAvatar(e.target.value)}
+            hint="Un emoji, par exemple 🦁"
+            maxLength={4}
+          />
+          <div className="grid gap-3 sm:col-span-3">
+            {add.error ? <ErrorNote error={add.error} /> : null}
+            <Button
+              type="submit"
+              className="justify-self-start"
+              disabled={add.isPending || firstName.trim().length === 0}
+            >
+              {add.isPending ? 'Enregistrement…' : 'Ajouter'}
+            </Button>
+          </div>
+        </form>
+      </details>
     </Card>
   );
 }
@@ -143,12 +205,19 @@ function PinSetup() {
   });
 
   return (
-    <Card>
-      <h2 className="text-xl font-bold">Code de l’espace parent</h2>
-      <p className="mt-2 text-sm text-muted">
+    <Card
+      titre="Code de l’espace parent"
+      sous="Quatre chiffres qui protègent l’import, la validation et les réglages."
+    >
+      <p
+        className={
+          'rounded-2xl px-4 py-3 text-sm font-semibold ' +
+          (isSet.data ? 'bg-leaf/15 text-leaf' : 'bg-gold/25 text-ink-2')
+        }
+      >
         {isSet.data
           ? 'Un code est défini. Vous pouvez le remplacer ci-dessous.'
-          : 'Aucun code pour l’instant : l’espace parent est accessible à tous sur cet appareil.'}
+          : 'Aucun code pour l’instant : sur cet appareil, l’espace parent est ouvert à tous — y compris à vos enfants.'}
       </p>
       <form
         className="mt-4 flex flex-wrap items-end gap-3"
@@ -206,20 +275,21 @@ function Library() {
   });
 
   return (
-    <Card>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-bold">Bibliothèque</h2>
+    <Card
+      titre="Bibliothèque"
+      sous="Tout ce que vos enfants peuvent déjà jouer."
+      actions={
         <Button variant="secondary" onClick={() => seed.mutate()} disabled={seed.isPending}>
-          {seed.isPending ? 'Chargement…' : 'Charger la leçon de démonstration'}
+          {seed.isPending ? 'Chargement…' : 'Leçon de démonstration'}
         </Button>
-      </div>
-
-      {seed.error ? <div className="mt-3"><ErrorNote error={seed.error} /></div> : null}
+      }
+    >
+      {seed.error ? <div className="mb-3"><ErrorNote error={seed.error} /></div> : null}
 
       {lessons.isLoading ? <Loading /> : null}
       {lessons.error ? <ErrorNote error={lessons.error} /> : null}
 
-      <ul className="mt-4 grid gap-3">
+      <ul className="grid gap-3">
         {(lessons.data ?? []).map((lesson) => (
           <li
             key={lesson.id}
@@ -238,10 +308,10 @@ function Library() {
       </ul>
 
       {lessons.data && lessons.data.length === 0 ? (
-        <p className="mt-4 text-sm text-muted">
-          Aucune leçon. L’import de cours arrive au lot 1 ; en attendant, chargez la leçon de
-          démonstration.
-        </p>
+        <Vide
+          titre="Aucune leçon publiée"
+          texte="Importez un cours photographié, ou chargez la leçon de démonstration pour voir à quoi ressemble le jeu."
+        />
       ) : null}
     </Card>
   );
@@ -339,19 +409,21 @@ function Documents() {
   }
 
   return (
-    <Card>
-      <h2 className="text-xl font-bold">Documents importés</h2>
+    <Card
+      titre="Documents importés"
+      sous="Chaque envoi, et où il en est de sa lecture."
+    >
       {docs.isLoading ? <Loading /> : null}
       {docs.error ? <ErrorNote error={docs.error} /> : null}
 
       {envois.size === 0 && !docs.isLoading ? (
-        <p className="mt-3 text-sm text-muted">
-          Rien d’importé pour l’instant. Les photos envoyées apparaîtront ici avec leur état
-          d’avancement.
-        </p>
+        <Vide
+          titre="Rien d’importé pour l’instant"
+          texte="Les pages que vous photographiez apparaîtront ici, groupées par envoi, avec leur état d’avancement."
+        />
       ) : null}
 
-      <ul className="mt-4 grid gap-3">
+      <ul className="grid gap-3">
         {[...envois.values()].map((pages) => {
           const tete = pages[0];
           const enEchec = pages.find((p) => p.stage === 'echec');
@@ -368,7 +440,7 @@ function Documents() {
                 </div>
                 <Pill>{ETAPES[tete.stage] ?? tete.stage}</Pill>
               </div>
-              <ol className="mt-2 grid gap-1 text-xs text-muted">
+              <ol className="mt-2 grid gap-1 text-sm text-muted">
                 {pages.map((p) => (
                   <li key={p.id}>
                     {p.page_no}. {p.original_name ?? 'sans nom'}
@@ -376,7 +448,7 @@ function Documents() {
                 ))}
               </ol>
               {enEchec?.stage_error ? (
-                <p className="mt-2 text-xs text-clay-dark">{enEchec.stage_error}</p>
+                <p className="mt-2 text-sm font-semibold text-clay-dark">{enEchec.stage_error}</p>
               ) : null}
               {tete.stage === 'importe' || tete.stage === 'echec' ? (
                 <BoutonLecture batchId={tete.batch_id} stage={tete.stage} />
@@ -386,7 +458,7 @@ function Documents() {
         })}
       </ul>
 
-      <p className="mt-4 text-xs text-muted">
+      <p className="mt-4 text-sm text-muted">
         La lecture appelle la fonction d’extraction : elle transcrit les pages, en tire un résumé
         et des notions, puis dépose le tout dans « À valider ». Rien n’atteint l’enfant avant
         votre relecture.
@@ -420,73 +492,60 @@ export default function ParentSpace() {
   });
 
   return (
-    <main className="mx-auto grid max-w-4xl gap-6 p-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Pill>Espace parent</Pill>
-          <h1 className="mt-2 text-3xl font-black">Mes enfants et leurs cours</h1>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              // Quitter l'espace parent le referme : sinon le verrou ne
-              // protegerait que la premiere visite de l'onglet.
-              verrouiller();
-              navigate('/');
-            }}
-          >
-            Espace enfant
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              verrouiller();
-              supabase.auth.signOut();
-            }}
-          >
-            Se déconnecter
-          </Button>
-        </div>
-      </header>
-
-      <Card>
-        <h2 className="text-xl font-bold">Profils</h2>
-        {children.isLoading ? <Loading /> : null}
-        {children.error ? <ErrorNote error={children.error} /> : null}
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {(children.data ?? []).map((child) => (
-            <li
-              key={child.id}
-              className="flex items-center gap-3 rounded-2xl border border-line px-4 py-3"
+    <main className="ciel min-h-screen pb-16">
+      <div className="mx-auto grid max-w-4xl gap-5 px-4 py-6 sm:px-6">
+        {/* L'en-tête porte le lionceau en petit : c'est la même maison que
+            l'espace enfant, vue depuis le bureau du parent. */}
+        <header className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Mascotte taille={44} className="shrink-0" />
+            <div>
+              <Pill>Espace parent</Pill>
+              <h1 className="mt-1.5 text-2xl font-black sm:text-3xl">Les cours de vos enfants</h1>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                // Quitter l'espace parent le referme : sinon le verrou ne
+                // protegerait que la premiere visite de l'onglet.
+                verrouiller();
+                navigate('/');
+              }}
             >
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-gold/30">
-                {child.avatar ?? child.first_name.slice(0, 1).toUpperCase()}
-              </span>
-              <div>
-                <strong>{child.first_name}</strong>
-                <small className="block text-muted">
-                  {child.classes ? child.classes.code : 'Classe à définir'}
-                </small>
-              </div>
-            </li>
-          ))}
-        </ul>
-        {children.data && children.data.length === 0 ? (
-          <p className="mt-4 text-sm text-muted">Aucun profil enregistré.</p>
-        ) : null}
-      </Card>
+              Espace enfant
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                verrouiller();
+                supabase.auth.signOut();
+              }}
+            >
+              Se déconnecter
+            </Button>
+          </div>
+        </header>
 
-      {session?.user.id ? (
-        <Rappels parentId={session.user.id} enfants={children.data ?? []} />
-      ) : null}
-      {classes.data ? <AddChild classes={classes.data} /> : null}
-      <ImportCourse enfants={children.data ?? []} />
-      <Documents />
-      <Validation />
-      <Illustrations />
-      <Library />
-      <PinSetup />
+        {/* L'ordre suit le parcours réel : on importe, on relit ce qui en est
+            sorti, on suit ses envois — et les réglages ferment la marche. */}
+        <ImportCourse enfants={children.data ?? []} />
+        <Validation />
+        <Documents />
+        <Enfants
+          classes={classes.data ?? []}
+          enfants={children.data ?? []}
+          chargement={children.isLoading}
+          erreur={children.error}
+        />
+        {session?.user.id ? (
+          <Rappels parentId={session.user.id} enfants={children.data ?? []} />
+        ) : null}
+        <Library />
+        <Illustrations />
+        <PinSetup />
+      </div>
     </main>
   );
 }
