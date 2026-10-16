@@ -8,6 +8,7 @@ import ImportCourse from './ImportCourse';
 import Validation from './Validation';
 import Illustrations from './Illustrations';
 import Rappels from '../../components/parent/Rappels';
+import Progres from '../../components/parent/Progres';
 import { verrouiller } from '../../components/PinGate';
 import Mascotte from '../../components/jeu/Mascotte';
 import type { ClassRow } from '../../types/db';
@@ -39,6 +40,14 @@ const SELECT =
  * parent qui vient d'en ajouter un cherchait ensuite où il était passé. Le
  * formulaire est maintenant replié sous la liste : on le déplie quand on en a
  * besoin, et le résultat apparaît juste au-dessus.
+ */
+/**
+ * Les enfants : leur avancement, et de quoi en ajouter un.
+ *
+ * La liste des prénoms a cédé la place aux cartes de progression — c'est la
+ * première chose qu'un parent vient voir, et c'était justement ce qui
+ * manquait. Le formulaire d'ajout reste replié dessous : on l'ouvre deux fois
+ * dans la vie de l'app.
  */
 function Enfants({
   classes,
@@ -81,33 +90,16 @@ function Enfants({
   const anglophone = classes.filter((c) => c.subsystem === 'anglophone');
 
   return (
-    <Card
-      titre="Vos enfants"
-      sous="Un profil par enfant : chacun sa classe, sa progression et sa collection."
-    >
+    <section className="grid gap-4">
+      <div>
+        <h2 className="text-lg font-extrabold">Vos enfants</h2>
+        <p className="mt-0.5 text-sm text-muted">Où ils en sont, et depuis quand.</p>
+      </div>
+
       {chargement ? <Loading /> : null}
       {erreur ? <ErrorNote error={erreur} /> : null}
 
-      {enfants.length > 0 ? (
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {enfants.map((child) => (
-            <li
-              key={child.id}
-              className="flex items-center gap-3 rounded-2xl border border-line px-4 py-3"
-            >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gold/30 text-xl">
-                {child.avatar ?? child.first_name.slice(0, 1).toUpperCase()}
-              </span>
-              <div className="min-w-0">
-                <strong className="block truncate">{child.first_name}</strong>
-                <small className="block text-muted">
-                  {child.classes ? child.classes.code : 'Classe à définir'}
-                </small>
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <Progres enfants={enfants} />
 
       {!chargement && enfants.length === 0 ? (
         <Vide
@@ -116,8 +108,8 @@ function Enfants({
         />
       ) : null}
 
-      <details className="group mt-4">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-2 rounded-full border-2 border-line bg-white-warm px-5 py-2.5 text-base font-bold marker:content-['']">
+      <details className="rounded-[var(--radius-card)] border border-line bg-white-warm/85 px-5 py-4">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-base font-bold marker:content-['']">
           <span aria-hidden="true" className="text-clay">
             +
           </span>
@@ -175,7 +167,7 @@ function Enfants({
           </div>
         </form>
       </details>
-    </Card>
+    </section>
   );
 }
 
@@ -528,23 +520,46 @@ export default function ParentSpace() {
           </div>
         </header>
 
-        {/* L'ordre suit le parcours réel : on importe, on relit ce qui en est
-            sorti, on suit ses envois — et les réglages ferment la marche. */}
-        <ImportCourse enfants={children.data ?? []} />
-        <Validation />
-        <Documents />
+        {/* Trois blocs visibles, et le reste dans un tiroir. L'espace parent
+            empilait huit sections de même poids : on y cherchait longtemps ce
+            qu'on vient y faire presque chaque jour — voir où en sont les
+            enfants, et ajouter le cours du soir. */}
         <Enfants
           classes={classes.data ?? []}
           enfants={children.data ?? []}
           chargement={children.isLoading}
           erreur={children.error}
         />
-        {session?.user.id ? (
-          <Rappels parentId={session.user.id} enfants={children.data ?? []} />
-        ) : null}
-        <Library />
-        <Illustrations />
-        <PinSetup />
+
+        <ImportCourse enfants={children.data ?? []} />
+        <Validation />
+
+        <details className="rounded-[var(--radius-card)] border border-line bg-white-warm/70 px-5 py-4 sm:px-6">
+          <summary className="cursor-pointer list-none marker:content-['']">
+            <span className="flex items-center justify-between gap-3">
+              <span>
+                <strong className="block text-lg font-extrabold">Réglages et outils</strong>
+                <span className="mt-0.5 block text-sm text-muted">
+                  Documents importés, rappels du soir, bibliothèque, illustrations, code d’accès.
+                </span>
+              </span>
+              <span aria-hidden="true" className="shrink-0 text-xl text-clay">
+                <span className="group-open:hidden">+</span>
+              </span>
+            </span>
+          </summary>
+
+          <div className="mt-5 grid gap-5">
+            <Documents />
+            {session?.user.id ? (
+              <Rappels parentId={session.user.id} enfants={children.data ?? []} />
+            ) : null}
+            <Library />
+            <Illustrations />
+            <PinSetup />
+          </div>
+        </details>
+
       </div>
     </main>
   );

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { BUCKET } from '../../lib/import';
-import { Button, Card, ErrorNote, Loading, Pill, Vide } from '../../components/ui';
+import { Button, Card, ErrorNote, Loading, Pill } from '../../components/ui';
 
 /**
  * La file de validation.
@@ -465,14 +465,14 @@ export default function Validation() {
 
   const liste = attente.data ?? [];
 
+  // Rien à relire : une carte entière le dirait trop fort. Une ligne suffit
+  // à rappeler que cette étape existe, sans encombrer la page.
   if (liste.length === 0) {
     return (
-      <Card titre="À valider" sous="Ce que la lecture a tiré de vos photos, avant publication.">
-        <Vide
-          titre="Rien n’attend votre relecture"
-          texte="Les leçons extraites d’un cours importé apparaissent ici. L’enfant ne verra que ce que vous aurez validé."
-        />
-      </Card>
+      <p className="rounded-2xl border border-dashed border-line px-5 py-3 text-base text-muted">
+        <strong className="font-bold text-ink-2">À valider</strong> · rien n’attend votre
+        relecture. Les leçons tirées d’un cours importé apparaîtront ici.
+      </p>
     );
   }
 
