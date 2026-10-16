@@ -335,6 +335,19 @@ c'est la case vide qui donne envie. Une case non gagnée affiche sa condition
 (« Jouer 7 jours de suite »), pas son nom — l'enfant doit savoir quoi faire,
 pas ce qu'il rate.
 
+### Où tout cela vit
+
+| | Adresse |
+|---|---|
+| L'app | https://seformercameroun.netlify.app — redéployée à chaque poussée sur `main` |
+| La base, le stockage, les fonctions | projet Supabase `seformercamerounapp` |
+| Le dépôt | `seconstruirecameroun-stack/seformercamerounapp` |
+
+Trois variables suffisent à Netlify : l'adresse Supabase, la clé publiable, et
+la moitié publique de la clé VAPID. Ni la clé `service_role`, ni la moitié
+privée VAPID n'y figurent — elles n'ont rien à faire dans un site statique,
+dont tout le contenu est lisible par qui l'ouvre.
+
 ### Le rappel du soir
 
 Toute la gamification suppose que l'enfant ouvre l'app. Or un enfant de sept

@@ -1,6 +1,13 @@
-# Les variables VITE_SUPABASE_URL et VITE_SUPABASE_PUBLISHABLE_KEY se
-# renseignent dans Netlify : Site configuration > Environment variables.
-# La cle service_role n'a rien a faire ici.
+# Le site vit sur https://seformercameroun.netlify.app
+# Projet Netlify : seformercameroun, equipe seconstruirecameroun.
+# Il se redeploie tout seul a chaque poussee sur main.
+#
+# Trois variables se renseignent dans Netlify : Site configuration >
+# Environment variables.
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_PUBLISHABLE_KEY
+#   VITE_VAPID_PUBLIC_KEY   (la moitie publique des rappels du soir)
+# La cle service_role n'a rien a faire ici, ni la moitie privee VAPID.
 
 [build]
   base = "app"
