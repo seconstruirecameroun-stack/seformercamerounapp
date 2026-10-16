@@ -9,6 +9,7 @@ import Validation from './Validation';
 import Illustrations from './Illustrations';
 import Rappels from '../../components/parent/Rappels';
 import Progres from '../../components/parent/Progres';
+import NouvelEnfant from '../../components/parent/NouvelEnfant';
 import { verrouiller } from '../../components/PinGate';
 import Mascotte from '../../components/jeu/Mascotte';
 import type { ClassRow } from '../../types/db';
@@ -26,12 +27,9 @@ type ChildWithClass = {
   first_name: string;
   avatar: string | null;
   class_id: string | null;
+  school: string | null;
   classes: { code: string; subsystem: string } | null;
 };
-
-const SELECT =
-  'w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink ' +
-  'outline-none transition focus:border-clay';
 
 /**
  * Les enfants : la liste et l'ajout au même endroit.
@@ -49,6 +47,14 @@ const SELECT =
  * manquait. Le formulaire d'ajout reste replié dessous : on l'ouvre deux fois
  * dans la vie de l'app.
  */
+/**
+ * Les enfants : leur avancement, et de quoi en ajouter un.
+ *
+ * La liste des prénoms a cédé la place aux cartes de progression — c'est la
+ * première chose qu'un parent vient voir. L'ajout, lui, est passé d'un
+ * formulaire de trois champs à un assistant : on n'ajoute un enfant que deux
+ * fois dans la vie de l'app, autant poser les bonnes questions ce jour-là.
+ */
 function Enfants({
   classes,
   enfants,
@@ -60,34 +66,10 @@ function Enfants({
   chargement: boolean;
   erreur: unknown;
 }) {
-  const qc = useQueryClient();
-  const [firstName, setFirstName] = useState('');
-  const [classId, setClassId] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [assistant, setAssistant] = useState(false);
 
-  const add = useMutation({
-    mutationFn: async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const parentId = auth.user?.id;
-      if (!parentId) throw new Error('Session expirée, reconnectez-vous.');
-      const { error } = await supabase.from('children').insert({
-        parent_id: parentId,
-        first_name: firstName.trim(),
-        class_id: classId || null,
-        avatar: avatar.trim() || null,
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setFirstName('');
-      setClassId('');
-      setAvatar('');
-      qc.invalidateQueries({ queryKey: ['children'] });
-    },
-  });
-
-  const francophone = classes.filter((c) => c.subsystem === 'francophone');
-  const anglophone = classes.filter((c) => c.subsystem === 'anglophone');
+  // Presque toujours la même école d'un enfant à l'autre : on la propose.
+  const ecoleConnue = enfants.map((e) => e.school).find((s) => s && s.trim()) ?? null;
 
   return (
     <section className="grid gap-4">
@@ -101,72 +83,29 @@ function Enfants({
 
       <Progres enfants={enfants} />
 
-      {!chargement && enfants.length === 0 ? (
+      {!chargement && enfants.length === 0 && !assistant ? (
         <Vide
           titre="Aucun profil pour l’instant"
           texte="Ajoutez un premier enfant : c’est lui qui recevra les cours que vous importerez."
+          action={<Button onClick={() => setAssistant(true)}>Ajouter un enfant</Button>}
         />
       ) : null}
 
-      <details className="rounded-[var(--radius-card)] border border-line bg-white-warm/85 px-5 py-4">
-        <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-base font-bold marker:content-['']">
-          <span aria-hidden="true" className="text-clay">
-            +
-          </span>
-          Ajouter un enfant
-        </summary>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            add.mutate();
-          }}
-          className="mt-4 grid gap-4 sm:grid-cols-3"
+      {assistant ? (
+        <NouvelEnfant
+          classes={classes}
+          ecoleConnue={ecoleConnue}
+          onFini={() => setAssistant(false)}
+        />
+      ) : enfants.length > 0 ? (
+        <Button
+          variant="secondary"
+          className="justify-self-start"
+          onClick={() => setAssistant(true)}
         >
-          <Field
-            label="Prénom"
-            required
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold">Classe</span>
-            <select className={SELECT} value={classId} onChange={(e) => setClassId(e.target.value)}>
-              <option value="">À définir</option>
-              <optgroup label="Francophone">
-                {francophone.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.code}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Anglophone">
-                {anglophone.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.code}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-          </label>
-          <Field
-            label="Avatar"
-            value={avatar}
-            onChange={(e) => setAvatar(e.target.value)}
-            hint="Un emoji, par exemple 🦁"
-            maxLength={4}
-          />
-          <div className="grid gap-3 sm:col-span-3">
-            {add.error ? <ErrorNote error={add.error} /> : null}
-            <Button
-              type="submit"
-              className="justify-self-start"
-              disabled={add.isPending || firstName.trim().length === 0}
-            >
-              {add.isPending ? 'Enregistrement…' : 'Ajouter'}
-            </Button>
-          </div>
-        </form>
-      </details>
+          + Ajouter un enfant
+        </Button>
+      ) : null}
     </section>
   );
 }
@@ -476,7 +415,7 @@ export default function ParentSpace() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('children')
-        .select('id, first_name, avatar, class_id, classes(code, subsystem)')
+        .select('id, first_name, avatar, class_id, school, classes(code, subsystem)')
         .order('created_at');
       if (error) throw error;
       return data as unknown as ChildWithClass[];
