@@ -338,7 +338,46 @@ body {
   animation: pulseOr 1200ms ease-in-out 2;
 }
 
+
+/* ───────────────── La page d'accueil publique ─────────────────
+   Elle emprunte au registre de l'enfant — c'est lui qu'on décrit — mais elle
+   s'adresse à un parent : les textes y sont plus denses et les blocs plus
+   larges que dans l'app. */
+
+/* Un semis de points, très pâle : il donne du grain au fond sans que l'œil
+   s'y arrête. */
+.pointille {
+  background-image: radial-gradient(oklch(0.3 0.045 205 / 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Le bandeau qui défile. Il s'arrête net pour qui demande moins de
+   mouvement, et il ne porte jamais d'information qu'on ne retrouve pas
+   ailleurs dans la page. */
+@keyframes defile {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.defile {
+  animation: defile 28s linear infinite;
+}
+
+/* Le cadre de téléphone : une capture de l'app, montrée pour ce qu'elle est.
+   Pas de reflet ni de perspective — l'écran doit rester lisible. */
+.telephone {
+  border: 10px solid var(--color-ink);
+  border-radius: 38px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  background: var(--color-ink);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .defile,
   .flamme,
   .anneau-actif,
   .tremble,
