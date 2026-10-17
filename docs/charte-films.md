@@ -20,11 +20,25 @@ c'est lui qui dit « tu m'as manqué » après trois jours. Si le film est
 expliqué par Niba, la leçon n'arrive plus d'un inconnu : elle arrive de
 quelqu'un avec qui l'enfant a déjà une histoire.
 
+**C'est donc Niba qu'on entend.** La narration ne disparaît pas — elle change
+de bouche. La voix reste celle de Céline, qui porte déjà les huit films
+existants et qu'on ne remplace pas sans faire sonner la suite comme un autre
+produit ; ce qui change est la direction de jeu. Au lieu de
+« native French educational narrator, clean diction », la consigne dit
+désormais :
+
+> `[a warm friendly young lion cub speaking to a nine year old child, native
+> French pronunciation, cheerful and encouraging, clear slow articulation, a
+> smile in the voice, starts speaking immediately]`
+
+La musique et les bruits restent eux aussi. Un film muet n'est pas un film,
+et un enfant de huit ans décroche d'une image qui ne fait pas de bruit.
+
 **Niba est dessiné, jamais généré.** Il existe en SVG dans
 `app/src/components/jeu/Mascotte.tsx`, et c'est cette définition-là qui fait
 foi. Un générateur d'images rendrait un lionceau différent à chaque plan ;
-l'enfant verrait six lions, pas Niba. Le film doit donc être composé en code,
-avec le même tracé :
+l'enfant verrait six lions, pas Niba. Il est donc posé par l'application
+par-dessus le plan, comme les mots-clés, avec le même tracé :
 
 | Élément    | Définition                                                                 |
 |------------|----------------------------------------------------------------------------|
@@ -40,8 +54,12 @@ clignement est **irrégulier** — à intervalle fixe, l'œil devient un métron
 et le personnage a l'air mécanique.
 
 Ce qu'il ne fait pas : il ne récite pas la leçon à la place de l'image. Quand
-il nomme la Sanaga, la Sanaga est à l'écran au moment où le mot tombe. Sa
-bulle porte la phrase, l'image porte la preuve.
+il nomme la Sanaga, la Sanaga est à l'écran au moment où le mot tombe. Sa voix
+porte la phrase, l'image porte la preuve.
+
+Une bulle double la voix à l'écran. Elle n'est pas là en remplacement du son
+mais en plus : le film sera regardé dans un transport, en classe, sur un
+téléphone partagé dont le haut-parleur est faible ou coupé.
 
 ---
 
@@ -115,8 +133,9 @@ nord : étroit et pointu au nord, large au sud, renflé à l'ouest sur la côte.
   on corrige un mot sans repayer une image, et le même plan sert en français
   comme en anglais.
 - **Aucune personne réelle, aucune marque, aucune enseigne lisible.**
-- **Le film se comprend sans le son.** Il sera regardé sur un téléphone
-  partagé, souvent en silence, parfois dans un transport.
+- **Le film a une voix, une musique et des bruits**, et il se comprend quand
+  même sans le son. Les deux, pas l'un ou l'autre : le son porte le film, la
+  bulle le rattrape quand le téléphone est partagé ou coupé.
 - **Rien sous 17 px.** Un enfant lit à bout de bras, en plein jour.
 - Palette : `ink`, `ink-2`, `white-warm`, `sand`, `clay`, `clay-dark`, `gold`,
   `leaf`, `sky`, `mint`, `lilac`. Pas d'autre couleur.
@@ -125,14 +144,23 @@ nord : étroit et pointu au nord, large au sud, renflé à l'ouest sur la côte.
 
 ## Chaîne de production
 
-L'ancienne chaîne passait par des images générées puis une voix off. Le
-connecteur de génération d'images n'est plus accessible depuis l'atelier, et
-de toute façon il ne savait tenir ni Niba ni la géographie.
+Tout se fait sur **Higgsfield**, et la chaîne n'a pas changé de nature :
 
-La chaîne retenue compose **en code** : Niba exact à chaque image, fleuves à
-leur place, texte net et corrigeable. Le prix à payer est la voix, qui ne se
-génère pas par ce canal — Niba parle donc en bulles, ce que la règle « le film
-se comprend sans le son » rendait de toute façon nécessaire.
+1. **L'image** du plan — `nano_banana_2`, 16:9, environ 2 crédits. C'est là
+   que se joue la règle du vrai lieu : le paysage réel, et un coin laissé
+   libre pour Niba.
+2. **L'animation** du plan — `grok_video_v15_lite`, 5 à 9 s, 720p, environ
+   5 crédits. Mouvement lent : l'eau qui coule, l'herbe qui plie, un animal
+   qui lève la tête. Jamais de secousse de caméra, jamais de coupe.
+3. **La voix** — Text to Speech, ElevenLabs v3, voix Céline dirigée en Niba,
+   **0,6 à 0,75 crédit la réplique**. C'est le poste le moins cher du film,
+   et celui qui change le plus l'attachement de l'enfant.
+4. **La musique et les bruits**, puis le montage.
+5. **Niba, sa bulle et les mots affichés** sont posés par l'application
+   par-dessus le plan, en SVG et en texte — jamais générés.
+
+Un plan complet revient donc à une dizaine de crédits, un film de six plans à
+une quarantaine.
 
 Les scripts verrouillés restent dans `work/video-*/script.md`, et
 `work/films-*.py` reste la source : on y écrit la narration, le plan et les

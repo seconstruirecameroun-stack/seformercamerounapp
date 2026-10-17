@@ -148,7 +148,7 @@ def ecrire():
 
         md = ['# %s — script verrouillé' % titre, '',
               'Format : CM1, 16:9, %d plans.' % len(blocs),
-              'Narrateur : Niba, en bulles. Le film se comprend sans le son.', '',
+              'Narrateur : Niba — voix Céline dirigée en lionceau, doublée par une bulle.', '',
               'Fil conducteur : %s' % fil, '', '## Narration', '']
         md += ['%d. %s' % (i + 1, v) for i, (v, _, _, _) in enumerate(blocs)]
         md += ['', '## Ce qui est à l’image', '']
