@@ -1,0 +1,149 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Plan 5 — Niba posé sur le film</title>
+<!--
+  À quoi ressemble un plan fini.
+
+  Le fond est la vidéo générée sur Higgsfield. Niba, sa bulle et les mots
+  affichés sont posés par-dessus par l'application — en SVG et en texte, pas
+  dans l'image. Trois conséquences :
+
+    · Niba est exactement lui à chaque plan, et non un lionceau différent à
+      chaque génération ;
+    · changer son humeur ou corriger un mot ne coûte pas une génération ;
+    · le même plan sert en français comme en anglais.
+-->
+<style>
+  :root {
+    --ink: #2B4047;
+    --ink-2: #5A7076;
+    --white-warm: #FFFBF4;
+    --sand: #F6E6C9;
+    --clay: #C9703F;
+    --clay-dark: #A2512A;
+    --gold: #E7AE4A;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: #10181b;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif;
+  }
+  .cadre {
+    position: relative;
+    width: 1280px;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 24px;
+  }
+  .cadre video, .cadre img.fond {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+
+  /* Les mots affichés. En capitales, posés en haut à droite, assez grands
+     pour être lus à bout de bras sur un téléphone partagé. */
+  .mots {
+    position: absolute; top: 28px; right: 28px;
+    display: flex; gap: 10px;
+  }
+  .mot {
+    background: var(--white-warm);
+    color: var(--ink);
+    font-size: 30px; font-weight: 700; letter-spacing: .04em;
+    padding: 10px 20px; border-radius: 999px;
+    box-shadow: 0 6px 0 rgba(43,64,71,.14);
+  }
+
+  /* Niba et sa bulle, dans le coin laissé libre par la génération. */
+  .niba {
+    position: absolute; left: 28px; bottom: 24px;
+    display: flex; align-items: flex-end; gap: 14px;
+  }
+  .bulle {
+    position: relative;
+    background: var(--white-warm);
+    color: var(--ink);
+    font-size: 30px; line-height: 1.3;
+    padding: 20px 26px; border-radius: 26px;
+    max-width: 620px;
+    box-shadow: 0 8px 0 rgba(43,64,71,.14);
+  }
+  .bulle::after {
+    content: ''; position: absolute; left: -12px; bottom: 26px;
+    border: 12px solid transparent;
+    border-right-color: var(--white-warm); border-left: 0;
+  }
+</style>
+
+<div class="cadre">
+  <video class="fond" autoplay muted loop playsinline
+         src="https://d8j0ntlcm91z4.cloudfront.net/user_3KZBSjYUBpq6aChUVJxyOvBy5SO/hf_20261017_000642_2dc17ab5-3599-46ef-b2c4-6155919a52ff.mp4"
+         poster="https://d8j0ntlcm91z4.cloudfront.net/user_3KZBSjYUBpq6aChUVJxyOvBy5SO/hf_20261017_000355_4226e95c-051e-4b65-99b2-450d4eebe815.png"></video>
+
+  <div class="mots">
+    <span class="mot">LOGONE</span>
+    <span class="mot">BÉNOUÉ</span>
+  </div>
+
+  <div class="niba">
+    <svg id="niba" viewBox="0 0 120 120" width="150" height="150" role="img"
+         aria-label="Niba, le lionceau"></svg>
+    <div class="bulle">Le Logone arrose Maroua,<br>et la Bénoué arrose Garoua.</div>
+  </div>
+</div>
+
+<script>
+  // Niba, repris trait pour trait de app/src/components/jeu/Mascotte.tsx.
+  // Le dessin fait foi : c'est ce qui garantit que l'enfant voit le même
+  // lionceau dans le film et dans son espace.
+  const svg = document.getElementById('niba');
+  const ns = 'http://www.w3.org/2000/svg';
+  const mettre = (nom, attrs) => {
+    const el = document.createElementNS(ns, nom);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    svg.appendChild(el);
+    return el;
+  };
+
+  // La crinière : neuf pétales arrondis, décalés pour ne pas faire roue.
+  for (let i = 0; i < 9; i++) {
+    const a = (i / 9) * Math.PI * 2 - Math.PI / 2;
+    mettre('circle', {
+      cx: 60 + Math.cos(a) * 36, cy: 62 + Math.sin(a) * 36, r: 16,
+      fill: i % 2 === 0 ? 'var(--clay)' : 'var(--gold)',
+    });
+  }
+
+  // Les oreilles, posées assez loin du centre pour dépasser de la face.
+  for (const x of [28, 92]) {
+    mettre('circle', { cx: x, cy: 33, r: 12, fill: 'var(--clay-dark)' });
+    mettre('circle', { cx: x, cy: 33, r: 6, fill: 'var(--sand)' });
+  }
+
+  mettre('circle', { cx: 60, cy: 62, r: 34, fill: 'var(--sand)' });
+
+  // Les yeux, ouverts : l'humeur du plan est « content ».
+  for (const x of [47, 73]) {
+    mettre('circle', { cx: x, cy: 58, r: 5, fill: 'var(--ink)' });
+    mettre('circle', { cx: x + 1.8, cy: 56.2, r: 1.8, fill: 'var(--white-warm)' });
+  }
+
+  mettre('ellipse', { cx: 60, cy: 72, rx: 13, ry: 9, fill: 'var(--white-warm)' });
+  mettre('path', { d: 'M55 69 q5 -4 10 0 q-5 5 -10 0', fill: 'var(--clay-dark)' });
+  mettre('path', {
+    d: 'M52 78 q8 7 16 0', fill: 'none', stroke: 'var(--ink)',
+    'stroke-width': 3, 'stroke-linecap': 'round',
+  });
+
+  // Les moustaches : trois traits qui suffisent à dire « félin ».
+  const m = mettre('g', {
+    stroke: 'var(--ink-2)', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: .55,
+  });
+  for (const d of ['M34 68 h10', 'M34 75 h10', 'M86 68 h-10', 'M86 75 h-10']) {
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', d);
+    m.appendChild(p);
+  }
+</script>
