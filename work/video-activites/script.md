@@ -1,7 +1,7 @@
 # Les activités de l’homme au village et en ville — script verrouillé
 
 Format : CM1, 16:9, 4 plans.
-Narrateur : Niba — voix Céline dirigée en lionceau, doublée par une bulle.
+Voix : Céline, articulation claire, débit posé. Niba explique à l’écran.
 
 Fil conducteur : Une journée qui commence au village et finit en ville.
 

@@ -1,7 +1,7 @@
 # Les bassins hydrographiques du Cameroun — script verrouillé
 
 Format : CM1, 16:9, 6 plans.
-Narrateur : Niba — voix Céline dirigée en lionceau, doublée par une bulle.
+Voix : Céline, articulation claire, débit posé. Niba explique à l’écran.
 
 Fil conducteur : On remonte un fleuve : d’abord l’eau, puis les régions qu’elle traverse.
 

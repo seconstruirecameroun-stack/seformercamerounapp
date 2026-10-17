@@ -12,24 +12,29 @@ constatée à l'écran.
 
 ## 1. Niba explique
 
-Jusqu'ici les films étaient une voix sur des images. L'enfant écoutait
-quelqu'un qu'il ne connaissait pas.
+Jusqu'ici le film était une voix sur des images, et rien à l'écran ne
+rattachait la leçon au reste de l'application.
 
-Niba est le seul personnage auquel il s'attache — c'est lui qui le félicite,
-c'est lui qui dit « tu m'as manqué » après trois jours. Si le film est
-expliqué par Niba, la leçon n'arrive plus d'un inconnu : elle arrive de
-quelqu'un avec qui l'enfant a déjà une histoire.
+Niba est le seul personnage auquel l'enfant s'attache — c'est lui qui le
+félicite, c'est lui qui dit « tu m'as manqué » après trois jours. Sa présence
+dans le film raccroche la leçon à quelqu'un que l'enfant connaît déjà.
 
-**C'est donc Niba qu'on entend.** La narration ne disparaît pas — elle change
-de bouche. La voix reste celle de Céline, qui porte déjà les huit films
-existants et qu'on ne remplace pas sans faire sonner la suite comme un autre
-produit ; ce qui change est la direction de jeu. Au lieu de
-« native French educational narrator, clean diction », la consigne dit
-désormais :
+**La narration reste Céline, et c'est Céline qui parle.** Niba est à l'écran,
+pas dans le haut-parleur : il montre, il réagit, sa bulle reprend la phrase.
+Il ne prend pas la voix.
 
-> `[a warm friendly young lion cub speaking to a nine year old child, native
-> French pronunciation, cheerful and encouraging, clear slow articulation, a
-> smile in the voice, starts speaking immediately]`
+Les deux directions ont été essayées sur la même phrase, le 17 octobre 2026,
+sur « le Logone arrose Maroua ». La direction tenue a été retenue, et elle ne
+change pas :
+
+> `[native French educational narrator, pure French pronunciation, clean
+> diction, calm and steady, starts speaking immediately]`
+
+Le lionceau joué à la voix ajoutait de la bonhomie et retirait de la clarté.
+Céline porte déjà les huit films existants : en changer ferait sonner la suite
+comme un autre produit, et un enfant qui révise a d'abord besoin d'entendre
+« Bénoué » et « Logone » prononcés net. La voix porte la leçon, Niba porte
+l'attachement. Chacun son travail.
 
 La musique et les bruits restent eux aussi. Un film muet n'est pas un film,
 et un enfant de huit ans décroche d'une image qui ne fait pas de bruit.
@@ -54,8 +59,8 @@ clignement est **irrégulier** — à intervalle fixe, l'œil devient un métron
 et le personnage a l'air mécanique.
 
 Ce qu'il ne fait pas : il ne récite pas la leçon à la place de l'image. Quand
-il nomme la Sanaga, la Sanaga est à l'écran au moment où le mot tombe. Sa voix
-porte la phrase, l'image porte la preuve.
+la Sanaga est nommée, la Sanaga est à l'écran au moment où le mot tombe. La
+voix porte la phrase, l'image porte la preuve.
 
 Une bulle double la voix à l'écran. Elle n'est pas là en remplacement du son
 mais en plus : le film sera regardé dans un transport, en classe, sur un
@@ -152,9 +157,9 @@ Tout se fait sur **Higgsfield**, et la chaîne n'a pas changé de nature :
 2. **L'animation** du plan — `grok_video_v15_lite`, 5 à 9 s, 720p, environ
    5 crédits. Mouvement lent : l'eau qui coule, l'herbe qui plie, un animal
    qui lève la tête. Jamais de secousse de caméra, jamais de coupe.
-3. **La voix** — Text to Speech, ElevenLabs v3, voix Céline dirigée en Niba,
-   **0,6 à 0,75 crédit la réplique**. C'est le poste le moins cher du film,
-   et celui qui change le plus l'attachement de l'enfant.
+3. **La voix** — Text to Speech, ElevenLabs v3, voix Céline, direction de
+   narration inchangée, **0,6 à 0,75 crédit la réplique**. C'est le poste le
+   moins cher du film, et celui sans lequel il n'y a pas de film.
 4. **La musique et les bruits**, puis le montage.
 5. **Niba, sa bulle et les mots affichés** sont posés par l'application
    par-dessus le plan, en SVG et en texte — jamais générés.
