@@ -208,10 +208,39 @@ Conséquence : une leçon gravie jusqu'au Défi n'est pas encore validée. Il re
 une dernière manche, sans faute, sur l'ensemble des notions. Elle se rejoue
 autant de fois qu'il faut, et la rater ne retire rien de ce qui est acquis.
 
-Reste à trancher, et c'est une question ouverte : la manche sans faute
-porte-t-elle sur toutes les questions de la leçon, ou sur une sélection d'une
-question par notion ? La première est une épreuve ; la seconde est un contrôle.
-Voir §12.
+La manche porte sur **toutes les questions de la leçon**, pas sur une sélection.
+Pour « Le cube », ce sont les vingt questions de ses quatre notions. C'est le
+choix du parent, fait en connaissance de la conséquence : une leçon ne sera
+validée que rarement, et seulement quand elle est vraiment sue.
+
+Deux conséquences de mécanique, qui ne changent pas la règle mais la rendent
+tenable :
+
+- **La manche va jusqu'au bout.** Une faute ne l'interrompt pas. L'enfant
+  répond aux vingt questions, voit la correction de chacune, et le verdict
+  tombe à la fin. Couper la manche à la première erreur lui retirerait les dix-
+  neuf explications qu'il avait encore à lire, et la punirait deux fois.
+- **Ce qu'il a raté est ce qu'on lui redonne.** Avant de reproposer la manche,
+  l'app fait revenir les notions fautives seules. Rejouer vingt questions
+  identiques pour une erreur sur les arêtes n'apprend rien sur les arêtes.
+
+Et la validation n'est pas définitive : voir « Une validation qui se perd »
+plus bas.
+
+### Une validation qui se perd
+
+La révision espacée ramène les notions à intervalles. Si l'enfant rate une
+notion d'une leçon validée, **la leçon redevient à valider** : la manche sans
+faute est à refaire.
+
+C'est la seule exception au principe « rater fait revenir, pas reculer », et
+elle est assumée. Ce principe protège l'apprentissage, qui est fragile ; la
+validation, elle, est une affirmation faite au parent. Une affirmation qui
+reste vraie quand elle est devenue fausse ne vaut rien.
+
+Ce qui est perdu est la validation, pas le reste : les étapes franchies, les
+images gagnées, les étoiles et les trophées ne bougent pas. L'enfant ne
+redescend pas l'escalier, il a une manche à rejouer.
 
 ### L'image se gagne à la troisième marche
 
@@ -763,11 +792,8 @@ scripts PowerShell existants.
    faut-il un mode entièrement audio dès le lot 3 ?
 5. **Hors-ligne.** Indispensable dès le début, ou acceptable au lot 6 ? La
    vidéo hors-ligne suppose un téléchargement explicite.
-6. **La manche sans faute porte sur quoi ?** Toutes les questions de la leçon,
-   ou une par notion ? Voir §5. Et que se passe-t-il pour une leçon validée dont
-   une notion redevient due à la révision espacée : perd-elle sa validation ?
-7. **Le rapport de travail est-il écrit ou calculé ?** Des phrases produites par
+6. **Le rapport de travail est-il écrit ou calculé ?** Des phrases produites par
    le modèle à partir des faits, ou des faits bruts mis en forme ? Le premier se
    lit mieux et coûte à chaque consultation ; le second ne ment jamais.
-8. **Modèle économique.** Gratuit, abonnement familial, par enfant ? Cela
+7. **Modèle économique.** Gratuit, abonnement familial, par enfant ? Cela
    détermine la générosité du quota, surtout vidéo.
