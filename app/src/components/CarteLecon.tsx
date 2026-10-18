@@ -69,10 +69,17 @@ export default function CarteLecon({
           </span>
         </div>
         <p className="mt-1 flex items-center gap-2 text-kid-xs font-bold text-muted">
-          <span>
-            {lecon.etapeTerminee
-              ? 'Leçon terminée — tu révises'
-              : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
+          {/* L'escalier gravi n'est pas la leçon sue : tant que la manche
+              n'est pas passée, la carte annonce ce qu'il reste à faire plutôt
+              qu'une révision tranquille. */}
+          <span className={lecon.validee ? 'font-black text-leaf' : undefined}>
+            {lecon.validee
+              ? '✓ Leçon validée'
+              : lecon.validationPerdue
+                ? 'À revalider'
+                : lecon.etapeTerminee
+                  ? 'La manche t’attend'
+                  : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
           </span>
           {/* Le jour du cahier : ce n'est pas ce que l'enfant vient chercher,
               mais c'est ce qui l'aide à reconnaître « le cours de mardi ». */}

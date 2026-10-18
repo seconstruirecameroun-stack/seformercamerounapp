@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { etapeCourante, etapeImage, imageGagnee, reussitesParNiveau } from './paliers';
+import { lireValidation, type MancheRow } from './manche';
 import {
   calculerSerie,
   construireContexte,
@@ -56,6 +57,15 @@ export type LeconResume = {
   /** Notions validées à l'étape en cours, et nombre total à y valider. */
   etapeFaites: number;
   etapeTotal: number;
+  /**
+   * La leçon est validée : une manche sans faute, et rien de raté depuis.
+   *
+   * Franchir les quatre étapes ne suffit pas. `etapeTerminee` dit que
+   * l'escalier est gravi ; `validee` dit que la leçon est sue.
+   */
+  validee: boolean;
+  /** Elle l'a été, puis une notion a été ratée : la manche est à refaire. */
+  validationPerdue: boolean;
 };
 
 /**
@@ -108,7 +118,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
   // importé avant que le parent ait choisi la classe.
   const classe = (enfant as { class_id: string | null }).class_id;
 
-  const [lecons, maitrise, recompenses, tentatives, justes] = await Promise.all([
+  const [lecons, maitrise, recompenses, tentatives, justes, fausses, manches] = await Promise.all([
     supabase
       .from('lessons')
       .select(
@@ -133,9 +143,30 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .select('item_id, created_at')
       .eq('child_id', childId)
       .eq('correct', true),
+    // Les fautes datées, sans limite elles non plus : ce sont elles qui font
+    // perdre une validation, et en manquer une la laisserait affichée à tort.
+    supabase
+      .from('attempts')
+      .select('item_id, created_at')
+      .eq('child_id', childId)
+      .eq('correct', false),
+    supabase
+      .from('manches')
+      .select('lesson_id, questions, justes, reussie, notions_ratees, created_at')
+      .eq('child_id', childId)
+      .order('created_at', { ascending: false }),
   ]);
 
   if (lecons.error) throw lecons.error;
+  if (manches.error) throw manches.error;
+
+  // Les manches de chaque leçon, de la plus récente à la plus ancienne.
+  const manchesParLecon = new Map<string, MancheRow[]>();
+  for (const m of (manches.data ?? []) as MancheRow[]) {
+    const liste = manchesParLecon.get(m.lesson_id) ?? [];
+    liste.push(m);
+    manchesParLecon.set(m.lesson_id, liste);
+  }
 
   const suivi = new Map<string, { level: number; next_review: string | null }>();
   for (const m of maitrise.data ?? []) {
@@ -187,6 +218,22 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     }));
     const reussies = reussitesParNiveau(avecItems, justes.data ?? []);
     const { niveau, termine } = etapeCourante(avecItems, reussies);
+
+    // La validation suit la même règle que la salle de jeu, importée telle
+    // quelle : une manche réussie, et aucune faute depuis.
+    const notionDeItem = new Map<string, string>();
+    for (const n of avecItems) for (const i of n.items) notionDeItem.set(i.id, n.id);
+    const reponsesDeLaLecon = [
+      ...(justes.data ?? []).map((r) => ({ ...r, correct: true })),
+      ...(fausses.data ?? []).map((r) => ({ ...r, correct: false })),
+    ]
+      .map((r) => ({
+        notion_id: notionDeItem.get(r.item_id) ?? '',
+        correct: r.correct,
+        created_at: r.created_at,
+      }))
+      .filter((r) => r.notion_id !== '');
+    const validation = lireValidation(manchesParLecon.get(lecon.id) ?? [], reponsesDeLaLecon);
 
     for (const n of avecItems) {
       for (const i of n.items) {
@@ -241,6 +288,8 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       aRevoir,
       etape: niveau,
       etapeTerminee: termine,
+      validee: validation.validee,
+      validationPerdue: validation.perdueLe !== null && !validation.validee,
       etapeFaites: termine ? aValider.length : (reussies.get(niveau)?.size ?? 0),
       etapeTotal: aValider.length,
     });

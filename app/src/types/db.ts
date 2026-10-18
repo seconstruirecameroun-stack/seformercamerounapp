@@ -149,6 +149,24 @@ export interface AttemptRow {
   created_at: string;
 }
 
+/**
+ * Une manche de validation jouée.
+ *
+ * Journal en ajout seul : l'état « leçon validée » ne vit nulle part, il se
+ * déduit de ces lignes et des fautes postérieures. Voir lib/manche.ts.
+ */
+export interface MancheRow {
+  id: string;
+  parent_id: string;
+  child_id: string;
+  lesson_id: string;
+  questions: number;
+  justes: number;
+  reussie: boolean;
+  notions_ratees: string[];
+  created_at: string;
+}
+
 export interface RewardRow {
   id: string;
   parent_id: string;
@@ -187,6 +205,7 @@ export interface Database {
       lesson_progress: Table<LessonProgressRow>;
       mastery: Table<MasteryRow>;
       attempts: Table<AttemptRow>;
+      manches: Table<MancheRow>;
       rewards: Table<RewardRow>;
       parent_settings: Table<ParentSettingsRow>;
     };

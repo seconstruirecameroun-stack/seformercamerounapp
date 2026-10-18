@@ -19,6 +19,7 @@ import {
   reussitesParNiveau,
   SECONDES_DEFI,
 } from '../../lib/paliers';
+import { enregistrerManche, POINTS_MANCHE } from '../../lib/manche';
 import { stopper } from '../../lib/voix';
 import type { Palier } from '../../lib/paliers';
 import ItemPlayer from '../../components/items/ItemPlayer';
@@ -181,6 +182,46 @@ function BarreEtape({
 }
 
 /**
+ * La barre de la manche de validation.
+ *
+ * Elle ne montre pas une progression mais un capital : les fautes restantes,
+ * et il n'y en a aucune. Une barre qui se remplit dirait « tu avances » alors
+ * que la seule chose qui compte est de n'avoir rien raté.
+ */
+function BarreManche({
+  faites,
+  total,
+  fautes,
+}: {
+  faites: number;
+  total: number;
+  fautes: number;
+}) {
+  return (
+    <div
+      className={
+        'rounded-[var(--radius-card)] border-2 p-4 shadow-[var(--shadow-tile)] ' +
+        (fautes > 0 ? 'border-clay/50 bg-clay/10' : 'border-leaf/50 bg-white-warm')
+      }
+    >
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="shrink-0 text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+          La manche
+        </span>
+        <span className="truncate text-kid font-extrabold">
+          Question {Math.min(faites + 1, total)} sur {total}
+        </span>
+      </div>
+      <p className="mt-2 text-kid-sm font-bold text-ink-2">
+        {fautes === 0
+          ? 'Sans faute pour l’instant. Continue !'
+          : `${fautes} ${fautes > 1 ? 'fautes' : 'faute'} : la manche sera à refaire. Va jusqu’au bout, tu apprends à chaque question.`}
+      </p>
+    </div>
+  );
+}
+
+/**
  * Le sablier de la dernière étape.
  *
  * Il ne sert qu'au Défi : partout ailleurs, presser un enfant qui découvre
@@ -295,6 +336,10 @@ function Etape({
   const [erreur, setErreur] = useState<unknown>(null);
   /** Le bilan ne se montre qu'une fois le coffre ouvert. */
   const [coffreOuvert, setCoffreOuvert] = useState(false);
+  /** Les notions ratées pendant la manche en cours. */
+  const [ratees, setRatees] = useState<Set<string>>(new Set());
+  /** La manche ne démarre pas toute seule : on annonce l'enjeu d'abord. */
+  const [mancheLancee, setMancheLancee] = useState(false);
 
   // La séance ne bouge pas sous les yeux de l'enfant : elle est rechargée au
   // seul moment où on le décide, par « Continuer ». Laissée fraîche, elle se
@@ -325,6 +370,8 @@ function Etape({
     setFile([]);
     setFranchieMaintenant(false);
     setCoffreOuvert(false);
+    setRatees(new Set());
+    setMancheLancee(false);
     seance.refetch();
   }
 
@@ -343,10 +390,105 @@ function Etape({
     );
   }
 
+  const estManche = s.mode === 'manche';
+  const estReprise = s.mode === 'reprise';
+
+  // L'enjeu s'annonce avant la première question. Lancer vingt questions sans
+  // prévenir qu'une seule faute les annule serait un piège : l'enfant doit
+  // savoir dans quoi il entre, et pouvoir y entrer quand il se sent prêt.
+  if (estManche && !mancheLancee) {
+    const perdue = s.validation.perdueLe !== null;
+    return (
+      <div className="grid gap-3">
+        <div className="monte overflow-hidden rounded-[var(--radius-card)] border-2 border-gold bg-white-warm text-center shadow-[var(--shadow-card)]">
+          <div className="bg-gold/25 px-6 py-7">
+            <Mascotte humeur="encourage" taille={96} className="mx-auto" />
+            <p className="mt-2 text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+              {perdue ? 'À revalider' : 'Dernière épreuve'}
+            </p>
+            <h2 className="mt-1 text-kid-2xl font-black">La manche</h2>
+          </div>
+          <div className="px-6 py-6">
+            <p className="text-kid font-bold">
+              {perdue
+                ? 'Tu avais validé cette leçon, puis tu as raté une notion. Il faut la regagner.'
+                : 'Tu as gravi les quatre étapes. Il reste à valider la leçon.'}
+            </p>
+            <ul className="mx-auto mt-4 grid max-w-sm gap-2 text-left text-kid-sm text-ink-2">
+              <li className="flex gap-2">
+                <span className="font-black text-clay-dark">{s.questions.length}</span>
+                <span>questions : toute la leçon, du début à la fin.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-black text-clay-dark">0</span>
+                <span>faute permise. Une seule, et la manche est à refaire.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-black text-clay-dark">✓</span>
+                <span>
+                  Tu vas jusqu’au bout même si tu te trompes : tu verras toutes les réponses.
+                </span>
+              </li>
+            </ul>
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <GrosBouton onClick={() => setMancheLancee(true)}>Je suis prêt</GrosBouton>
+              <GrosBouton variante="douce" onClick={() => navigate(`/enfant/${childId}`)}>
+                Plus tard
+              </GrosBouton>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const reussies = s.reussies + validees.size;
   const etapeFranchie = !s.termine && reussies >= s.total;
 
   if (index >= s.questions.length) {
+    // Le bilan de la manche ne ressemble à aucun autre : il ne dit pas ce qui
+    // a été gagné, il dit si la leçon est validée. Le coffre n'a pas sa place
+    // ici quand elle ne l'est pas — il annoncerait une récompense à qui vient
+    // d'échouer.
+    if (estManche) {
+      const gagnee = justes === s.questions.length;
+      const manquantes = s.questions.length - justes;
+      return (
+        <div className="grid gap-3">
+          {gagnee ? <Confettis /> : null}
+          <div className="monte overflow-hidden rounded-[var(--radius-card)] border-2 border-line bg-white-warm text-center shadow-[var(--shadow-card)]">
+            <div className={'px-6 py-7 ' + (gagnee ? 'bg-leaf/25' : 'bg-clay/15')}>
+              <Mascotte humeur={gagnee ? 'fete' : 'encourage'} taille={96} className="mx-auto" />
+              <h2 className="mt-2 text-kid-2xl font-black">
+                {gagnee ? 'Leçon validée !' : 'Pas encore'}
+              </h2>
+              <p className="mt-1 text-kid font-bold text-ink-2">
+                {justes} bonnes réponses sur {s.questions.length}
+              </p>
+              {gagnee ? (
+                <p className="grimpe mt-3 text-kid-lg font-black text-gold">+{POINTS_MANCHE} ★</p>
+              ) : null}
+            </div>
+            <div className="px-6 py-6">
+              <p className="text-kid-sm text-muted">
+                {gagnee
+                  ? 'Toute la leçon, sans une faute. Tu la sais.'
+                  : `Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'}. On va revoir ce que tu as raté, puis tu retenteras la manche.`}
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                <GrosBouton onClick={continuer}>
+                  {gagnee ? 'Continuer' : 'Revoir ce que j’ai raté'}
+                </GrosBouton>
+                <GrosBouton variante="douce" onClick={() => navigate(`/enfant/${childId}`)}>
+                  Mes leçons
+                </GrosBouton>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     const reste = s.total - reussies;
 
     // Le butin dit la même chose que l'ancien récapitulatif. La différence
@@ -455,6 +597,16 @@ function Etape({
       if (valide) setValidees(suite);
 
       const franchie = !s.termine && s.reussies + suite.size >= s.total;
+
+      // La manche se juge à la fin, et seulement à la fin. Elle n'est pas
+      // interrompue par une faute : l'enfant doit voir les corrections des
+      // questions qui lui restaient.
+      const ratee = estManche && !reponse.correct;
+      const toutesRatees = ratee ? new Set(ratees).add(question.notion.id) : ratees;
+      if (ratee) setRatees(toutesRatees);
+      const derniereDeLaManche = estManche && index + 1 === s.questions.length;
+      const justesFinal = justes + (reponse.correct ? 1 : 0);
+      const mancheGagnee = derniereDeLaManche && justesFinal === s.questions.length;
       // L'image tombe quand la notion est validée à son étape « Maîtrise » :
       // le même geste que celui qui fait avancer la barre, donc visible.
       const acquise = valide && s.palier.niveau === etapeImage(question.notion);
@@ -462,7 +614,10 @@ function Etape({
       // Les trois bonus partent avec la tentative : une seule écriture, et
       // le total affiché est celui qui est réellement en base.
       const bonus =
-        (valide ? POINTS_NOTION : 0) + (acquise ? POINTS_IMAGE : 0) + (franchie ? POINTS_ETAPE : 0);
+        (valide ? POINTS_NOTION : 0) +
+        (acquise ? POINTS_IMAGE : 0) +
+        (franchie ? POINTS_ETAPE : 0) +
+        (mancheGagnee ? POINTS_MANCHE : 0);
 
       // Le total d'étoiles avant la réponse, lu dans le cache : il sert à
       // savoir si cette réponse-là fait franchir un rang.
@@ -546,6 +701,32 @@ function Etape({
         });
       }
 
+      // La manche jouée est écrite une fois sa dernière question répondue.
+      // C'est elle qui porte la validation, et les notions à redonner si
+      // l'enfant ferme l'app avant la reprise.
+      if (derniereDeLaManche) {
+        await enregistrerManche({
+          parentId,
+          childId,
+          lessonId,
+          questions: s.questions.length,
+          justes: justesFinal,
+          notionsRatees: [...toutesRatees],
+        });
+        if (mancheGagnee) {
+          fenetres.push({
+            ton: 'fete',
+            son: 'etape',
+            titre: 'Leçon validée !',
+            texte: 'Toute la leçon, sans une faute.',
+            points: POINTS_MANCHE,
+            vignette: 'medaille',
+            humeur: null,
+          });
+        }
+        qc.invalidateQueries({ queryKey: ['manches', childId] });
+      }
+
       setFile(fenetres);
       setFranchieMaintenant(franchie);
 
@@ -596,17 +777,34 @@ function Etape({
 
   return (
     <div className="grid gap-3">
-      <BarreEtape palier={s.palier} reussies={reussies} total={s.total} termine={s.termine} />
+      {estManche ? (
+        <BarreManche faites={index} total={s.questions.length} fautes={ratees.size} />
+      ) : estReprise ? (
+        <div className="rounded-[var(--radius-card)] border-2 border-clay/50 bg-clay/10 p-4 shadow-[var(--shadow-tile)]">
+          <span className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+            Ce que tu as raté
+          </span>
+          <p className="mt-1 text-kid-sm font-bold text-ink-2">
+            On revoit {s.total} {s.total > 1 ? 'notions' : 'notion'}, puis tu retentes la manche.
+          </p>
+        </div>
+      ) : (
+        <BarreEtape palier={s.palier} reussies={reussies} total={s.total} termine={s.termine} />
+      )}
 
       <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <Galets total={s.questions.length} faits={index} />
           <span className="rounded-full bg-sand px-3 py-1 text-kid-xs font-black tracking-wide uppercase">
-            {s.palier.promesse}
+            {estManche ? 'Sans faute' : estReprise ? 'On reprend' : s.palier.promesse}
           </span>
         </div>
 
-        {estChronometre(s.niveau) ? (
+        {/* Le sablier suit le niveau de la QUESTION, pas celui de la séance.
+            Dans la manche, les questions de toutes les étapes se suivent :
+            chronométrer une question de Découverte parce que la séance est
+            au sommet de l’escalier n’aurait aucun sens. */}
+        {estChronometre(question.item.level) ? (
           <div className="mt-3">
             <Chrono
               cle={question.item.id}
@@ -662,7 +860,9 @@ function Etape({
                 : franchieMaintenant
                   ? 'Étape suivante'
                   : derniere
-                    ? 'Voir mon résultat'
+                    ? estManche
+                      ? 'Voir si c’est validé'
+                      : 'Voir mon résultat'
                     : 'Question suivante'
             }
             onFermer={fenetreSuivante}

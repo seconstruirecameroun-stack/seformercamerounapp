@@ -49,3 +49,7 @@ work/affluent-*.png
 
 # Dossier de travail du CLI Supabase.
 supabase/.temp/
+
+# Le bundle de la vérification de la manche : il se refabrique en une commande,
+# documentée en tête de app/src/lib/manche.verif.ts.
+work/*.mjs

@@ -1,4 +1,11 @@
 import { supabase } from './supabase';
+import {
+  lireValidation,
+  questionsDeLaManche,
+  TAILLE_REPRISE,
+  type EtatValidation,
+  type MancheRow,
+} from './manche';
 import type { ItemRow, NotionRow } from '../types/db';
 
 /**
@@ -97,7 +104,19 @@ export type Question = {
   item: ItemRow;
 };
 
+/**
+ * Ce que la séance demande à l'enfant.
+ *
+ *   etapes   l'escalier ordinaire, ou la révision d'une leçon validée
+ *   reprise  les notions ratées à la dernière manche, et elles seules
+ *   manche   toutes les questions de la leçon, pour la valider sans faute
+ */
+export type ModeSeance = 'etapes' | 'reprise' | 'manche';
+
 export type Seance = {
+  mode: ModeSeance;
+  /** Où en est la validation de la leçon, d'après les manches jouées. */
+  validation: EtatValidation;
   /** L'étape en cours, 1 à 3. */
   niveau: number;
   palier: Palier;
@@ -143,6 +162,40 @@ export function choisirQuestion(
   const moins = Math.min(...candidats.map((i) => vus.get(i.id) ?? 0));
   const frais = candidats.filter((i) => (vus.get(i.id) ?? 0) === moins);
   return frais[Math.floor(Math.random() * frais.length)];
+}
+
+/**
+ * Les questions d'une reprise : les notions ratées, et elles seules.
+ *
+ * Un tour par notion avant d'en approfondir aucune. Donner d'abord cinq
+ * questions sur les arêtes puis rien sur les sommets laisserait la moitié du
+ * travail de côté — et c'est justement la moitié qu'il a ratée.
+ *
+ * À l'intérieur d'une notion, le plus difficile d'abord : l'enfant a déjà
+ * gravi les quatre étapes, ce n'est pas la reconnaissance qui lui manque.
+ */
+export function questionsDeReprise(
+  notions: NotionAvecItems[],
+  vus: Map<string, number>,
+  taille: number,
+): Question[] {
+  const files = notions.map((notion) => ({
+    notion,
+    items: [...notion.items].sort(
+      (a, b) => b.level - a.level || (vus.get(a.id) ?? 0) - (vus.get(b.id) ?? 0),
+    ),
+  }));
+
+  const questions: Question[] = [];
+  for (let tour = 0; questions.length < taille; tour++) {
+    if (!files.some((f) => f.items.length > tour)) break;
+    for (const f of files) {
+      if (questions.length >= taille) break;
+      const item = f.items[tour];
+      if (item) questions.push({ notion: f.notion, item });
+    }
+  }
+  return questions;
 }
 
 /**
@@ -215,22 +268,82 @@ export async function construireSeance(childId: string, lessonId: string): Promi
   const idsItems = notions.flatMap((n) => n.items.map((i) => i.id));
   if (idsItems.length === 0) return null;
 
-  const { data: essais, error: erreurEssais } = await supabase
-    .from('attempts')
-    .select('item_id, correct')
-    .eq('child_id', childId)
-    .in('item_id', idsItems);
-  if (erreurEssais) throw erreurEssais;
+  const [essaisRes, manchesRes] = await Promise.all([
+    supabase
+      .from('attempts')
+      .select('item_id, correct, created_at')
+      .eq('child_id', childId)
+      .in('item_id', idsItems),
+    supabase
+      .from('manches')
+      .select('lesson_id, questions, justes, reussie, notions_ratees, created_at')
+      .eq('child_id', childId)
+      .eq('lesson_id', lessonId)
+      .order('created_at', { ascending: false }),
+  ]);
+  if (essaisRes.error) throw essaisRes.error;
+  if (manchesRes.error) throw manchesRes.error;
+  const essais = essaisRes.data ?? [];
 
-  // Deux lectures du même journal : ce qui est validé, et ce qui a déjà été vu.
-  const reussiesParNiveau = reussitesParNiveau(notions, (essais ?? []).filter((e) => e.correct));
+  // Trois lectures du même journal : ce qui est validé, ce qui a déjà été vu,
+  // et les fautes datées — ce sont elles qui font perdre une validation.
+  const reussiesParNiveau = reussitesParNiveau(notions, essais.filter((e) => e.correct));
   const vus = new Map<string, number>();
-  for (const e of essais ?? []) vus.set(e.item_id, (vus.get(e.item_id) ?? 0) + 1);
+  for (const e of essais) vus.set(e.item_id, (vus.get(e.item_id) ?? 0) + 1);
+
+  const notionDeItem = new Map<string, string>();
+  for (const n of notions) for (const i of n.items) notionDeItem.set(i.id, n.id);
+  const reponses = essais
+    .map((e) => ({
+      notion_id: notionDeItem.get(e.item_id) ?? '',
+      correct: e.correct,
+      created_at: e.created_at,
+    }))
+    .filter((r) => r.notion_id !== '');
+
+  const validation = lireValidation((manchesRes.data ?? []) as MancheRow[], reponses);
 
   const { niveau, termine } = etapeCourante(notions, reussiesParNiveau);
   const palier = PALIERS.find((p) => p.niveau === niveau) ?? PALIERS[0];
   const aFaire = concernees(notions, niveau);
   const ok = reussiesParNiveau.get(niveau) ?? new Set<string>();
+
+  // L'escalier gravi, la leçon n'est pas finie : il reste à la valider. Tant
+  // qu'elle ne l'est pas, la séance sert la manche — ou, s'il a raté la
+  // précédente, les notions fautives seules.
+  const aReprendre = notions.filter((n) => validation.aReprendre.includes(n.id));
+  const mode: ModeSeance =
+    !termine || validation.validee ? 'etapes' : aReprendre.length > 0 ? 'reprise' : 'manche';
+
+  if (mode === 'manche') {
+    const questions = questionsDeLaManche(notions);
+    return {
+      mode,
+      validation,
+      niveau,
+      palier,
+      termine,
+      total: questions.length,
+      reussies: 0,
+      questions,
+      restantAprès: 0,
+    };
+  }
+
+  if (mode === 'reprise') {
+    const questions = questionsDeReprise(aReprendre, vus, TAILLE_REPRISE);
+    return {
+      mode,
+      validation,
+      niveau,
+      palier,
+      termine,
+      total: aReprendre.length,
+      reussies: 0,
+      questions,
+      restantAprès: 0,
+    };
+  }
 
   // Une étape franchie : on repasse sur tout, pour entretenir.
   const restantes = termine ? aFaire : aFaire.filter((n) => !ok.has(n.id));
@@ -242,6 +355,8 @@ export async function construireSeance(childId: string, lessonId: string): Promi
   }
 
   return {
+    mode,
+    validation,
     niveau,
     palier,
     termine,
