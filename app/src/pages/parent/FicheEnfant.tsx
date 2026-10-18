@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { chargerRapports, type Fenetre, type Priorite, type Rapport } from '../../lib/rapport';
+import {
+  chargerRapports,
+  type Fenetre,
+  type Priorite,
+  type ProfilNotion,
+  type Rapport,
+} from '../../lib/rapport';
 import { Button, Card, ErrorNote, Loading, Pill, Vide } from '../../components/ui';
 import Mascotte from '../../components/jeu/Mascotte';
 import { verrouiller } from '../../components/PinGate';
 import { supabase } from '../../lib/supabase';
-import type { ItemKind } from '../../types/db';
+import type { ItemKind, NotionKind } from '../../types/db';
 
 /**
  * Le rapport de travail, dans le profil de l'enfant.
@@ -37,6 +43,14 @@ const NOM_DU_TYPE: Record<ItemKind, string> = {
   dictee: 'les dictées',
   restitution_audio: 'les réponses orales',
   defi_chrono: 'les défis chronométrés',
+};
+
+/** Les quatre familles de notions, dites comme un parent les dirait. */
+const NOM_DE_LA_FAMILLE: Record<NotionKind, string> = {
+  date: 'les dates',
+  definition: 'les définitions',
+  liste: 'les listes à retenir',
+  relation: 'les liens entre les choses',
 };
 
 /** « vers 19 h », parce qu'un parent ne lit pas « mode horaire = 19 ». */
@@ -161,9 +175,58 @@ function CarteForces({ r }: { r: Rapport }) {
   );
 }
 
+/**
+ * Une famille de notions, et le trou entre reconnaître et produire.
+ *
+ * C'est le bloc qui manquait. Un parent voyait son fils buter sur les dates
+ * et ne trouvait rien dans le rapport : 82 % de réussite, rien à signaler.
+ * La moyenne mélangeait trente et un QCM, où la bonne année est à l'écran,
+ * et six textes à trous, où il faut l'écrire — 97 % d'un côté, 33 % de
+ * l'autre. Le trou était là ; il n'était simplement affiché nulle part.
+ */
+function Famille({ p }: { p: ProfilNotion }) {
+  const nom = NOM_DE_LA_FAMILLE[p.kind] ?? p.kind;
+  return (
+    <li className="rounded-2xl bg-paper p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <strong className="text-base">
+          {nom.charAt(0).toUpperCase() + nom.slice(1)}
+        </strong>
+        <span className="text-sm text-muted">
+          {Math.round(p.part * 100)} % sur {p.essais} questions
+        </span>
+      </div>
+      {p.ecart !== null && p.reconnaitre && p.produire ? (
+        <p className="mt-2 text-base leading-relaxed">
+          Il répond juste <strong>{Math.round(p.reconnaitre.part * 100)} %</strong> du temps
+          quand la réponse est à l’écran, et <strong>{Math.round(p.produire.part * 100)} %</strong>{' '}
+          quand il doit l’écrire lui-même.
+        </p>
+      ) : null}
+      {p.erreurRecurrente ? (
+        <p className="mt-2 rounded-xl bg-clay/10 px-3 py-2 text-base">
+          Il a écrit <strong>« {p.erreurRecurrente.texte} »</strong> {p.erreurRecurrente.fois} fois,
+          sur des questions différentes.
+        </p>
+      ) : null}
+    </li>
+  );
+}
+
 function CarteDifficultes({ r }: { r: Rapport }) {
+  // Les familles qui méritent d'être montrées : celles qui ne vont pas de
+  // soi — un trou entre reconnaître et produire, une erreur répétée, ou une
+  // réussite nettement basse. Les lister toutes ferait un tableau de plus.
+  const familles = r.profils.filter(
+    (p) => p.ecart !== null || p.erreurRecurrente !== null || p.part < 0.7,
+  );
+  const avecEcart = r.profils.filter((p) => p.ecart !== null);
   const rien =
-    !r.matiereFaible && !r.typeFaible && r.manchesRatees === 0 && r.aTravailler.length === 0;
+    !r.matiereFaible &&
+    !r.typeFaible &&
+    familles.length === 0 &&
+    r.manchesRatees === 0 &&
+    r.aTravailler.length === 0;
   return (
     <Card titre="Ce qui le met en difficulté" sous="Les formes de questions et les matières qui résistent.">
       {rien ? (
@@ -173,6 +236,18 @@ function CarteDifficultes({ r }: { r: Rapport }) {
         </p>
       ) : (
         <ul className="grid gap-2">
+          {/* Quand le trou se répète sur presque toutes les familles, ce
+              n-est plus une faiblesse sur les dates ou sur les listes : c’est
+              une seule chose, dite quatre fois. Au parent de la lire d-un
+              coup, pas de la recomposer carte par carte. */}
+          {avecEcart.length >= 3 ? (
+            <Phrase>
+              La même chose revient partout : il reconnaît bien, et il produit
+              mal. Dans {avecEcart.length} famille{avecEcart.length > 1 ? 's' : ''} de notions sur{' '}
+              {r.profils.length}, il répond nettement mieux quand la réponse est à l’écran que
+              lorsqu’il doit l’écrire lui-même.
+            </Phrase>
+          ) : null}
           {r.matiereFaible ? (
             <Phrase>
               La matière qui résiste le plus est <strong>{r.matiereFaible.label}</strong> :{' '}
@@ -186,6 +261,15 @@ function CarteDifficultes({ r }: { r: Rapport }) {
               coûtent le plus : {Math.round(r.typeFaible.part * 100)} % de réussite sur{' '}
               {r.typeFaible.essais} questions.
             </Phrase>
+          ) : null}
+          {familles.length > 0 ? (
+            <li>
+              <ul className="my-1 grid gap-2">
+                {familles.map((p) => (
+                  <Famille key={p.kind} p={p} />
+                ))}
+              </ul>
+            </li>
           ) : null}
           {r.manchesRatees > 0 ? (
             <Phrase>

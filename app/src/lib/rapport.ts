@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { ItemKind, Json } from '../types/db';
+import type { ItemKind, Json, NotionKind } from '../types/db';
 
 /**
  * Le rapport de travail d'un enfant, pour son parent.
@@ -29,6 +29,23 @@ import type { ItemKind, Json } from '../types/db';
  * pourraient broder. Ici les faits sont bruts et la mise en phrase vit dans
  * l'écran, où elle se relit.
  */
+
+/**
+ * Reconnaître, ou produire.
+ *
+ * Deux QCM et un texte à trous ne demandent pas le même travail : dans l'un
+ * la réponse est à l'écran, dans l'autre elle est dans la tête. Mélangés, ils
+ * donnent une moyenne qui ment — un enfant à 97 % quand il choisit et à 33 %
+ * quand il écrit s'affiche à 82 %, et personne ne voit le trou.
+ */
+const RECONNAITRE: ItemKind[] = ['qcm', 'vrai_faux'];
+
+/** En deçà, un profil par type de notion n'a pas assez de matière. */
+const ASSEZ_POUR_UN_PROFIL = 8;
+/** Et chaque versant doit tenir debout tout seul pour qu'on les compare. */
+const ASSEZ_PAR_VERSANT = 4;
+/** Sous cet écart, reconnaître et produire se valent : rien à signaler. */
+const ECART_NOTABLE = 0.25;
 
 /** En deçà, une proportion ne veut rien dire : on ne l'affiche pas. */
 const ASSEZ_POUR_UNE_MATIERE = 8;
@@ -66,6 +83,37 @@ export type Priorite = {
 
 export type Part = { label: string; part: number; essais: number };
 
+/**
+ * Ce que l'enfant fait d'une famille de notions : dates, définitions, listes,
+ * relations.
+ *
+ * C'est l'axe qui manquait, et c'est pourtant celui dans lequel un parent
+ * pense — « il rate les dates », pas « il rate 42 % des questions de niveau
+ * 3 ». Il manquait parce que le rapport ne regardait que les matières et les
+ * formes de questions ; une faiblesse étalée sur dix notions de dates, une
+ * erreur chacune, ne ressortait nulle part.
+ */
+export type ProfilNotion = {
+  kind: NotionKind;
+  essais: number;
+  part: number;
+  /** Quand la réponse est à l'écran : QCM, vrai ou faux. */
+  reconnaitre: { part: number; essais: number } | null;
+  /** Quand il doit la sortir de sa tête : écrire, dicter, remettre en ordre. */
+  produire: { part: number; essais: number } | null;
+  /** L'écart entre les deux, quand il est assez grand pour être dit. */
+  ecart: number | null;
+  /**
+   * Ce qu'il écrit à la place, quand la même réponse revient sur plusieurs
+   * notions de la famille.
+   *
+   * C'est le fait le plus utile du rapport entier : une date fausse répétée
+   * trois fois sur trois questions différentes n'est pas une étourderie,
+   * c'est un repère faux qui s'est installé.
+   */
+  erreurRecurrente: { texte: string; fois: number } | null;
+};
+
 export type Rapport = {
   prenom: string;
   fenetre: Fenetre;
@@ -93,6 +141,8 @@ export type Rapport = {
   // ── Ce qui le met en difficulté ─────────────────────────────────────────
   matiereFaible: Part | null;
   typeFaible: (Part & { kind: ItemKind }) | null;
+  /** Dates, définitions, listes, relations : de la plus fragile à la plus sûre. */
+  profils: ProfilNotion[];
   manchesRatees: number;
 
   // ── Ce qu'il doit beaucoup travailler ───────────────────────────────────
@@ -181,12 +231,80 @@ type Essai = {
 
 type Repere = {
   kind: ItemKind;
+  notionKind: NotionKind;
   payload: Json;
   notionId: string;
   enonce: string;
   lecon: string;
   matiere: string | null;
 };
+
+/**
+ * Le profil de chaque famille de notions : dates, définitions, listes,
+ * relations.
+ *
+ * On y sépare reconnaître de produire, parce que c'est là que se cache ce
+ * qu'une moyenne noie. Et on y cherche la réponse fausse qui revient d'une
+ * notion à l'autre : trois dates différentes auxquelles l'enfant répond la
+ * même année, ce n'est pas trois étourderies, c'est un repère faux installé.
+ */
+function profilsParNotion(essais: Essai[], reperes: Map<string, Repere>): ProfilNotion[] {
+  const familles = new Map<
+    NotionKind,
+    { bons: number; total: number; rBons: number; rTotal: number; pBons: number; pTotal: number; ecrites: string[] }
+  >();
+
+  for (const e of essais) {
+    const r = reperes.get(e.item_id);
+    if (!r) continue;
+    const f = familles.get(r.notionKind) ?? {
+      bons: 0, total: 0, rBons: 0, rTotal: 0, pBons: 0, pTotal: 0, ecrites: [],
+    };
+    f.total += 1;
+    if (e.correct) f.bons += 1;
+    if (RECONNAITRE.includes(r.kind)) {
+      f.rTotal += 1;
+      if (e.correct) f.rBons += 1;
+    } else {
+      f.pTotal += 1;
+      if (e.correct) f.pBons += 1;
+      if (!e.correct) {
+        const dite = direLaReponse(r.kind, r.payload, e.answer);
+        // On ne garde que ce qu'il a vraiment écrit : une position dans une
+        // liste ne se répète pas d'une notion à l'autre.
+        if (dite) for (const bout of dite.split(',')) {
+          const net = bout.trim();
+          if (net) f.ecrites.push(net);
+        }
+      }
+    }
+    familles.set(r.notionKind, f);
+  }
+
+  const profils: ProfilNotion[] = [];
+  for (const [kind, f] of familles) {
+    if (f.total < ASSEZ_POUR_UN_PROFIL) continue;
+    const reconnaitre = f.rTotal >= ASSEZ_PAR_VERSANT
+      ? { part: f.rBons / f.rTotal, essais: f.rTotal } : null;
+    const produire = f.pTotal >= ASSEZ_PAR_VERSANT
+      ? { part: f.pBons / f.pTotal, essais: f.pTotal } : null;
+    const brut = reconnaitre && produire ? reconnaitre.part - produire.part : null;
+    const compte = new Map<string, number>();
+    for (const x of f.ecrites) compte.set(x, (compte.get(x) ?? 0) + 1);
+    const repetee = [...compte.entries()].sort((a, b) => b[1] - a[1])[0];
+    profils.push({
+      kind,
+      essais: f.total,
+      part: f.bons / f.total,
+      reconnaitre,
+      produire,
+      ecart: brut !== null && brut >= ECART_NOTABLE ? brut : null,
+      // Deux fois ne suffit pas : c'est la troisième qui fait le repère faux.
+      erreurRecurrente: repetee && repetee[1] >= 3 ? { texte: repetee[0], fois: repetee[1] } : null,
+    });
+  }
+  return profils.sort((a, b) => a.part - b.part);
+}
 
 /** Les proportions de réussite par étiquette, celles qui ont assez de matière. */
 function parts(
@@ -333,6 +451,7 @@ export function construireRapport(
     matiereForte: matieres.meilleure,
     matiereFaible: matieres.pire,
     typeFaible: types.pire ? { ...types.pire, kind: types.pire.label as ItemKind } : null,
+    profils: profilsParNotion(essais, reperes),
     manchesRatees: manches.filter((m) => !m.reussie).length,
     aTravailler,
   };
@@ -384,7 +503,8 @@ export async function chargerRapports(
     const { data, error } = await supabase
       .from('items')
       .select(
-        'id, kind, payload, notion_id, notions(id, statement, lessons(title, subjects(label)))',
+        'id, kind, payload, notion_id, ' +
+          'notions(id, kind, statement, lessons(title, subjects(label)))',
       )
       .in('id', tranche);
     if (error) throw error;
@@ -394,12 +514,14 @@ export async function chargerRapports(
       payload: Json;
       notion_id: string;
       notions: {
+        kind: NotionKind;
         statement: string;
         lessons: { title: string; subjects: { label: string } | null } | null;
       } | null;
     }>) {
       reperes.set(brut.id, {
         kind: brut.kind,
+        notionKind: brut.notions?.kind ?? 'definition',
         payload: brut.payload,
         notionId: brut.notion_id,
         enonce: brut.notions?.statement ?? 'Notion',
