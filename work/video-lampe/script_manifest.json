@@ -1,0 +1,60 @@
+{
+  "title": "La lampe à pétrole",
+  "lesson": "La lampe à pétrole",
+  "registre": "figures de sciences",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Une flamme qui s’allume, cinq parties qui se nomment, et le rôle de chacune.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "La lampe à pétrole, appelée aussi lampe tempête, est un appareil d’éclairage.",
+      "scene": {
+        "scene": "lampe",
+        "allumage": true
+      },
+      "keywords": [
+        "LAMPE TEMPÊTE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Elle a cinq parties : le réservoir, la molette, la mèche, le verre et la grille.",
+      "scene": {
+        "scene": "lampe",
+        "numeros": true
+      },
+      "keywords": [
+        "CINQ PARTIES"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "vo_line": "Le réservoir contient le pétrole, la mèche porte la flamme, le verre la protège.",
+      "scene": {
+        "scene": "paires",
+        "gauche": [
+          "le réservoir",
+          "la mèche",
+          "le verre",
+          "la grille"
+        ],
+        "droite": [
+          "le pétrole",
+          "la flamme",
+          "le vent",
+          "l’air"
+        ]
+      },
+      "keywords": [
+        "CHACUNE SON RÔLE"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

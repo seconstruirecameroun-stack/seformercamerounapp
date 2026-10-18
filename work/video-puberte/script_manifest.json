@@ -1,0 +1,98 @@
+{
+  "title": "Les changements liés à la puberté",
+  "lesson": "Les changements liés à la puberté",
+  "registre": "figures de sciences",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Un enfant devient adulte, et le cahier dit exactement comment.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "La puberté est le passage de l’enfant à l’état adulte.",
+      "scene": {
+        "scene": "fleche",
+        "avant": "enfant",
+        "apres": "adulte"
+      },
+      "keywords": [
+        "LA PUBERTÉ"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Cela commence entre douze et quinze ans chez les garçons, onze et quatorze chez les filles.",
+      "scene": {
+        "scene": "barres",
+        "min": 10,
+        "max": 16,
+        "lignes": [
+          [
+            "garçons",
+            12,
+            15,
+            "SKY"
+          ],
+          [
+            "filles",
+            11,
+            14,
+            "LILAC"
+          ]
+        ]
+      },
+      "keywords": [
+        "LES ÂGES"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Chez le garçon, les épaules s’élargissent et la voix devient grave.",
+      "scene": {
+        "scene": "etiquettes",
+        "onde": "grave",
+        "mots": [
+          "les épaules s’élargissent",
+          "les muscles se développent",
+          "la voix devient grave"
+        ]
+      },
+      "keywords": [
+        "LE GARÇON"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 4,
+      "vo_line": "Chez la fille, le bassin s’élargit et la voix devient fine.",
+      "scene": {
+        "scene": "etiquettes",
+        "onde": "fine",
+        "mots": [
+          "les seins se développent",
+          "le bassin s’élargit",
+          "la voix devient fine"
+        ]
+      },
+      "keywords": [
+        "LA FILLE"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 5,
+      "vo_line": "Les testicules produisent les spermatozoïdes, les ovaires produisent les ovules.",
+      "scene": {
+        "scene": "cellules"
+      },
+      "keywords": [
+        "LES CELLULES"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

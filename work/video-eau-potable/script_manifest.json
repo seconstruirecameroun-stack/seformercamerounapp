@@ -1,0 +1,62 @@
+{
+  "title": "L’eau potable",
+  "lesson": "L’eau potable",
+  "registre": "figures de sciences",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Deux verres, et tout ce qu’il faut faire pour passer de l’un à l’autre.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Une eau potable est celle qu’on peut boire sans danger pour notre santé.",
+      "scene": {
+        "scene": "verres"
+      },
+      "keywords": [
+        "POTABLE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "On peut la javelliser et la filtrer, la bouillir et la filtrer, ou la décanter.",
+      "scene": {
+        "scene": "paires",
+        "gauche": [
+          "javelliser",
+          "bouillir",
+          "javelliser"
+        ],
+        "droite": [
+          "et filtrer",
+          "et filtrer",
+          "et décanter"
+        ]
+      },
+      "keywords": [
+        "TROIS FAÇONS"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "vo_line": "L’eau maintient la température, transporte les nutriments et évacue les déchets.",
+      "scene": {
+        "scene": "etiquettes",
+        "numerote": true,
+        "mots": [
+          "la température",
+          "le transport des nutriments",
+          "l’évacuation des déchets"
+        ]
+      },
+      "keywords": [
+        "TROIS RÔLES"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

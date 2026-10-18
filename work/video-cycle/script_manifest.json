@@ -1,0 +1,76 @@
+{
+  "title": "Le cycle de l’eau dans la nature",
+  "lesson": "Le cycle de l’eau dans la nature",
+  "registre": "figures de sciences",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Un paysage qui se complète étape par étape, jusqu’à refermer la boucle.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Le cycle de l’eau est le trajet que parcourt l’eau pour revenir à son point de départ.",
+      "scene": {
+        "scene": "boucle"
+      },
+      "keywords": [
+        "UN TRAJET"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Sous l’effet de la chaleur, l’eau se transforme en vapeur : c’est l’évaporation.",
+      "scene": {
+        "scene": "cycle",
+        "jusqua": 1,
+        "nom": "évaporation"
+      },
+      "keywords": [
+        "ÉVAPORATION"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Au contact des zones froides, la vapeur devient un nuage : c’est la condensation.",
+      "scene": {
+        "scene": "cycle",
+        "jusqua": 2,
+        "nom": "condensation"
+      },
+      "keywords": [
+        "CONDENSATION"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "vo_line": "L’eau tombe sous forme de pluie : c’est la précipitation.",
+      "scene": {
+        "scene": "cycle",
+        "jusqua": 3,
+        "nom": "précipitation"
+      },
+      "keywords": [
+        "PRÉCIPITATION"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 5,
+      "vo_line": "Elle ruisselle jusqu’aux mers et aux fleuves, et le cycle recommence.",
+      "scene": {
+        "scene": "cycle",
+        "jusqua": 4,
+        "nom": "ruissellement"
+      },
+      "keywords": [
+        "RUISSELLEMENT"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "title": "L’amélioration des sols : le compost",
+  "lesson": "L’amélioration des sols : le compost",
+  "registre": "figures de sciences",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Ce qui vient des plantes et des bêtes revient nourrir la terre.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Le compost est un engrais naturel fait de matières animales et végétales.",
+      "scene": {
+        "scene": "origines"
+      },
+      "keywords": [
+        "LE COMPOST"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "On enrichit un sol pauvre en utilisant le compost.",
+      "scene": {
+        "scene": "sols"
+      },
+      "keywords": [
+        "UN SOL RICHE"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "vo_line": "Feuilles mortes, cendre de bois, restes de repas, épluchures : tout est biodégradable.",
+      "scene": {
+        "scene": "etiquettes",
+        "mots": [
+          "les feuilles mortes",
+          "la cendre de bois",
+          "les restes de repas",
+          "les épluchures",
+          "la litière d’animaux"
+        ]
+      },
+      "keywords": [
+        "BIODÉGRADABLE"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

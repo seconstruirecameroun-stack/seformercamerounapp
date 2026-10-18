@@ -1,0 +1,79 @@
+{
+  "title": "Les organes reproducteurs",
+  "lesson": "Les organes reproducteurs",
+  "registre": "figures de sciences",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Des organes épars, un cadre qui les rassemble, puis le rôle de chacun.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "L’appareil reproducteur est l’ensemble des organes qui permettent de se reproduire.",
+      "scene": {
+        "scene": "ensemble"
+      },
+      "keywords": [
+        "UN ENSEMBLE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Chez l’homme : le pénis, les deux testicules, les canaux et la prostate.",
+      "scene": {
+        "scene": "etiquettes",
+        "mots": [
+          "le pénis",
+          "les deux testicules",
+          "les canaux",
+          "la prostate"
+        ]
+      },
+      "keywords": [
+        "CHEZ L’HOMME"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Chez la femme : la vulve, l’utérus, le vagin et les deux ovaires.",
+      "scene": {
+        "scene": "etiquettes",
+        "mots": [
+          "la vulve",
+          "l’utérus",
+          "le vagin",
+          "les deux ovaires"
+        ]
+      },
+      "keywords": [
+        "CHEZ LA FEMME"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "vo_line": "Les ovaires produisent les ovules, et l’utérus accueille la gestation.",
+      "scene": {
+        "scene": "paires",
+        "gauche": [
+          "les testicules",
+          "les ovaires",
+          "l’utérus"
+        ],
+        "droite": [
+          "les spermatozoïdes",
+          "les ovules",
+          "la gestation"
+        ]
+      },
+      "keywords": [
+        "CHACUN SON RÔLE"
+      ],
+      "niba": "fete"
+    }
+  ]
+}
