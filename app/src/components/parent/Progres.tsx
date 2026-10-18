@@ -78,12 +78,22 @@ function CarteEnfant({ enfant }: { enfant: Enfant }) {
             </small>
           </div>
         </div>
-        <Link
-          to={`/enfant/${enfant.id}`}
-          className="tuile shrink-0 rounded-full border-2 border-line bg-white-warm px-4 py-2 text-base font-bold"
-        >
-          Voir son espace
-        </Link>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          {/* Le rapport avant l'espace : un parent qui ouvre cette page vient
+              plus souvent savoir où en est son enfant que jouer à sa place. */}
+          <Link
+            to={`/parent/enfant/${enfant.id}`}
+            className="tuile rounded-full border-2 border-clay bg-clay/10 px-4 py-2 text-base font-bold text-clay-dark"
+          >
+            Son rapport
+          </Link>
+          <Link
+            to={`/enfant/${enfant.id}`}
+            className="tuile rounded-full border-2 border-line bg-white-warm px-4 py-2 text-base font-bold"
+          >
+            Son espace
+          </Link>
+        </div>
       </header>
 
       {bord.isLoading ? <Loading label="Je rassemble sa progression…" /> : null}

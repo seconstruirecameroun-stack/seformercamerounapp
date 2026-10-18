@@ -5,6 +5,7 @@ import LoginPage from './pages/Login';
 import ProfilePicker from './pages/ProfilePicker';
 import Landing from './pages/Landing';
 import ParentSpace from './pages/parent/ParentSpace';
+import FicheEnfant from './pages/parent/FicheEnfant';
 import PinGate from './components/PinGate';
 import ChildSpace from './pages/child/ChildSpace';
 import ChildHome from './pages/child/ChildHome';
@@ -42,6 +43,18 @@ export default function App() {
             <RequireParent>
               <PinGate>
                 <ParentSpace />
+              </PinGate>
+            </RequireParent>
+          }
+        />
+        {/* Le rapport de travail vit derrière le code, comme l'import et la
+            validation : il parle de l'enfant à son parent, pas à lui. */}
+        <Route
+          path="/parent/enfant/:childId"
+          element={
+            <RequireParent>
+              <PinGate>
+                <FicheEnfant />
               </PinGate>
             </RequireParent>
           }

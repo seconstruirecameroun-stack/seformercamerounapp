@@ -340,6 +340,16 @@ function Etape({
   const [ratees, setRatees] = useState<Set<string>>(new Set());
   /** La manche ne démarre pas toute seule : on annonce l'enjeu d'abord. */
   const [mancheLancee, setMancheLancee] = useState(false);
+  /**
+   * Le moment où la question est apparue.
+   *
+   * Le temps passé par question est l'un des quatre faits que le rapport du
+   * parent promet, et il n'était enregistré nulle part : recordAttempt
+   * acceptait une durée depuis le début, personne ne la lui passait, et la
+   * colonne restait vide. Une promesse qui ne se remplit jamais vaut moins
+   * qu'une promesse qu'on ne fait pas.
+   */
+  const apparue = useRef<number>(Date.now());
 
   // La séance ne bouge pas sous les yeux de l'enfant : elle est rechargée au
   // seul moment où on le décide, par « Continuer ». Laissée fraîche, elle se
@@ -358,6 +368,12 @@ function Etape({
   useEffect(() => {
     if (file.length > 0) jouerSon(file[0].son);
   }, [file]);
+
+  // Le chronomètre du temps de réflexion repart à chaque question. Il ne
+  // compte donc pas le temps passé à lire la correction de la précédente.
+  useEffect(() => {
+    apparue.current = Date.now();
+  }, [index, mancheLancee]);
 
   /** Nouvelle série de questions, à la suite : l'enfant ne retourne pas au menu. */
   function continuer() {
@@ -629,6 +645,7 @@ function Etape({
         item: question.item,
         answer: reponse.donnee,
         correct: reponse.correct,
+        durationMs: Date.now() - apparue.current,
         bonus,
       });
 
