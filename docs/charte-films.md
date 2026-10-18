@@ -171,6 +171,41 @@ phrase et les mots du cahier gardent leur place en bas et en haut à droite.
 
 ---
 
+## 4. Quand la matière est le nombre et la figure
+
+Les mathématiques ne sont ni le monde ni la langue. On ne peut pas les
+photographier, mais elles ne se réduisent pas non plus à des mots qui
+bougent : un cube est une figure, une addition est une quantité, une
+conversion est un tableau. Il y a donc quelque chose à montrer — à condition
+de le dessiner juste.
+
+**La figure est dessinée, jamais générée.** Un générateur produit volontiers
+un cube à sept arêtes ou cinq sommets visibles ; la leçon dit six faces, huit
+sommets, douze arêtes, et l'enfant qui compte sur l'image doit trouver ce
+compte-là. Le dessin est donc calculé, comme Niba et comme les lettres. Ce
+n'est pas un principe esthétique : c'est la seule façon qu'une image de
+mathématiques ne contredise pas sa leçon.
+
+Ce qui est montré, selon ce qu'on enseigne :
+
+| La leçon porte sur | Le film montre |
+|--------------------|----------------|
+| une figure | la figure elle-même, et ce qu'on y compte, surligné un à un |
+| une quantité | des objets qu'on peut compter du doigt, jamais un chiffre seul |
+| une conversion | le tableau, et le nombre qui glisse d'une colonne à l'autre |
+| une écriture en lettres | le mot et le chiffre côte à côte, la lettre qui change en couleur |
+
+**Le fond fait partie de la leçon.** Un fond pastel calme sous une figure, un
+fond plus clair sous un tableau pour que les colonnes se détachent : il
+n'est jamais décoratif, il sert la lecture.
+
+**Et la police garde l'âme de l'enfant.** Fredoka partout, ronde et large,
+jamais un caractère de manuel technique. Un chiffre doit avoir le même
+visage amical qu'un mot : à sept ans, une typographie sévère sur une leçon de
+calcul ajoute une difficulté qui n'est pas celle qu'on enseigne.
+
+---
+
 ## Ce qui ne change pas
 
 - **Une seule idée par plan**, et ce qui est dit est montré.
