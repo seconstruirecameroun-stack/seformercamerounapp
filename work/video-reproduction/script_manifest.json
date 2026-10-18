@@ -1,0 +1,54 @@
+{
+  "title": "La reproduction des animaux",
+  "lesson": "La reproduction des animaux",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "talking_characters": false,
+  "mascotte": "Niba",
+  "through_line": "On va voir naître trois petits, chacun à sa façon.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Les animaux ne font pas tous leurs petits de la même façon.",
+      "shot": "A calm farmyard in southern Cameroon with red laterite earth and an oil palm behind: a hen on the left, a goat in the middle, and a snake coiled on warm sand on the right, each one quietly in its own corner. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "TROIS MODES"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Les ovipares pondent des œufs : la poule, le poisson, l’escargot.",
+      "shot": "A hen settling on a small nest of pale eggs, a fish in a shallow pool beside her and a snail on a leaf, warm morning light. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "OVIPARE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "Les vivipares donnent directement naissance aux petits : la chèvre, la vache.",
+      "shot": "A goat standing beside her newborn kid on red earth, a cow with her calf a little further back, soft warm light. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "VIVIPARE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "Les ovovivipares gardent leurs œufs dans le ventre : la vipère.",
+      "shot": "A snake coiled on warm sand, a soft glow inside her body showing small eggs, one tiny snake just emerging beside her. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "OVOVIVIPARE"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

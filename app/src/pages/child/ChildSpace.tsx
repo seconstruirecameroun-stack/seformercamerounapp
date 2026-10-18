@@ -24,6 +24,7 @@ import type { Palier } from '../../lib/paliers';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
 import Illustration from '../../components/Illustration';
+import { urlFilm } from '../../lib/image';
 import Fiches from './Fiches';
 import Popup from '../../components/Popup';
 import Coffre, { Confettis } from '../../components/jeu/Coffre';
@@ -788,6 +789,9 @@ export default function ChildSpace() {
     .filter((n) => n.status === 'approved')
     .sort((a, b) => a.sort_order - b.sort_order);
   const video = bundle?.videos?.[0];
+  const filmUrl = urlFilm(video, (chemin) =>
+    supabase.storage.from('films').getPublicUrl(chemin).data.publicUrl,
+  );
 
   return (
     <main className="enfant ciel min-h-screen pb-12">
@@ -886,9 +890,9 @@ export default function ChildSpace() {
                 <div className="grid gap-3">
                   <Fiches
                     film={
-                      video?.external_url
+                      filmUrl && video
                         ? {
-                            url: video.external_url,
+                            url: filmUrl,
                             poster: video.poster_url,
                             duree: video.duration_s,
                           }

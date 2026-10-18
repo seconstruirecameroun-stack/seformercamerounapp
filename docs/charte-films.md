@@ -154,9 +154,21 @@ Tout se fait sur **Higgsfield**, et la chaîne n'a pas changé de nature :
 1. **L'image** du plan — `nano_banana_2`, 16:9, environ 2 crédits. C'est là
    que se joue la règle du vrai lieu : le paysage réel, et un coin laissé
    libre pour Niba.
-2. **L'animation** du plan — `grok_video_v15_lite`, 5 à 9 s, 720p, environ
-   5 crédits. Mouvement lent : l'eau qui coule, l'herbe qui plie, un animal
-   qui lève la tête. Jamais de secousse de caméra, jamais de coupe.
+2. **Le mouvement** — une approche de six pour cent sur la durée du plan,
+   calculée localement par ffmpeg, **gratuite**. C'est assez pour que l'image
+   respire et assez peu pour qu'un enfant ne le remarque pas.
+
+   L'animation par générateur (`grok_video_v15_lite`, environ 5 crédits le
+   plan) donne davantage de vie — l'eau qui coule, l'herbe qui plie — mais
+   elle impose une vérification que rien n'oblige à faire : **le fichier de
+   départ envoyé par l'atelier ne prend qu'à la première génération.** Les
+   suivantes réanimant silencieusement la même image, le solde se débite
+   normalement et rien ne signale l'erreur. Treize plans ont ainsi été animés
+   sur la même image, pour soixante-cinq crédits perdus.
+
+   Si on y revient, la règle est : après chaque envoi, relire la vignette du
+   fichier de départ affichée par l'atelier et refuser de lancer tant qu'elle
+   n'a pas changé. Contrôler le solde ne prouve que le débit, jamais l'objet.
 3. **La voix** — Text to Speech, ElevenLabs v3, voix Céline, direction de
    narration inchangée, **0,6 à 0,75 crédit la réplique**. C'est le poste le
    moins cher du film, et celui sans lequel il n'y a pas de film.

@@ -57,3 +57,25 @@ export async function preparerIllustration(fichier: File, forme: FormeImage): Pr
   if (!blob) throw new Error('Conversion impossible sur ce navigateur.');
   return blob;
 }
+
+/**
+ * L'adresse d'un film de leçon.
+ *
+ * Deux colonnes peuvent la porter, pour une raison d'histoire : les premiers
+ * films vivaient sur un CDN extérieur et ont gardé leur `external_url` en
+ * passant dans le compartiment du projet, tandis que les suivants n'ont qu'un
+ * `storage_path`.
+ *
+ * Le lecteur ne lisait que `external_url`. Un film correctement déposé mais
+ * référencé par son chemin restait donc invisible dans la leçon — sans la
+ * moindre erreur, ce qui est la pire façon de disparaître. Le chemin passe
+ * d'abord : c'est la forme qui survit à un changement d'hébergement.
+ */
+export function urlFilm(
+  video: { storage_path?: string | null; external_url?: string | null } | null | undefined,
+  urlPublique: (chemin: string) => string,
+): string | null {
+  if (!video) return null;
+  if (video.storage_path) return urlPublique(video.storage_path);
+  return video.external_url ?? null;
+}

@@ -1,0 +1,65 @@
+{
+  "title": "Les soins aux animaux domestiques",
+  "lesson": "Les soins aux animaux domestiques",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "talking_characters": false,
+  "mascotte": "Niba",
+  "through_line": "Un animal tombe malade, on apprend à le voir et à le soigner.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Les animaux de la maison peuvent tomber malades.",
+      "shot": "A quiet Cameroonian courtyard with red earth, a goat lying down with its head low, a hen standing still nearby, soft overcast light. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "LES MALADIES"
+      ],
+      "niba": "manque"
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "La gale et la teigne abîment la peau et le poil.",
+      "shot": "A close calm view of an animal flank with a plain uniform coat, showing three clearly round bare patches where the hair has fallen out. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "GALE",
+        "TEIGNE"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "La grippe donne la toux, la bave et la fatigue.",
+      "shot": "A hen resting with drooping wings beside a bowl of water, head low, a soft blanket of warm light around her. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "LA GRIPPE"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "La rage fait beaucoup baver et rend l’animal agressif.",
+      "shot": "Seen from a safe distance: a lone dog far away beside a puddle, head low, while an adult gently leads a child away along a path, both seen from behind. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "LA RAGE"
+      ],
+      "niba": "manque"
+    },
+    {
+      "n": 5,
+      "block_kind": "narration",
+      "vo_line": "On vaccine, on nettoie l’habitat, on va chez le vétérinaire.",
+      "shot": "A clean swept animal shelter with fresh straw and a bucket of clear water, a small medical bag on a stool, the goat standing again and alert. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "LES TROIS GESTES"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

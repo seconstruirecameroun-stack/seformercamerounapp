@@ -1,0 +1,54 @@
+{
+  "title": "Les milieux de vie des végétaux",
+  "lesson": "Les milieux de vie des végétaux",
+  "channel_type": "Kids",
+  "style": "Pastel Flat 2D",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "talking_characters": false,
+  "mascotte": "Niba",
+  "through_line": "On remonte de la terre ferme jusqu’à la boue, en suivant l’eau.",
+  "blocks": [
+    {
+      "n": 1,
+      "block_kind": "narration",
+      "vo_line": "Les végétaux sont vivants : ils ont tous des racines.",
+      "shot": "A single young plant shown whole on red laterite earth, its roots visible under a cut-away of the soil, soft clear light. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "DES RACINES"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "block_kind": "narration",
+      "vo_line": "Certains poussent sur la terre : le manguier, le palmier.",
+      "shot": "A mango tree heavy with fruit and an oil palm growing on dry red laterite earth, a hibiscus flower in front, warm afternoon light. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "SUR LA TERRE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "block_kind": "narration",
+      "vo_line": "D’autres poussent dans l’eau : le nénuphar, le roseau.",
+      "shot": "A calm pond with water lilies floating flat on the surface, tall reeds at the edge and green algae visible under the clear water. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "DANS L’EAU"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "block_kind": "narration",
+      "vo_line": "D’autres poussent dans la boue : le palétuvier, le papyrus.",
+      "shot": "Mangrove trees standing on arching stilt roots in dark shining mud, tall papyrus stems behind them, soft humid light. Keep the lower left corner calm and uncluttered.",
+      "keywords": [
+        "DANS LA BOUE"
+      ],
+      "niba": "fete"
+    }
+  ]
+}
