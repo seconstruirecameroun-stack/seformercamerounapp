@@ -1,0 +1,72 @@
+{
+  "title": "Les pronoms personnels",
+  "lesson": "Les pronoms personnels",
+  "registre": "typographique",
+  "style": "Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Un nom s’en va, un petit mot prend sa place.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Le pronom est un mot qui remplace le nom.",
+      "scene": {
+        "scene": "remplace",
+        "mots": [
+          "Maman",
+          "va",
+          "au",
+          "champ"
+        ],
+        "remplacer": 0,
+        "par": "Elle"
+      },
+      "keywords": [
+        "LE PRONOM"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Maman va au champ devient elle va au champ.",
+      "scene": {
+        "scene": "phrase",
+        "mots": [
+          "Elle",
+          "va",
+          "au",
+          "champ"
+        ],
+        "accent": 0
+      },
+      "keywords": [
+        "ELLE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Les pronoms personnels sont je, tu, il, elle, nous, vous, ils, elles.",
+      "scene": {
+        "scene": "liste",
+        "mots": [
+          "je",
+          "tu",
+          "il",
+          "elle",
+          "nous",
+          "vous",
+          "ils",
+          "elles"
+        ],
+        "colonnes": 4
+      },
+      "keywords": [
+        "HUIT PRONOMS"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

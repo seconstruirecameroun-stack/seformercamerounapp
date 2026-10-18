@@ -131,6 +131,46 @@ nord : étroit et pointu au nord, large au sud, renflé à l'ouest sur la côte.
 
 ---
 
+## 3. Quand la matière est la langue
+
+Les deux premières règles supposent qu'il y a un monde à montrer. Pour la
+géographie, les sciences, l'histoire, c'est vrai. Pour le français et les
+mathématiques, c'est faux : il n'y a rien à photographier dans « le pronom
+remplace le nom », et un décor pastel posé derrière la phrase ne fait
+qu'occuper l'écran.
+
+**Pour ces matières, la chose à montrer est la langue elle-même.** Le film
+devient typographique : les mots entrent, se déplacent, se remplacent, et une
+lettre arrive là où la règle la fait arriver.
+
+Cela semble contredire l'interdiction du texte dans l'image. Elle ne vaut en
+réalité que pour ce qui est **généré** : un générateur déforme les lettres,
+invente des mots, et rend l'image intraduisible. Une lettre **composée** —
+dessinée par le montage, en Fredoka, la police de l'application — n'a aucun
+de ces défauts. C'est exactement le raisonnement de Niba : interdit à la
+génération, autorisé au dessin.
+
+Ce que le film montre alors, règle par règle :
+
+| La règle dit | Le film fait |
+|--------------|--------------|
+| Le pronom remplace le nom | « Maman » se soulève et « Elle » prend sa place |
+| La phrase a un sens | des mots en désordre se rangent en ligne |
+| Majuscule et point | la première lettre grandit, un point tombe à la fin |
+| GN et GV | la phrase se sépare en deux blocs de couleurs |
+| Pluriel en ou | un « s » arrive en glissant à la fin du mot |
+| Les six exceptions | le « s » est refusé, un « x » le remplace |
+
+Trois conséquences pratiques. Le film ne coûte plus que sa voix, puisque
+l'image est composée et non générée. Il se corrige au mot près sans rien
+repayer. Et il ne peut pas se tromper d'orthographe, ce qui serait le comble
+pour une leçon de français.
+
+La typographie occupe les deux tiers hauts du cadre ; Niba, sa bande de
+phrase et les mots du cahier gardent leur place en bas et en haut à droite.
+
+---
+
 ## Ce qui ne change pas
 
 - **Une seule idée par plan**, et ce qui est dit est montré.

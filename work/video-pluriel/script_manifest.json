@@ -1,0 +1,80 @@
+{
+  "title": "Le pluriel des noms en ou et en eu",
+  "lesson": "Le pluriel des noms en ou et en eu",
+  "registre": "typographique",
+  "style": "Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Une lettre arrive à la fin du mot. Reste à savoir laquelle.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Les noms terminés par ou prennent un s au pluriel.",
+      "scene": {
+        "scene": "suffixe",
+        "singulier": "un trou",
+        "pluriel": "des trou",
+        "lettre": "s"
+      },
+      "keywords": [
+        "OU PREND S"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Six noms en ou prennent un x : bijou, caillou, chou, joujou, genou, pou.",
+      "scene": {
+        "scene": "liste",
+        "mots": [
+          "bijoux",
+          "cailloux",
+          "choux",
+          "joujoux",
+          "genoux",
+          "poux"
+        ],
+        "colonnes": 3,
+        "accent_final": true
+      },
+      "keywords": [
+        "SIX EXCEPTIONS"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "vo_line": "Les noms terminés par eu prennent un x au pluriel.",
+      "scene": {
+        "scene": "suffixe",
+        "singulier": "un feu",
+        "pluriel": "des feu",
+        "lettre": "x"
+      },
+      "keywords": [
+        "EU PREND X"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "vo_line": "Trois noms en eu prennent un s : pneu, bleu, émeu.",
+      "scene": {
+        "scene": "liste",
+        "mots": [
+          "pneus",
+          "bleus",
+          "émeus"
+        ],
+        "colonnes": 3,
+        "accent_final": true
+      },
+      "keywords": [
+        "TROIS EXCEPTIONS"
+      ],
+      "niba": "fete"
+    }
+  ]
+}
