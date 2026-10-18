@@ -1,0 +1,92 @@
+{
+  "title": "Les mesures de grandeurs : les sous-multiples",
+  "lesson": "Les mesures de grandeurs : les sous-multiples",
+  "registre": "nombres et figures",
+  "style": "Fredoka et figures dessinées sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Quatre colonnes, et un chiffre qui tombe dans la bonne.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Pour convertir une mesure, j’utilise le tableau des sous-multiples.",
+      "scene": {
+        "scene": "tableau"
+      },
+      "keywords": [
+        "LE TABLEAU"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Les sous-multiples du mètre sont le décimètre, le centimètre et le millimètre.",
+      "scene": {
+        "scene": "echelle"
+      },
+      "keywords": [
+        "M DM CM MM"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Deux mètres font deux cents centimètres.",
+      "scene": {
+        "scene": "tableau",
+        "chiffres": [
+          2,
+          0,
+          0,
+          null
+        ],
+        "cible": 2,
+        "legende": "2 m = 200 cm"
+      },
+      "keywords": [
+        "2 M = 200 CM"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 4,
+      "vo_line": "Cent vingt centimètres font un mètre et deux décimètres.",
+      "scene": {
+        "scene": "tableau",
+        "chiffres": [
+          1,
+          2,
+          0,
+          null
+        ],
+        "cible": 0,
+        "legende": "120 cm = 1 m 2 dm"
+      },
+      "keywords": [
+        "120 CM"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 5,
+      "vo_line": "Trois décimètres et quatre millimètres font trois cent quatre millimètres.",
+      "scene": {
+        "scene": "tableau",
+        "chiffres": [
+          null,
+          3,
+          0,
+          4
+        ],
+        "cible": 3,
+        "legende": "3 dm 4 mm = 304 mm"
+      },
+      "keywords": [
+        "304 MM"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

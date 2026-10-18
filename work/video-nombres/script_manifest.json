@@ -1,0 +1,84 @@
+{
+  "title": "Les nombres de 101 à 999",
+  "lesson": "Les nombres de 101 à 999",
+  "registre": "nombres et figures",
+  "style": "Fredoka et figures dessinées sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Un s arrive au bout de cent, puis repart dès qu’un nombre le suit.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Cent prend un s quand il est multiplié et qu’aucun nombre ne le suit.",
+      "scene": {
+        "scene": "conditions"
+      },
+      "keywords": [
+        "LA RÈGLE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Cent s’écrit sans s, car il n’est pas multiplié.",
+      "scene": {
+        "scene": "cent",
+        "paquets": 1,
+        "mot": "cent"
+      },
+      "keywords": [
+        "CENT"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Deux cents prend un s : rien ne suit le mot cent.",
+      "scene": {
+        "scene": "cent",
+        "paquets": 2,
+        "mot": "deux cent",
+        "finale": "s"
+      },
+      "keywords": [
+        "DEUX CENTS"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 4,
+      "vo_line": "Trois cent quarante perd son s, car quarante suit cent.",
+      "scene": {
+        "scene": "cent",
+        "paquets": 3,
+        "mot": "trois cent",
+        "finale": "s",
+        "suivant": "quarante"
+      },
+      "keywords": [
+        "PAS DE S"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 5,
+      "vo_line": "Neuf cent quatre-vingt-dix-neuf est le plus grand nombre à trois chiffres.",
+      "scene": {
+        "scene": "chiffres",
+        "tuiles": [
+          "9",
+          "9",
+          "9"
+        ],
+        "barree": true,
+        "mot": "999"
+      },
+      "keywords": [
+        "999"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "title": "Le cube",
+  "lesson": "Le cube",
+  "registre": "nombres et figures",
+  "style": "Fredoka et figures dessinées sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "Céline",
+  "mascotte": "Niba",
+  "through_line": "Un solide qu’on ouvre, puis qu’on compte : six, huit, douze.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Le cube est un solide.",
+      "scene": {
+        "scene": "cube"
+      },
+      "keywords": [
+        "LE CUBE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Le cube a six faces carrées.",
+      "scene": {
+        "scene": "patron"
+      },
+      "keywords": [
+        "SIX FACES"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Le cube a huit sommets.",
+      "scene": {
+        "scene": "cube",
+        "compter": "sommets"
+      },
+      "keywords": [
+        "HUIT SOMMETS"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 4,
+      "vo_line": "Le cube a douze arêtes.",
+      "scene": {
+        "scene": "cube",
+        "compter": "aretes"
+      },
+      "keywords": [
+        "DOUZE ARÊTES"
+      ],
+      "niba": "fete"
+    }
+  ]
+}
