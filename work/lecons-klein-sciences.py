@@ -475,8 +475,19 @@ def verifier():
 
 
 def litteral(valeur):
-    """Un littéral JSON prêt pour SQL : les apostrophes typographiques passent."""
+    """Un littéral JSON prêt pour SQL, pour les colonnes jsonb."""
     return "'" + json.dumps(valeur, ensure_ascii=False) + "'"
+
+
+def texte(valeur):
+    """Un littéral texte SQL.
+
+    À ne pas confondre avec litteral() : passer une chaîne simple à ce
+    dernier l'enrobe de guillemets JSON, et le titre entrerait en base avec
+    ses guillemets autour. Les apostrophes du français étant typographiques
+    (’), le doublement des apostrophes droites ne sert qu'en dernier recours.
+    """
+    return "'" + valeur.replace("'", "''") + "'"
 
 
 ENTETE = """-- Se Former Cameroun — les trois leçons de sciences du cahier de KLEIN (CE1)
@@ -552,23 +563,23 @@ def sql():
         out.append("  insert into lessons")
         out.append("    (parent_id, subject_id, class_id, title, summary, lang, chapter, taught_on,")
         out.append("     sort_order, status, illustration, illustration_prompt)")
-        out.append("  values (p_parent, v_subject, v_class, %s," % litteral(titre))
-        out.append("    %s," % litteral(resume))
+        out.append("  values (p_parent, v_subject, v_class, %s," % texte(titre))
+        out.append("    %s," % texte(resume))
         out.append("    'fr', %s, %s, %d, 'approved', %s,"
-                   % (litteral(chapitre), ("date '%s'" % date) if date else 'null', ordre, litteral(img)))
-        out.append("    %s)" % litteral(STYLE + prompt))
+                   % (texte(chapitre), ("date '%s'" % date) if date else 'null', ordre, texte(img)))
+        out.append("    %s)" % texte(STYLE + prompt))
         out.append("  returning id into v_lesson;\n")
 
         for ni, (kind, phrase, nimg, nprompt, expl, items) in enumerate(notions, start=1):
             out.append("  insert into notions (parent_id, lesson_id, kind, statement, sort_order, status,")
             out.append("     illustration, illustration_prompt)")
             out.append("  values (p_parent, v_lesson, '%s', %s, %d, 'approved', %s,"
-                       % (kind, litteral(phrase), ni, litteral(nimg)))
-            out.append("    %s)" % litteral(STYLE + nprompt))
+                       % (kind, texte(phrase), ni, texte(nimg)))
+            out.append("    %s)" % texte(STYLE + nprompt))
             out.append("  returning id into v_notion;\n")
 
             out.append("  insert into explanations (parent_id, notion_id, register, body, status) values")
-            out.append(',\n'.join("    (p_parent, v_notion, '%s', %s, 'approved')" % (r, litteral(b))
+            out.append(',\n'.join("    (p_parent, v_notion, '%s', %s, 'approved')" % (r, texte(b))
                                   for r, b in expl) + ';\n')
 
             out.append("  insert into items (parent_id, notion_id, kind, level, payload, answer, explain, status) values")
@@ -576,7 +587,7 @@ def sql():
             for ikind, niveau, payload, answer, explain in items:
                 lignes.append(
                     "    (p_parent, v_notion, '%s', %d,\n     %s::jsonb,\n     %s::jsonb, %s, 'approved')"
-                    % (ikind, niveau, litteral(payload), litteral(answer), litteral(explain))
+                    % (ikind, niveau, litteral(payload), litteral(answer), texte(explain))
                 )
             out.append(',\n'.join(lignes) + ';\n')
 
