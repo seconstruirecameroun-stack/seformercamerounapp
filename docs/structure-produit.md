@@ -193,6 +193,26 @@ retenir la position de la bonne case.
 Rater ne fait pas reculer : ça fait revenir. Perdre un acquis décourage un
 enfant de primaire bien plus que ça ne le motive.
 
+### Valider la leçon : la note sur note
+
+Franchir les quatre étapes ne suffit pas à **valider** la leçon. La validation
+demande la **note sur note** : toutes les questions justes, aucune faute.
+
+Les deux règles ne disent pas la même chose et ne servent pas la même chose.
+Le franchissement fait avancer : il suffit d'une bonne réponse par notion pour
+monter d'une marche, et rater fait revenir, pas reculer. C'est ce qui permet à
+un enfant d'apprendre sans se décourager. La validation, elle, certifie : elle
+dit que la leçon est sue, et une leçon sue ne se récite pas à huit sur dix.
+
+Conséquence : une leçon gravie jusqu'au Défi n'est pas encore validée. Il reste
+une dernière manche, sans faute, sur l'ensemble des notions. Elle se rejoue
+autant de fois qu'il faut, et la rater ne retire rien de ce qui est acquis.
+
+Reste à trancher, et c'est une question ouverte : la manche sans faute
+porte-t-elle sur toutes les questions de la leçon, ou sur une sélection d'une
+question par notion ? La première est une épreuve ; la seconde est un contrôle.
+Voir §12.
+
 ### L'image se gagne à la troisième marche
 
 Chaque notion porte une image, et l'enfant la gagne en validant cette notion
@@ -586,8 +606,35 @@ n'attend jamais sa vidéo pour être révisable.
 3. **Importer** — photos ou PDF → enfant + matière + type (cours / devoir)
 4. **Bibliothèque** — documents importés et leur état de traitement
 5. **À valider** — file des notions, explications et scripts vidéo générés
-6. **Détail enfant** — progression notion par notion, erreurs récurrentes
+6. **Détail enfant** — progression notion par notion, erreurs récurrentes,
+   et le rapport de travail décrit ci-dessous
 7. **Réglages** — code PIN, quota de génération, abonnement
+
+### Le rapport de travail, dans le profil de l'enfant
+
+Le parent ne regarde pas des pourcentages, il regarde son enfant. Le profil de
+chaque enfant porte donc un **rapport** que l'app tient à jour pendant qu'il
+joue, et qui répond à quatre questions :
+
+| Ce que le rapport dit | Ce qui le nourrit |
+|---|---|
+| Comment il travaille | durée des séances, heure, régularité, abandons en cours de leçon, temps passé par question |
+| Ce qu'il réussit | notions acquises du premier coup, étapes franchies sans reprise, matières où il avance seul |
+| Ce qui le met en difficulté | notions reprises plusieurs fois, types de questions ratés, matières en retard |
+| Ce qu'il doit travailler beaucoup | le petit nombre de notions à revoir en priorité, nommées, pas comptées |
+
+Le dernier point est le seul qui compte vraiment pour un parent du soir. Il ne
+doit pas être une liste de vingt notions : trois ou quatre, nommées en clair,
+avec ce que l'enfant rate exactement — « il confond les arêtes et les sommets »
+plutôt que « 42 % en géométrie ».
+
+Le rapport observe le comportement de travail, jamais l'enfant. « Il s'arrête
+après huit minutes » est un fait utile ; « il manque de concentration » est un
+jugement que l'app n'a pas à porter, et qu'un parent lira sur son enfant plutôt
+que sur une séance.
+
+Il se lit à deux échelles : la semaine écoulée, et depuis le début. Une
+difficulté qui dure n'a pas le même sens qu'une mauvaise soirée.
 
 ### Espace enfant
 
@@ -716,5 +763,11 @@ scripts PowerShell existants.
    faut-il un mode entièrement audio dès le lot 3 ?
 5. **Hors-ligne.** Indispensable dès le début, ou acceptable au lot 6 ? La
    vidéo hors-ligne suppose un téléchargement explicite.
-6. **Modèle économique.** Gratuit, abonnement familial, par enfant ? Cela
+6. **La manche sans faute porte sur quoi ?** Toutes les questions de la leçon,
+   ou une par notion ? Voir §5. Et que se passe-t-il pour une leçon validée dont
+   une notion redevient due à la révision espacée : perd-elle sa validation ?
+7. **Le rapport de travail est-il écrit ou calculé ?** Des phrases produites par
+   le modèle à partir des faits, ou des faits bruts mis en forme ? Le premier se
+   lit mieux et coûte à chaque consultation ; le second ne ment jamais.
+8. **Modèle économique.** Gratuit, abonnement familial, par enfant ? Cela
    détermine la générosité du quota, surtout vidéo.
