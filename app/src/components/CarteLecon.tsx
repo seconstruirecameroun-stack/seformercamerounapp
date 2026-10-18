@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Illustration from './Illustration';
 import type { LeconResume } from '../lib/dashboard';
+import { PALIERS } from '../lib/paliers';
 import { jourCourt } from '../lib/rangement';
 
 /**
@@ -41,7 +42,10 @@ export default function CarteLecon({
         <h3 className="line-clamp-2 text-kid font-extrabold">{lecon.title}</h3>
         <div className="mt-1.5 flex items-center gap-2">
           <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
-            {[1, 2, 3].map((n) => (
+            {/* L'escalier se compte depuis PALIERS, jamais à la main : le jour
+                où une marche est ajoutée — le Défi l'a été — une liste écrite
+                en dur fait mentir la carte sur ce qu'il reste à franchir. */}
+            {PALIERS.map(({ niveau: n }) => (
               <span
                 key={n}
                 className={
