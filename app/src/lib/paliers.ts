@@ -212,9 +212,20 @@ export const ECHECS_AVANT_APPUI = 3;
 /**
  * Les échecs consécutifs de chaque notion, à une étape donnée.
  *
- * On ne compte que les réponses les plus récentes : une bonne réponse remet
- * le compteur à zéro. Trois de suite veulent dire que la question ne lui
- * apprend plus rien, et qu'il faut changer de prise.
+ * Deux choses remettent le compteur à zéro : une bonne réponse **à cette
+ * étape**, et une bonne réponse **à l’étape d’appui**.
+ *
+ * La seconde n’était pas là, et elle manquait gravement. L’appui sert une
+ * question plus facile au bout de trois échecs — mais comme on ne servait
+ * plus aucune question de l’étape en cours, plus aucun échec ni aucune
+ * réussite ne pouvait s’y inscrire : le compteur restait figé au-dessus de
+ * trois, l’appui durait pour toujours, et la notion ne pouvait plus jamais
+ * être validée. KLEIN avait cinq notions dans cet état, dont deux bloquées à
+ * l’étape 2 le jour même. L’escalier censé l’aider devenait un cul-de-sac.
+ *
+ * Avec la reprise d’appui, le cycle se referme : trois échecs, une marche
+ * plus bas, et dès qu’il retrouve pied la question de l’étape revient — avec
+ * trois essais neufs, et non un seul qui le renverrait aussitôt en bas.
  */
 export function echecsDAffilee(
   notions: NotionAvecItems[],
@@ -226,8 +237,13 @@ export function echecsDAffilee(
   for (const notion of notions) {
     const siens = new Set(notion.items.filter((i) => i.level === niveau).map((i) => i.id));
     if (siens.size === 0) continue;
+    const appui = niveauDAppui(notion, niveau);
+    const ceuxDAppui = new Set(
+      appui < niveau ? notion.items.filter((i) => i.level === appui).map((i) => i.id) : [],
+    );
     let suite = 0;
     for (const e of recents) {
+      if (ceuxDAppui.has(e.item_id) && e.correct) break;
       if (!siens.has(e.item_id)) continue;
       if (e.correct) break;
       suite += 1;
