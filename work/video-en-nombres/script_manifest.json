@@ -1,0 +1,66 @@
+{
+  "title": "Numbers 251 to 300",
+  "lesson": "Numbers 251 to 300",
+  "registre": "anglais",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "en",
+  "narrator": "voix anglaise — la voix suit la langue de la leçon",
+  "mascotte": "Niba",
+  "through_line": "Three figures, a few words, and one small line that joins them.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "We read two hundred and fifty-one.",
+      "scene": {
+        "scene": "nombre",
+        "chiffres": [
+          "2",
+          "5",
+          "1"
+        ],
+        "mots": [
+          "two",
+          "hundred",
+          "and",
+          "fifty-one"
+        ]
+      },
+      "keywords": [
+        "251"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "A hyphen joins the tens and the units.",
+      "scene": {
+        "scene": "trait",
+        "gauche": "fifty",
+        "droite": "one",
+        "note": "never “fifty one”"
+      },
+      "keywords": [
+        "THE HYPHEN"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "vo_line": "After two hundred and ninety-nine comes three hundred.",
+      "scene": {
+        "scene": "suite",
+        "nombres": [
+          "298",
+          "299",
+          "300"
+        ],
+        "note": "three hundred, with no “and”"
+      },
+      "keywords": [
+        "UP TO 300"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

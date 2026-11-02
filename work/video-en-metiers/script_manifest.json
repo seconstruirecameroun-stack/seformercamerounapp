@@ -1,0 +1,105 @@
+{
+  "title": "Builder, carpenter and carver",
+  "lesson": "Builder, carpenter and carver",
+  "registre": "anglais",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "en",
+  "narrator": "voix anglaise — la voix suit la langue de la leçon",
+  "mascotte": "Niba",
+  "through_line": "Three men work with their hands, and each one has his own tool.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "A builder builds houses with bricks and cement.",
+      "scene": {
+        "scene": "metier",
+        "metier": "builder",
+        "outil": "trowel"
+      },
+      "keywords": [
+        "BUILDER"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "A carpenter makes tables, chairs and doors out of wood.",
+      "scene": {
+        "scene": "metier",
+        "metier": "carpenter",
+        "outil": "saw"
+      },
+      "keywords": [
+        "CARPENTER"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "A wood carver carves wood to make a mortar.",
+      "scene": {
+        "scene": "metier",
+        "metier": "carver",
+        "outil": "gouge"
+      },
+      "keywords": [
+        "CARVER"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "vo_line": "He arranges blocks to make a wall. He is a builder.",
+      "scene": {
+        "scene": "tri",
+        "enonce": "He arranges blocks to make a wall.",
+        "metier": "builder",
+        "note": "blocks and walls"
+      },
+      "keywords": [
+        "WHO IS HE?"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 5,
+      "vo_line": "He makes tables out of wood. He is a carpenter.",
+      "scene": {
+        "scene": "tri",
+        "enonce": "He makes tables out of wood.",
+        "metier": "carpenter",
+        "note": "wood and furniture"
+      },
+      "keywords": [
+        "WHO IS HE?"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 6,
+      "vo_line": "He uses a trowel. He is a builder.",
+      "scene": {
+        "scene": "tri",
+        "enonce": "He uses a trowel.",
+        "metier": "builder",
+        "note": "the trowel spreads cement"
+      },
+      "keywords": [
+        "WHO IS HE?"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 7,
+      "vo_line": "Both the carpenter and the carver use a chisel.",
+      "scene": {
+        "scene": "chisel"
+      },
+      "keywords": [
+        "THE CHISEL"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

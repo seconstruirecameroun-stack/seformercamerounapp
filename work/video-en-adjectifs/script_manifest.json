@@ -1,0 +1,79 @@
+{
+  "title": "Kinds of adjectives",
+  "lesson": "Kinds of adjectives",
+  "registre": "anglais",
+  "style": "Figures dessinées et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "en",
+  "narrator": "voix anglaise — la voix suit la langue de la leçon",
+  "mascotte": "Niba",
+  "through_line": "One word describes another, and sometimes it keeps a capital letter.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "An adjective is a word that describes a noun.",
+      "scene": {
+        "scene": "adjectif",
+        "mots": [
+          "a",
+          "sharp",
+          "trowel"
+        ],
+        "adjectif": 1,
+        "note": "sharp describes the trowel"
+      },
+      "keywords": [
+        "ADJECTIVE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Heavier is not a sentence. The hammer is heavy — that is a sentence.",
+      "scene": {
+        "scene": "sansphrase",
+        "faux": "heavier",
+        "vrais": [
+          "The",
+          "hammer",
+          "is",
+          "heavy."
+        ]
+      },
+      "keywords": [
+        "A SENTENCE"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 3,
+      "vo_line": "Common adjectives take no capital letter.",
+      "scene": {
+        "scene": "capitale",
+        "mot": "old",
+        "nom": "carpenter",
+        "propre": false,
+        "note": "common — no capital"
+      },
+      "keywords": [
+        "COMMON"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "vo_line": "Proper adjectives come from places, and they keep their capital letter.",
+      "scene": {
+        "scene": "capitale",
+        "mot": "cameroonian",
+        "nom": "carpenter",
+        "propre": true,
+        "note": "proper — from Cameroon"
+      },
+      "keywords": [
+        "PROPER"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

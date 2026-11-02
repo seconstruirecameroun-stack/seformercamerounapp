@@ -206,6 +206,32 @@ calcul ajoute une difficulté qui n'est pas celle qu'on enseigne.
 
 ---
 
+## 5. La voix suit la langue de la leçon
+
+Céline porte les quatorze films français. Elle ne portera pas les films
+d'anglais, et ce n'est pas une entorse à la règle de la voix unique : c'est
+la même règle, étendue. **Une voix par langue, et toujours la même dans
+cette langue.**
+
+La raison n'est pas le confort d'écoute. L'objectif affiché de l'Unit 13 est
+« spell and pronounce words dealing with wood work and building ». Un enfant
+qui entend *trowel*, *chisel* et *two hundred and fifty-one* prononcés avec
+l'accent d'une narratrice française apprend une prononciation fausse, dans le
+film même qui prétend la lui enseigner. Le film travaillerait contre la
+leçon.
+
+La règle vaut dans les deux sens : un film de français gardera Céline même si
+une voix anglaise était disponible, et un film d'anglais gardera sa voix
+anglaise même pour une leçon facile.
+
+Deux choses ne changent pas pour autant. **La direction de narration reste la
+même** — narrateur éducatif, diction nette, débit posé, parole immédiate —
+parce que c'est le ton qui fait la collection, pas le timbre. Et **la bande de
+phrase affiche toujours ce qui est dit** : en anglais pour un film d'anglais,
+puisque c'est sous ces mots que l'enfant sera interrogé.
+
+---
+
 ## Ce qui ne change pas
 
 - **Une seule idée par plan**, et ce qui est dit est montré.
