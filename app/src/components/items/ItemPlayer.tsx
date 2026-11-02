@@ -5,7 +5,7 @@ import { Button } from '../ui';
 import { ecartMot, Enonce, LETTRES, memeMot } from './partage';
 import Clavier, { useChampActif } from './Clavier';
 import LettresMobiles from './LettresMobiles';
-import { modeSaisie } from '../../lib/saisie';
+import { accentsComptent, modeSaisie } from '../../lib/saisie';
 import type { Props } from './partage';
 import VraiFaux from './VraiFaux';
 import Association from './Association';
@@ -221,8 +221,16 @@ function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
  * met ses deux mots l’un sous l’autre, avec la seule lettre qui diffère en
  * couleur — il voit qu’il lui manquait un n, et c’est ce qu’il retiendra.
  */
-function Faute({ ecrit, attendu }: { ecrit: string; attendu: string }) {
-  const e = ecartMot(ecrit, attendu);
+function Faute({
+  ecrit,
+  attendu,
+  accents = false,
+}: {
+  ecrit: string;
+  attendu: string;
+  accents?: boolean;
+}) {
+  const e = ecartMot(ecrit, attendu, accents);
   if (ecrit.trim() === '') return null;
   // Rien de commun : les deux mots n’ont pas de rapport, le détail de la
   // divergence n’apprendrait rien. On se tait plutôt que de bricoler.
@@ -262,6 +270,9 @@ function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
   // Aux étiquettes, « rempli » ne suffit pas : il faut avoir posé toutes les
   // lettres, sinon on valide un mot tronqué sans rien en dire.
   const entier = saisies.every((s, i) => s.length === (attendues[i] ?? '').length);
+  // Au Défi, l'accent compte. La règle et son pourquoi vivent dans lib/saisie.ts.
+  const accents = accentsComptent(item.level);
+  const juste = (i: number) => memeMot(saisies[i] ?? '', attendues[i] ?? '', accents);
 
   const morceaux = payload.text.split(/\{\{\d+\}\}/);
   const complet = saisies.every((s) => s.trim() !== '');
@@ -274,7 +285,7 @@ function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
 
   function valider() {
     onRepondre({
-      correct: saisies.every((s, i) => memeMot(s, attendues[i] ?? '')),
+      correct: saisies.every((_s, i) => juste(i)),
       donnee: { values: saisies },
     });
   }
@@ -292,7 +303,7 @@ function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
                 className={
                   'mx-1 inline-block w-28 max-w-[42vw] rounded-xl border-b-[3px] bg-sand/50 px-2 py-1 text-center font-bold outline-none ' +
                   (verrouille
-                    ? memeMot(saisies[i], attendues[i] ?? '')
+                    ? juste(i)
                       ? 'border-leaf text-leaf'
                       : 'border-clay text-clay-dark'
                     : 'border-line focus:border-clay')
@@ -314,8 +325,8 @@ function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
       {verrouille ? (
         <div className="mt-4 grid gap-2">
           {attendues.map((mot, i) =>
-            memeMot(saisies[i] ?? '', mot) ? null : (
-              <Faute key={i} ecrit={saisies[i] ?? ''} attendu={mot} />
+            juste(i) ? null : (
+              <Faute key={i} ecrit={saisies[i] ?? ''} attendu={mot} accents={accents} />
             ),
           )}
           <p className="text-kid-sm text-ink-2">

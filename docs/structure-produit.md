@@ -273,6 +273,43 @@ L'étape se déduit entièrement du journal des tentatives : aucune colonne
 réel. La révision espacée continue en parallèle, et reprend la main une fois
 les trois étapes franchies.
 
+### Écrire la réponse : le clavier de l’app
+
+Partout où l’enfant écrit — dictée, texte à trous — il écrit sur **le clavier
+de l’application**, jamais sur celui du téléphone. La raison est simple :
+depuis une page web on ne peut pas faire taire de façon fiable la barre de
+suggestions d’Android. Une dictée où le téléphone propose « sablonneux » au
+bout de trois lettres ne mesure plus rien.
+
+Ce clavier est alphabétique, pas AZERTY : un CE1 connaît son alphabet et pas
+la disposition d’un clavier, et chercher les touches ajouterait à l’exercice
+une difficulté qui n’est pas celle qu’on enseigne. Il montre **toutes** ses
+touches, jamais celles qu’appelle la réponse attendue : un clavier qui
+ferait apparaître un trait d’union seulement quand il en faut un soufflerait
+la réponse.
+
+Aux trois premières classes (SIL, CP, CE1 ; Class 1 à 3), l’étape *Maîtrise*
+se joue aux **lettres mobiles** : les lettres du mot, en désordre, à
+remettre dans l’ordre, comme avec les étiquettes de la maîtresse. Ce n’est
+pas une facilité — le tiroir contient les deux n de « sablonneux », et il
+faut les placer tous les deux. Cela retire la seule chose qui n’est pas la
+leçon : savoir taper.
+
+**Les accents comptent au Défi, et seulement là.** Ils ne comptaient nulle
+part tant que la réponse se tapait sur le téléphone, où é è ê à ç se cachent
+derrière un appui long : punir un accent inatteignable, c’est noter le
+clavier et non l’enfant. Le clavier de l’app les met en première rangée, avec
+l’apostrophe — qui pour un enfant n’est pas une ponctuation mais une lettre
+du mot, « l’eau », « s’élargit ». L’excuse est donc tombée. Mais on ne
+resserre qu’à la dernière étape, celle qu’on n’atteint qu’en ayant franchi les
+trois autres sur cette notion : avant, refuser « eleve » ferait échouer sur
+l’orthographe un enfant qui a compris la leçon.
+
+Quand le mot est refusé, l’app ne répond pas « Réponse : sablonneux » — elle
+montre **où** le mot diverge : « sablon·eux » contre « sablon·n·eux », la
+lettre en cause mise en évidence à sa place. Au Défi, l’accent manquant se
+montre de la même façon : « s’e·largit » contre « s’é·largit ».
+
 ### Variantes d'explication
 
 Chaque notion porte plusieurs explications, de registres différents :

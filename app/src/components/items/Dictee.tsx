@@ -85,7 +85,6 @@ export default function Dictee({ item, onRepondre, verrouille, visuel }: Props) 
           valeur={saisie}
           onChange={setSaisie}
           espace
-          accents
           validerActif={saisie.trim() !== ''}
           onValider={() =>
             onRepondre({

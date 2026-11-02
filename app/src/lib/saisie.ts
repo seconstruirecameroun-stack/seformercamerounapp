@@ -38,6 +38,22 @@ export const DERNIERE_CLASSE_AUX_ETIQUETTES = 3;
 /** L'étape où l'on produit la réponse au lieu de la reconnaître. */
 export const ETAPE_PRODUCTION = 3;
 
+/** La dernière étape : le Défi. */
+export const ETAPE_DEFI = 4;
+
+/**
+ * Faut-il compter les accents dans un mot écrit ?
+ *
+ * Au Défi seulement. Les trois étapes d'avant servent à installer la notion ;
+ * y refuser « eleve » pour « élève » ferait échouer sur l'orthographe un
+ * enfant qui a compris la leçon. Au Défi, il a déjà franchi les trois autres
+ * sur cette notion précise : il reste la précision, et le clavier de l'app
+ * donne é è ê à ç ù en première rangée.
+ */
+export function accentsComptent(niveau: number): boolean {
+  return niveau >= ETAPE_DEFI;
+}
+
 export function modeSaisie(rang: number | null, niveau: number): ModeSaisie {
   if (rang === null) return 'clavier';
   // Au Défi, tout le monde tape : la vitesse et la frappe font partie de

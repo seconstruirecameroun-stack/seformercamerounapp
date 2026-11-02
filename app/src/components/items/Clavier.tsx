@@ -73,8 +73,6 @@ export type ClavierProps = {
   onChange: (v: string) => void;
   /** Affiche la touche espace : inutile pour un mot, nécessaire pour une phrase. */
   espace?: boolean;
-  /** Affiche la rangée des accents. */
-  accents?: boolean;
   /** Le bouton de validation, posé dans le clavier plutôt qu'en dessous. */
   onValider?: () => void;
   validerActif?: boolean;
@@ -125,7 +123,6 @@ export default function Clavier({
   valeur,
   onChange,
   espace = false,
-  accents = false,
   onValider,
   validerActif = true,
   libelleValider = 'Vérifier',
@@ -219,15 +216,18 @@ export default function Clavier({
 
   return (
     <div className={cadre}>
-      {accents ? (
-        <div className="flex gap-1 sm:gap-1.5">
-          {ACCENTS.map((a) => (
-            <Touche key={a} onPress={() => taper(a)} etiquette={a}>
-              {majuscule ? a.toUpperCase() : a}
-            </Touche>
-          ))}
-        </div>
-      ) : null}
+      {/* Toujours affichée, jamais en option. Elle a été facultative pendant
+          une version, et les textes à trous ne la demandaient pas : é, è et
+          surtout l’apostrophe y manquaient. Or la correction ne pardonne pas
+          l’apostrophe — la réponse « s’élargit » était alors impossible à
+          écrire. Une touche dont on peut avoir besoin doit toujours être là. */}
+      <div className="flex gap-1 sm:gap-1.5">
+        {ACCENTS.map((a) => (
+          <Touche key={a} onPress={() => taper(a)} etiquette={a}>
+            {majuscule ? a.toUpperCase() : a}
+          </Touche>
+        ))}
+      </div>
 
       {LIGNES.map((ligne, i) => (
         <div key={ligne} className="flex gap-1 sm:gap-1.5">

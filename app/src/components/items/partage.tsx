@@ -45,10 +45,17 @@ export function Enonce({
   );
 }
 
-/** La même lettre, à la casse et aux accents près. */
-function memeLettre(a: string, b: string) {
+/**
+ * La même lettre, à la casse près — et aux accents près seulement si on le
+ * demande. Au Défi, « eleve » contre « élève » doit montrer DEUX fautes :
+ * sans cela l'écart ne trouve aucune divergence et l'enfant voit une réponse
+ * refusée sans rien qui la distingue de ce qu'il a écrit.
+ */
+function memeLettre(a: string, b: string, accentsComptent = false) {
   const net = (c: string) =>
-    c.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    accentsComptent
+      ? c.toLowerCase()
+      : c.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   return net(a) === net(b);
 }
 
@@ -72,16 +79,22 @@ export type Ecart = {
  * alors « il manque un n » au lieu de « Réponse : sablonneux », qui ne lui
  * dit pas ce qu'il a raté.
  */
-export function ecartMot(ecrit: string, attendu: string): Ecart {
+export function ecartMot(ecrit: string, attendu: string, accentsComptent = false): Ecart {
   const a = ecrit.trim();
   const b = attendu.trim();
   let debut = 0;
-  while (debut < a.length && debut < b.length && memeLettre(a[debut], b[debut])) debut += 1;
+  while (
+    debut < a.length &&
+    debut < b.length &&
+    memeLettre(a[debut], b[debut], accentsComptent)
+  ) {
+    debut += 1;
+  }
   let fin = 0;
   while (
     fin < a.length - debut &&
     fin < b.length - debut &&
-    memeLettre(a[a.length - 1 - fin], b[b.length - 1 - fin])
+    memeLettre(a[a.length - 1 - fin], b[b.length - 1 - fin], accentsComptent)
   ) {
     fin += 1;
   }
@@ -93,15 +106,28 @@ export function ecartMot(ecrit: string, attendu: string): Ecart {
   };
 }
 
-/** Comparaison indulgente : la casse, les accents et les espaces ne comptent pas. */
-export function memeMot(a: string, b: string) {
-  const net = (s: string) =>
-    s
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/\s+/g, ' ');
+/**
+ * Comparaison d'un mot : la casse et les espaces ne comptent jamais, les
+ * accents comptent si on le demande.
+ *
+ * Ils ne comptaient nulle part, et pour une bonne raison : sur un téléphone,
+ * é è ê à ç sont cachés derrière un appui long. Punir un accent qu'on ne
+ * peut pas atteindre, c'est noter le clavier et non l'enfant. Le clavier de
+ * l'app les met en première rangée, donc l'excuse est tombée — mais
+ * seulement au Défi, la dernière étape, celle qu'on n'atteint qu'en ayant
+ * déjà franchi les trois autres sur cette notion.
+ *
+ * L'apostrophe, elle, est toujours normalisée : droite ou typographique,
+ * c'est la même apostrophe. Ce n'est pas ce qu'on enseigne, et l'enfant n'a
+ * aucun moyen de savoir laquelle des deux la base attend.
+ */
+export function memeMot(a: string, b: string, accentsComptent = false) {
+  const net = (s: string) => {
+    const brut = s.trim().toLowerCase().replace(/['‘’ʼ]/g, '’').replace(/\s+/g, ' ');
+    return accentsComptent
+      ? brut.normalize('NFC')
+      : brut.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  };
   return net(a) === net(b);
 }
 
