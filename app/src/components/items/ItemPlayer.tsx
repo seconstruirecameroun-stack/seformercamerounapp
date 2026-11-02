@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { ItemRow } from '../../types/db';
-import { Button } from '../ui';
 import Illustration from '../Illustration';
 import { Enonce, LETTRES, memeMot } from './partage';
+import Clavier, { useChampActif } from './Clavier';
 import type { Props } from './partage';
 import VraiFaux from './VraiFaux';
 import Association from './Association';
@@ -215,9 +215,24 @@ function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
   const payload = item.payload as { text: string; blanks: number };
   const attendues = (item.answer as { values: string[] }).values;
   const [saisies, setSaisies] = useState<string[]>(() => attendues.map(() => ''));
+  // Le clavier de l’app écrit dans le trou que l’enfant vient de toucher.
+  const champs = useChampActif(attendues.length);
 
   const morceaux = payload.text.split(/\{\{\d+\}\}/);
   const complet = saisies.every((s) => s.trim() !== '');
+
+  function ecrire(v: string) {
+    const copie = [...saisies];
+    copie[champs.actif] = v;
+    setSaisies(copie);
+  }
+
+  function valider() {
+    onRepondre({
+      correct: saisies.every((s, i) => memeMot(s, attendues[i] ?? '')),
+      donnee: { values: saisies },
+    });
+  }
 
   return (
     <>
@@ -239,6 +254,7 @@ function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
                 }
                 value={saisies[i]}
                 disabled={verrouille}
+                {...champs.liens(i)}
                 onChange={(e) => {
                   const copie = [...saisies];
                   copie[i] = e.target.value;
@@ -255,18 +271,19 @@ function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
           Réponse : <strong>{attendues.join(' · ')}</strong>
         </p>
       ) : (
-        <Button
-          className="mt-5"
-          onClick={() =>
-            onRepondre({
-              correct: saisies.every((s, i) => memeMot(s, attendues[i] ?? '')),
-              donnee: { values: saisies },
-            })
-          }
-          disabled={!complet}
-        >
-          Vérifier
-        </Button>
+        <>
+          {attendues.length > 1 ? (
+            <p className="mt-3 text-kid-sm text-muted">
+              Touche un trou pour y écrire. Trou {champs.actif + 1} sur {attendues.length}.
+            </p>
+          ) : null}
+          <Clavier
+            valeur={saisies[champs.actif] ?? ''}
+            onChange={ecrire}
+            onValider={valider}
+            validerActif={complet}
+          />
+        </>
       )}
     </>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '../ui';
 import { Enonce, memePhrase } from './partage';
+import Clavier, { SANS_AIDE } from './Clavier';
 import type { Props } from './partage';
 import { lire, peutParler, stopper } from '../../lib/voix';
 
@@ -61,12 +61,16 @@ export default function Dictee({ item, onRepondre, verrouille, visuel }: Props) 
         {ecoutes <= 1 ? 'Écouter' : 'Réécouter'}
       </button>
 
+      {/* Une dictée où le téléphone propose le mot au bout de trois lettres
+          ne mesure plus rien : le champ refuse le clavier du système, et
+          c’est celui de l’app qui l’alimente. */}
       <textarea
         ref={champ}
         className="mt-3 w-full rounded-[var(--radius-tile)] border-2 border-line bg-sand/40 px-4 py-3 text-kid leading-relaxed outline-none focus:border-clay disabled:opacity-70"
         rows={2}
         value={saisie}
         disabled={verrouille}
+        {...SANS_AIDE}
         onChange={(e) => setSaisie(e.target.value)}
         placeholder="Écris ici…"
         aria-label="La phrase entendue"
@@ -77,18 +81,19 @@ export default function Dictee({ item, onRepondre, verrouille, visuel }: Props) 
           La phrase était : <strong>{payload.phrase}</strong>
         </p>
       ) : (
-        <Button
-          className="mt-3"
-          disabled={saisie.trim() === ''}
-          onClick={() =>
+        <Clavier
+          valeur={saisie}
+          onChange={setSaisie}
+          espace
+          accents
+          validerActif={saisie.trim() !== ''}
+          onValider={() =>
             onRepondre({
               correct: memePhrase(saisie, payload.phrase),
               donnee: { phrase: saisie.trim(), ecoutes },
             })
           }
-        >
-          Vérifier
-        </Button>
+        />
       )}
     </>
   );
