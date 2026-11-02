@@ -389,6 +389,107 @@ def ve_nombre(t):
     t.texte((160, 274), 'n = %d' % len(points), 26, INK)
 
 
+# --------------------------------------------------------------------------
+# Leçon 4 — les questions du cahier, avec les nombres posés dans les régions
+
+def _centre_region(t, masque):
+    """Le centre de gravité d-une région, en coordonnées de la figure.
+
+    Placer les nombres à l-œil, c-est risquer d-en poser un dans la mauvaise
+    région — et une figure qui range 3 hors du milieu enseigne le contraire
+    de la leçon. On le calcule donc sur le masque de la région, et on vérifie
+    ensuite que le point obtenu appartient bien à ce masque.
+    """
+    boite = masque.getbbox()
+    assert boite is not None, 'région vide : aucun nombre à y poser'
+    px = masque.load()
+    sx = sy = n = 0
+    for y in range(boite[1], boite[3], 2):
+        for x in range(boite[0], boite[2], 2):
+            if px[x, y]:
+                sx += x
+                sy += y
+                n += 1
+    assert n, 'région vide'
+    cx, cy = sx / n, sy / n
+    assert px[int(cx), int(cy)], 'le centre de gravité tombe hors de sa région'
+    return cx / S, cy / S
+
+
+def _nombres(t, t_masque, valeurs, taille=19, pas=24):
+    """Pose une suite de nombres, centrée sur la région qui les porte."""
+    if not valeurs:
+        return
+    cx, cy = _centre_region(t, t_masque)
+    largeur = pas * (len(valeurs) - 1)
+    for i, v in enumerate(valeurs):
+        t.texte((cx - largeur / 2 + i * pas, cy), str(v), taille, INK)
+
+
+def _deux_numerote(t, cadre, c_seul, commun, d_seul, dehors, taille=19):
+    """Deux ovales C et D, chaque nombre dans sa région."""
+    _cadre(t, *cadre)
+    a, b = _deux((cadre[0] + cadre[2]) / 2, (cadre[1] + cadre[3]) / 2 - 6, 44, 82, 60)
+    m = _poser(t, [a, b],
+               [(lambda q: _sauf(q[0], q[1]), SKY),
+                (lambda q: _sauf(q[1], q[0]), GOLD),
+                (lambda q: _et(q[0], q[1]), CLAY)],
+               [((a[0] - 54, a[1] - 48), 'C'), ((b[0] + 54, b[1] - 48), 'D')], taille=18)
+    _nombres(t, _sauf(m[0], m[1]), c_seul, taille, pas=20)
+    _nombres(t, _et(m[0], m[1]), commun, taille, pas=20)
+    _nombres(t, _sauf(m[1], m[0]), d_seul, taille, pas=20)
+    for i, v in enumerate(dehors):
+        t.texte((cadre[0] + 22 + i * 26, cadre[3] - 18), str(v), taille, INK_2)
+
+
+def _trois_numerote(t, cadre, lettres, seuls, paires, centre, dehors, taille=17):
+    """Trois ovales, un nombre par région, placés par calcul."""
+    _cadre(t, *cadre)
+    cx, cy = (cadre[0] + cadre[2]) / 2, (cadre[1] + cadre[3]) / 2 - 8
+    o = _trois(cx, cy, 38, 74)
+    m = [_ovale_masque(t, *x) for x in o]
+    for i, couleur in enumerate((SKY, GOLD, MINT)):
+        _teinter(t, _sauf(_sauf(m[i], m[(i + 1) % 3]), m[(i + 2) % 3]), couleur)
+    for i in range(3):
+        _teinter(t, _sauf(_et(m[i], m[(i + 1) % 3]), m[(i + 2) % 3]), LILAC)
+    _teinter(t, _et(_et(m[0], m[1]), m[2]), CLAY)
+    for x in o:
+        _contour(t, *x)
+    for i in range(3):
+        _nombres(t, _sauf(_sauf(m[i], m[(i + 1) % 3]), m[(i + 2) % 3]), seuls[i], taille, pas=20)
+        _nombres(t, _sauf(_et(m[i], m[(i + 1) % 3]), m[(i + 2) % 3]), paires[i], taille, pas=20)
+    _nombres(t, _et(_et(m[0], m[1]), m[2]), centre, taille, pas=20)
+    for (x, y, rx, _ry), lettre in zip(o, lettres):
+        dx, dy = x - cx, y - cy
+        n = math.hypot(dx, dy) or 1.0
+        t.texte((x + dx / n * (rx + 16), y + dy / n * (rx + 16)), lettre, 20, INK)
+    for i, v in enumerate(dehors):
+        t.texte((cadre[0] + 20 + i * 24, cadre[3] - 16), str(v), taille, INK_2)
+
+
+def vq_questions(t):  # couverture 960x540
+    _deux_numerote(t, (60, 126, 440, 414), [1, 2, 3], [4, 5], [6, 7], [8, 9, 10], taille=22)
+    _trois_numerote(t, (500, 126, 900, 414), 'KLM',
+                    [[1], [5], [7]], [[2], [6], [4]], [3], [8, 9, 10, 11, 12], taille=19)
+
+
+def vq_deux(t):
+    _deux_numerote(t, (12, 40, 308, 240), [1, 2, 3], [4, 5], [6, 7], [8, 9, 10])
+    t.texte((160, 282), 'ni dans C ni dans D : 8, 9, 10', 17, INK)
+
+
+def vq_trois(t):
+    _trois_numerote(t, (10, 36, 310, 254), 'KLM',
+                    [[1], [5], [7]], [[2], [6], [4]], [3], [8, 9, 10, 11, 12])
+    t.texte((160, 290), 'n(U) = 12', 21, INK)
+
+
+def vq_placer(t):
+    _trois_numerote(t, (10, 36, 310, 254), 'ABC',
+                    [[11, 17], [12, 18], [20]], [[], [], [13]], [15, 19], [])
+    t.texte((160, 290), 'une région peut rester vide', 16, INK)
+
+
 FIGURES = [
     ('ve-diagramme', 960, 540, ve_diagramme),
     ('ve-relation', 320, 320, ve_relation),
@@ -407,6 +508,10 @@ FIGURES = [
     ('ve-centre', 320, 320, ve_centre),
     ('ve-dehors', 320, 320, ve_dehors),
     ('ve-nombre', 320, 320, ve_nombre),
+    ('vq-questions', 960, 540, vq_questions),
+    ('vq-deux', 320, 320, vq_deux),
+    ('vq-trois', 320, 320, vq_trois),
+    ('vq-placer', 320, 320, vq_placer),
 ]
 
 
