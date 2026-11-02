@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import type { ItemRow } from '../../types/db';
 import Illustration from '../Illustration';
+import { Button } from '../ui';
 import { Enonce, LETTRES, memeMot } from './partage';
 import Clavier, { useChampActif } from './Clavier';
+import LettresMobiles from './LettresMobiles';
+import { modeSaisie } from '../../lib/saisie';
 import type { Props } from './partage';
 import VraiFaux from './VraiFaux';
 import Association from './Association';
@@ -211,12 +214,18 @@ function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
   );
 }
 
-function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
+function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
   const payload = item.payload as { text: string; blanks: number };
   const attendues = (item.answer as { values: string[] }).values;
   const [saisies, setSaisies] = useState<string[]>(() => attendues.map(() => ''));
   // Le clavier de l’app écrit dans le trou que l’enfant vient de toucher.
   const champs = useChampActif(attendues.length);
+  // Aux petites classes, l’étape Maîtrise se joue aux étiquettes : la règle
+  // vit dans lib/saisie.ts, avec le constat qui l’a fait écrire.
+  const etiquettes = modeSaisie(rang ?? null, item.level) === 'lettres-mobiles';
+  // Aux étiquettes, « rempli » ne suffit pas : il faut avoir posé toutes les
+  // lettres, sinon on valide un mot tronqué sans rien en dire.
+  const entier = saisies.every((s, i) => s.length === (attendues[i] ?? '').length);
 
   const morceaux = payload.text.split(/\{\{\d+\}\}/);
   const complet = saisies.every((s) => s.trim() !== '');
@@ -270,6 +279,32 @@ function TexteATrous({ item, onRepondre, verrouille, visuel }: Props) {
         <p className="mt-4 text-kid-sm text-ink-2">
           Réponse : <strong>{attendues.join(' · ')}</strong>
         </p>
+      ) : etiquettes ? (
+        <>
+          {attendues.map((mot, i) => (
+            <div key={i} className="mt-4">
+              {attendues.length > 1 ? (
+                <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+                  Trou {i + 1}
+                </p>
+              ) : null}
+              <LettresMobiles
+                attendu={mot}
+                graine={item.id + ':' + i}
+                onChange={(v) => {
+                  setSaisies((avant) => {
+                    const copie = [...avant];
+                    copie[i] = v;
+                    return copie;
+                  });
+                }}
+              />
+            </div>
+          ))}
+          <Button className="mt-5" onClick={valider} disabled={!entier}>
+            Vérifier
+          </Button>
+        </>
       ) : (
         <>
           {attendues.length > 1 ? (

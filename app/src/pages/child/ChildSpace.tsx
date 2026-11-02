@@ -20,6 +20,7 @@ import {
   SECONDES_DEFI,
 } from '../../lib/paliers';
 import { enregistrerManche, POINTS_MANCHE } from '../../lib/manche';
+import { rangDeLaClasse } from '../../lib/saisie';
 import { stopper } from '../../lib/voix';
 import type { Palier } from '../../lib/paliers';
 import ItemPlayer from '../../components/items/ItemPlayer';
@@ -313,10 +314,13 @@ function Etape({
   parentId,
   childId,
   lessonId,
+  rang,
 }: {
   parentId: string;
   childId: string;
   lessonId: string;
+  /** La place de la classe dans l'école : elle choisit la façon d'écrire. */
+  rang: number | null;
 }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -838,6 +842,7 @@ function Etape({
             item={question.item}
             onRepondre={repondre}
             verrouille={verrouille}
+            rang={rang}
             visuel={
               question.notion.illustration ? (
                 <Illustration
@@ -928,7 +933,10 @@ export default function ChildSpace() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('children')
-        .select('id, first_name, avatar')
+        // Le rang de la classe décide de la façon d’écrire une réponse —
+        // étiquettes aux petites classes, clavier ensuite. Le charger ici
+        // évite une requête de plus au moment de poser la question.
+        .select('id, first_name, avatar, classes(rank)')
         .eq('id', childId!)
         .single();
       if (error) throw error;
@@ -1099,7 +1107,12 @@ export default function ChildSpace() {
             <div className="mt-4">
               {onglet === 'mission' ? (
                 parentId && childId ? (
-                  <Etape parentId={parentId} childId={childId} lessonId={bundle.id} />
+                  <Etape
+                    parentId={parentId}
+                    childId={childId}
+                    lessonId={bundle.id}
+                    rang={rangDeLaClasse(child.data?.classes ?? null)}
+                  />
                 ) : (
                   <Loading />
                 )

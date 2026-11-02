@@ -19,6 +19,13 @@ export type Props = {
       les réponses gardent ainsi toute la largeur, ce qui compte sur un
       téléphone où une option sur deux lignes devient pénible à viser. */
   visuel?: React.ReactNode;
+  /**
+   * La place de la classe dans l’école, de 1 (SIL) à 6 (CM2).
+   *
+   * Elle décide de la façon d’écrire une réponse : étiquettes aux petites
+   * classes, clavier ensuite. La règle vit dans lib/saisie.ts.
+   */
+  rang?: number | null;
 };
 
 export const LETTRES = ['A', 'B', 'C', 'D', 'E'];
