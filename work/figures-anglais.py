@@ -267,25 +267,33 @@ def an_syllabes(t):
 # ───────────────────────── leçon 2 : les adjectifs ────────────────────────
 
 def an_adjectifs(t):  # 960x540
-    t.texte((480, 80), 'kinds of adjectives', 42, INK_2)
-    for i, (phrase, mot, ton, note) in enumerate((
-        ('a sharp trowel', 'sharp', MINT, 'common — no capital'),
-        ('a Cameroonian carpenter', 'Cameroonian', LILAC, 'proper — with a capital'),
+    # Deux blocs de couleur pleins, pas deux lignes de texte : à la taille
+    # d’une vignette de carte, une phrase fine disparaît et l’enfant ne
+    # reconnaît plus sa leçon.
+    t.texte((480, 70), 'kinds of adjectives', 40, INK_2)
+    for i, (mot, nom, ton, note) in enumerate((
+        ('sharp', 'trowel', MINT, 'common'),
+        ('Cameroonian', 'carpenter', LILAC, 'proper'),
     )):
-        cy = 230 + i * 150
-        t.rrect(130, cy - 54, 830, cy + 54, 24, fill=(255, 255, 255, 150),
-                bord=(255, 255, 255), trait=3)
-        avant, apres = phrase.split(mot)
-        pol = 42
-        la = t.pol(pol).getlength(avant) / fm.S
-        lm = t.pol(pol).getlength(mot) / fm.S
-        lb = t.pol(pol).getlength(apres) / fm.S
-        x = 480 - (la + lm + lb) / 2
-        t.texte((x, cy - 10), avant, pol, INK, 'lm')
-        t.rrect(x + la - 6, cy - 36, x + la + lm + 6, cy + 16, 12, fill=ton)
-        t.texte((x + la + lm / 2, cy - 10), mot, pol, INK)
-        t.texte((x + la + lm, cy - 10), apres, pol, INK, 'lm')
-        t.texte((480, cy + 34), note, 24, CLAY)
+        x0 = 60 + i * 450
+        t.rrect(x0, 130, x0 + 390, 460, 28, fill=ton, bord=(255, 255, 255), trait=4)
+        taille = 64 if len(mot) <= 7 else 44
+        if i == 1:
+            # La majuscule est tout le sujet : on la met en valeur À SA PLACE
+            # dans le mot. Une pastille posée à côté recouvrait le C au lieu
+            # de le montrer.
+            tete, reste = mot[0], mot[1:]
+            lt = t.pol(taille).getlength(tete) / fm.S
+            lr = t.pol(taille).getlength(reste) / fm.S
+            x = x0 + 195 - (lt + lr) / 2
+            t.rrect(x - 8, 230 - taille * 0.62, x + lt + 6, 230 + taille * 0.52,
+                    10, fill=GOLD)
+            t.texte((x + lt / 2 - 1, 230), tete, taille, WHITE_WARM)
+            t.texte((x + lt + 6, 230), reste, taille, INK, 'lm')
+        else:
+            t.texte((x0 + 195, 230), mot, taille, INK)
+        t.texte((x0 + 195, 300), nom, 36, INK_2)
+        fs._etiquette(t, x0 + 195, 390, 300, 56, note, 30, WHITE_WARM)
 
 
 def an_adjectif(t):
@@ -332,11 +340,14 @@ def an_propres(t):
 # ───────────────────────── leçon 3 : les nombres ──────────────────────────
 
 def an_nombres(t):  # 960x540
-    t.texte((480, 86), 'numbers 251 to 300', 42, INK_2)
+    # Les tuiles portent la vignette à elles seules : trois gros chiffres se
+    # lisent encore à cent pixels de large, une phrase non.
+    t.texte((480, 66), 'numbers 251 to 300', 38, INK_2)
     for i, c in enumerate('251'):
-        fm._tuile(t, 360 + i * 120, 250, 100, 130, c, 84, (WHITE_WARM, SAND, MINT)[i])
-    t.texte((480, 400), 'two hundred and fifty-one', 38, INK)
-    t.texte((480, 470), 'the hyphen joins the tens and the units', 26, CLAY)
+        fm._tuile(t, 300 + i * 180, 270, 160, 220, c, 140, (WHITE_WARM, SAND, MINT)[i])
+    fm._tuile(t, 790, 270, 120, 220, '…', 80, LILAC, INK_2)
+    t.texte((480, 440), 'two hundred and fifty-one', 36, INK)
+    t.texte((480, 492), 'up to three hundred', 26, CLAY)
 
 
 def an_lire(t):
