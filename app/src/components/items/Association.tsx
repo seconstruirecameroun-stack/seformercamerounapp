@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMelange } from '../../lib/melange';
 import { Enonce } from './partage';
 import type { Props } from './partage';
 
@@ -17,6 +18,11 @@ export default function Association({ item, onRepondre, verrouille, visuel }: Pr
   const payload = item.payload as { question: string; gauche: string[]; droite: string[] };
   /** ordre[i] = index dans `droite` de ce qui va avec gauche[i]. */
   const ordre = (item.answer as { order: number[] }).order;
+  // La colonne de droite était rangée en face de la gauche : relier ligne à
+  // ligne donnait la bonne réponse sans lire. Elle est maintenant mélangée.
+  // Une seule des deux colonnes suffit à casser l'alignement, et garder la
+  // gauche stable laisse à l'enfant un point d'appui pour suivre où il en est.
+  const vue = useMelange(payload.droite.length);
 
   const [actif, setActif] = useState<number | null>(null);
   /** paires[i] = index choisi dans `droite` pour gauche[i]. */
@@ -83,7 +89,7 @@ export default function Association({ item, onRepondre, verrouille, visuel }: Pr
         </div>
 
         <div className="grid content-start gap-2">
-          {payload.droite.map((texte, j) => (
+          {vue.map((j) => (
             <button
               key={j}
               type="button"
@@ -98,7 +104,7 @@ export default function Association({ item, onRepondre, verrouille, visuel }: Pr
                     : 'border-line bg-white-warm hover:border-ink-2')
               }
             >
-              {texte}
+              {payload.droite[j]}
             </button>
           ))}
         </div>

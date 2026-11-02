@@ -273,6 +273,35 @@ L'étape se déduit entièrement du journal des tentatives : aucune colonne
 réel. La révision espacée continue en parallèle, et reprend la main une fois
 les trois étapes franchies.
 
+### L’ordre des choix est tiré à chaque fois
+
+Sur les 277 QCM de la base, la bonne réponse était en **position 1**. Les
+277. Ce n’était pas propre aux QCM : les associations rangeaient la colonne
+de droite exactement en face de celle de gauche, et les chronologies
+affichaient les étiquettes déjà dans l’ordre. Trois types d’exercices sur
+quatre se résolvaient donc **sans rien lire** — toucher la première tuile,
+relier ligne à ligne, prendre les étiquettes de gauche à droite.
+
+Un enfant n’a pas besoin de formuler la règle pour en prendre l’habitude ;
+il suffit qu’elle marche. Et la manche de validation, qui exige un
+sans-faute, devenait un sans-faute sur rien.
+
+L’ordre est maintenant **tiré au sort à l’affichage**, à chaque fois que la
+question se présente. Pas une fois pour toutes en base : une position fixe
+par question se retiendrait aussi. Le tirage est uniforme — la bonne réponse
+tombe aussi souvent en premier qu’ailleurs, car « jamais celle du dessus »
+serait une habitude de plus, simplement inversée.
+
+Ce qui est **enregistré** reste l’index d’origine. La place à l’écran ne sort
+pas du composant, pour que le journal des tentatives et le rapport aux
+parents parlent de la même réponse d’une séance à l’autre. Les scripts qui
+écrivent les leçons n’ont donc rien à changer : ils peuvent ranger la bonne
+réponse en premier, c’est sans effet.
+
+Le vrai/faux échappe à cela par nature — il n’a que deux cases, dans un
+ordre qui est le sien. On a vérifié l’autre pente : 48 % des énoncés sont
+vrais, l’équilibre y est donc déjà fait.
+
 ### Écrire la réponse : le clavier de l’app
 
 Partout où l’enfant écrit — dictée, texte à trous — il écrit sur **le clavier

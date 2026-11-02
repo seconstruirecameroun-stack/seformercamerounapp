@@ -5,6 +5,7 @@ import { Button } from '../ui';
 import { ecartMot, Enonce, LETTRES, memeMot } from './partage';
 import Clavier, { useChampActif } from './Clavier';
 import LettresMobiles from './LettresMobiles';
+import { useMelange } from '../../lib/melange';
 import { accentsComptent, modeSaisie } from '../../lib/saisie';
 import type { Props } from './partage';
 import VraiFaux from './VraiFaux';
@@ -26,6 +27,10 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
   const payload = item.payload as { question: string; options?: string[]; images?: string[] };
   const bonne = (item.answer as { index: number }).index;
   const [choisi, setChoisi] = useState<number | null>(null);
+  // L'ordre d'affichage. Tout le reste du composant — `bonne`, `choisi`, ce
+  // qu'on enregistre — continue de parler en index d'origine ; seule la
+  // place à l'écran change. Voir lib/melange.ts pour le pourquoi.
+  const vue = useMelange((payload.images ?? payload.options ?? []).length);
 
   // Quand les réponses sont des images, on les montre en grand plutôt que
   // d'écrire leur nom : à sept ans, reconnaître une terre rouge est plus sûr
@@ -35,7 +40,8 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
       <>
         <Enonce visuel={visuel}>{payload.question}</Enonce>
         <div className="mt-5 grid grid-cols-2 gap-3">
-          {payload.images.map((cle, i) => {
+          {vue.map((i, place) => {
+            const cle = payload.images![i];
             const estBonne = verrouille && i === bonne;
             const estRate = verrouille && i === choisi && i !== bonne;
             return (
@@ -70,7 +76,7 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
                         : 'bg-white-warm/90 text-ink')
                   }
                 >
-                  {estBonne ? '✓' : estRate ? '✗' : LETTRES[i]}
+                  {estBonne ? '✓' : estRate ? '✗' : LETTRES[place]}
                 </span>
               </button>
             );
@@ -86,7 +92,8 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
     <>
       <Enonce visuel={visuel}>{payload.question}</Enonce>
       <div className="mt-5 grid gap-3">
-        {options.map((option, i) => {
+        {vue.map((i, place) => {
+          const option = options[i];
           const estBonne = verrouille && i === bonne;
           const estRate = verrouille && i === choisi && i !== bonne;
           return (
@@ -120,7 +127,7 @@ function Qcm({ item, onRepondre, verrouille, visuel }: Props) {
                       : 'bg-sand text-ink')
                 }
               >
-                {estBonne ? '✓' : estRate ? '✗' : LETTRES[i]}
+                {estBonne ? '✓' : estRate ? '✗' : LETTRES[place]}
               </span>
               <span className="flex-1">{option}</span>
             </button>
@@ -136,7 +143,11 @@ function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
   const ordre = (item.answer as { order: number[] }).order;
   const [choisis, setChoisis] = useState<number[]>([]);
 
-  const restants = payload.tokens.map((_, i) => i).filter((i) => !choisis.includes(i));
+  // Les étiquettes étaient proposées dans l'ordre du payload — c'est-à-dire
+  // dans le bon ordre : les prendre de gauche à droite suffisait. Elles
+  // sortent maintenant mélangées. `choisis` reste en index d'origine.
+  const vue = useMelange(payload.tokens.length);
+  const restants = vue.filter((i) => !choisis.includes(i));
 
   function ajouter(i: number) {
     const suite = [...choisis, i];
