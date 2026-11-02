@@ -141,13 +141,13 @@ def _poser(t, ovales, teintes, etiquettes=None, trait=3, taille=20):
 # Leçon 1 — ce que montre un diagramme de Venn
 
 def ve_diagramme(t):  # couverture 960x540
-    _cadre(t, 70, 70, 890, 470, taille=40)
-    a, b = _deux(480, 268, 128, 232, 150)
+    _cadre(t, 100, 126, 860, 414, taille=34)
+    a, b = _deux(480, 270, 118, 214, 118)
     _poser(t, [a, b],
            [(lambda m: _sauf(m[0], m[1]), SKY),
             (lambda m: _sauf(m[1], m[0]), GOLD),
             (lambda m: _et(m[0], m[1]), CLAY)],
-           [((262, 120), 'A'), ((700, 120), 'B')], trait=5, taille=46)
+           [((248, 270), 'A'), ((712, 270), 'B')], trait=5, taille=42)
 
 
 def ve_relation(t):
@@ -309,8 +309,8 @@ def _trois_ovales(t, cx=160, cy=168, ecart=36, r=72):
 
 
 def ve_lire(t):  # couverture 960x540
-    _cadre(t, 150, 50, 810, 500, taille=36)
-    o = _trois(480, 268, 68, 142)
+    _cadre(t, 262, 112, 698, 428, taille=28)
+    o = _trois(480, 272, 52, 102)
     m = [_ovale_masque(t, *x) for x in o]
     seul = [_sauf(_sauf(m[i], m[(i + 1) % 3]), m[(i + 2) % 3]) for i in range(3)]
     paire = [_sauf(_et(m[i], m[(i + 1) % 3]), m[(i + 2) % 3]) for i in range(3)]
@@ -322,7 +322,7 @@ def ve_lire(t):  # couverture 960x540
     _teinter(t, centre, CLAY)
     for x in o:
         _contour(t, *x, trait=5)
-    _lettres(t, o, (480, 268), 0.74, 34)
+    _lettres(t, o, (480, 272), 0.76, 26)
 
 
 def _trois_poser(t, teintes):
@@ -410,10 +410,41 @@ FIGURES = [
 ]
 
 
+# L-application affiche une couverture en `object-fit: cover` dans une boîte
+# bien plus large que 16/9 : mesuré dans le navigateur, elle n-en montre que
+# la bande verticale 110 → 430 sur 540. Le reste est coupé, en haut comme en
+# bas. Les lettres A et B de la première couverture y sont passées, et le
+# rectangle du set universel de la troisième aussi — or ce rectangle EST la
+# leçon. Un dessin juste, invisible, ne vaut pas mieux qu-un dessin faux.
+BANDE = (110, 430)
+
+
+def _hors_bande(image):
+    """Les pixels d-encre qui tombent dans la partie coupée à l-affichage."""
+    petite = image.convert('RGB')
+    largeur, hauteur = petite.size
+    px = petite.load()
+    fautifs = 0
+    for y in list(range(0, BANDE[0])) + list(range(BANDE[1], hauteur)):
+        for x in range(0, largeur, 2):
+            r, v, b = px[x, y]
+            if abs(r - INK[0]) + abs(v - INK[1]) + abs(b - INK[2]) < 90:
+                fautifs += 1
+    return fautifs
+
+
 def controler():
     """Ce que la figure montre doit être ce que la leçon dit."""
     cles = [c for c, _w, _h, _f in FIGURES]
     assert len(set(cles)) == len(cles), 'clé en double'
+
+    for cle, w, h, fabrique in FIGURES:
+        if (w, h) != (960, 540):
+            continue
+        t = Toile(w, h)
+        fabrique(t)
+        fautifs = _hors_bande(t.fini())
+        assert fautifs == 0,             'couverture %s : %d pixels de dessin hors de la bande visible' % (cle, fautifs)
 
     # Les trois ovales doivent vraiment se croiser trois par trois, sinon la
     # région centrale dont parle la leçon n-existe pas sur le dessin.
