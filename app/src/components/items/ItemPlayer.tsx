@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ItemRow } from '../../types/db';
 import Illustration from '../Illustration';
 import { Button } from '../ui';
-import { Enonce, LETTRES, memeMot } from './partage';
+import { ecartMot, Enonce, LETTRES, memeMot } from './partage';
 import Clavier, { useChampActif } from './Clavier';
 import LettresMobiles from './LettresMobiles';
 import { modeSaisie } from '../../lib/saisie';
@@ -214,6 +214,42 @@ function Chronologie({ item, onRepondre, verrouille, visuel }: Props) {
   );
 }
 
+/**
+ * La faute, montrée à l’endroit où elle est.
+ *
+ * « Réponse : sablonneux » ne dit pas à un enfant ce qu’il a raté. On lui
+ * met ses deux mots l’un sous l’autre, avec la seule lettre qui diffère en
+ * couleur — il voit qu’il lui manquait un n, et c’est ce qu’il retiendra.
+ */
+function Faute({ ecrit, attendu }: { ecrit: string; attendu: string }) {
+  const e = ecartMot(ecrit, attendu);
+  if (ecrit.trim() === '') return null;
+  // Rien de commun : les deux mots n’ont pas de rapport, le détail de la
+  // divergence n’apprendrait rien. On se tait plutôt que de bricoler.
+  if (e.debut === '' && e.fin === '') return null;
+
+  return (
+    <div className="rounded-2xl bg-clay/10 px-4 py-3">
+      <p className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
+        Tu as écrit
+      </p>
+      <p className="mt-0.5 text-kid font-extrabold">
+        <span>{e.debut}</span>
+        <span className="rounded bg-clay/30 px-0.5 text-clay-dark line-through">{e.ecrit}</span>
+        <span>{e.fin}</span>
+      </p>
+      <p className="mt-2 text-kid-xs font-black tracking-widest text-leaf uppercase">
+        Il fallait écrire
+      </p>
+      <p className="mt-0.5 text-kid font-extrabold">
+        <span>{e.debut}</span>
+        <span className="rounded bg-leaf/30 px-0.5 text-leaf">{e.attendu}</span>
+        <span>{e.fin}</span>
+      </p>
+    </div>
+  );
+}
+
 function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
   const payload = item.payload as { text: string; blanks: number };
   const attendues = (item.answer as { values: string[] }).values;
@@ -276,9 +312,16 @@ function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
       </p>
 
       {verrouille ? (
-        <p className="mt-4 text-kid-sm text-ink-2">
-          Réponse : <strong>{attendues.join(' · ')}</strong>
-        </p>
+        <div className="mt-4 grid gap-2">
+          {attendues.map((mot, i) =>
+            memeMot(saisies[i] ?? '', mot) ? null : (
+              <Faute key={i} ecrit={saisies[i] ?? ''} attendu={mot} />
+            ),
+          )}
+          <p className="text-kid-sm text-ink-2">
+            Réponse : <strong>{attendues.join(' · ')}</strong>
+          </p>
+        </div>
       ) : etiquettes ? (
         <>
           {attendues.map((mot, i) => (

@@ -45,6 +45,54 @@ export function Enonce({
   );
 }
 
+/** La même lettre, à la casse et aux accents près. */
+function memeLettre(a: string, b: string) {
+  const net = (c: string) =>
+    c.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return net(a) === net(b);
+}
+
+export type Ecart = {
+  /** Le début commun aux deux mots. */
+  debut: string;
+  /** Ce que l'enfant a écrit de trop ou de travers, au milieu. */
+  ecrit: string;
+  /** Ce qu'il aurait fallu écrire à la place. */
+  attendu: string;
+  /** La fin commune aux deux mots. */
+  fin: string;
+};
+
+/**
+ * Où exactement le mot diverge.
+ *
+ * On pèle le début puis la fin communs, et ce qui reste au milieu est la
+ * faute. Pour « sabloneux » contre « sablonneux » : début « sablon », fin
+ * « eux », et au milieu rien d'écrit contre un « n » attendu. L'enfant lit
+ * alors « il manque un n » au lieu de « Réponse : sablonneux », qui ne lui
+ * dit pas ce qu'il a raté.
+ */
+export function ecartMot(ecrit: string, attendu: string): Ecart {
+  const a = ecrit.trim();
+  const b = attendu.trim();
+  let debut = 0;
+  while (debut < a.length && debut < b.length && memeLettre(a[debut], b[debut])) debut += 1;
+  let fin = 0;
+  while (
+    fin < a.length - debut &&
+    fin < b.length - debut &&
+    memeLettre(a[a.length - 1 - fin], b[b.length - 1 - fin])
+  ) {
+    fin += 1;
+  }
+  return {
+    debut: b.slice(0, debut),
+    ecrit: a.slice(debut, a.length - fin),
+    attendu: b.slice(debut, b.length - fin),
+    fin: fin > 0 ? b.slice(b.length - fin) : '',
+  };
+}
+
 /** Comparaison indulgente : la casse, les accents et les espaces ne comptent pas. */
 export function memeMot(a: string, b: string) {
   const net = (s: string) =>

@@ -102,6 +102,14 @@ export type NotionAvecItems = NotionRow & { items: ItemRow[] };
 export type Question = {
   notion: NotionAvecItems;
   item: ItemRow;
+  /**
+   * La question est servie une marche plus bas, pour reprendre appui.
+   *
+   * L'enfant a buté trois fois de suite sur cette notion à l'étape en cours.
+   * On ne lui repose pas la même question une quatrième fois : on redescend
+   * à une étape qu'il franchit, et on remontera après.
+   */
+  appui?: boolean;
 };
 
 /**
@@ -196,6 +204,50 @@ export function questionsDeReprise(
     }
   }
   return questions;
+}
+
+/** Au bout de trois échecs de suite sur une notion, on redescend d'une marche. */
+export const ECHECS_AVANT_APPUI = 3;
+
+/**
+ * Les échecs consécutifs de chaque notion, à une étape donnée.
+ *
+ * On ne compte que les réponses les plus récentes : une bonne réponse remet
+ * le compteur à zéro. Trois de suite veulent dire que la question ne lui
+ * apprend plus rien, et qu'il faut changer de prise.
+ */
+export function echecsDAffilee(
+  notions: NotionAvecItems[],
+  niveau: number,
+  essais: Array<{ item_id: string; correct: boolean; created_at: string }>,
+): Map<string, number> {
+  const recents = [...essais].sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const sortie = new Map<string, number>();
+  for (const notion of notions) {
+    const siens = new Set(notion.items.filter((i) => i.level === niveau).map((i) => i.id));
+    if (siens.size === 0) continue;
+    let suite = 0;
+    for (const e of recents) {
+      if (!siens.has(e.item_id)) continue;
+      if (e.correct) break;
+      suite += 1;
+    }
+    sortie.set(notion.id, suite);
+  }
+  return sortie;
+}
+
+/**
+ * L'étape où reprendre appui : la plus haute en dessous de celle qui bloque.
+ *
+ * Reconnaître avant de produire. Un enfant qui échoue à écrire « sablonneux »
+ * sait souvent le reconnaître parmi trois propositions — c'est là qu'il
+ * retrouve pied, et une bonne réponse à l'étape basse ne valide pas pour
+ * autant l'étape haute : chaque niveau garde son compte.
+ */
+export function niveauDAppui(notion: NotionNiveaux, niveau: number): number {
+  const dessous = notion.items.map((i) => i.level).filter((n) => n < niveau);
+  return dessous.length > 0 ? Math.max(...dessous) : niveau;
 }
 
 /**
@@ -348,10 +400,17 @@ export async function construireSeance(childId: string, lessonId: string): Promi
   // Une étape franchie : on repasse sur tout, pour entretenir.
   const restantes = termine ? aFaire : aFaire.filter((n) => !ok.has(n.id));
 
+  const echecs = echecsDAffilee(notions, niveau, essais);
+
   const questions: Question[] = [];
   for (const notion of restantes.slice(0, TAILLE_SEANCE)) {
-    const item = choisirQuestion(notion, niveau, vus);
-    if (item) questions.push({ notion, item });
+    // Trois échecs de suite : on arrête de reposer la même question. KLEIN a
+    // reçu « sablonneux » cinq fois dans la journée, et son orthographe s'est
+    // dégradée à chaque essai — il ne révisait plus, il se noyait.
+    const bloque = (echecs.get(notion.id) ?? 0) >= ECHECS_AVANT_APPUI;
+    const servi = bloque ? niveauDAppui(notion, niveau) : niveau;
+    const item = choisirQuestion(notion, servi, vus);
+    if (item) questions.push({ notion, item, appui: servi < niveau });
   }
 
   return {
