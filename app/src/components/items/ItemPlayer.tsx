@@ -5,11 +5,13 @@ import { Button } from '../ui';
 import { ecartMot, Enonce, LETTRES, memeMot } from './partage';
 import Clavier, { useChampActif } from './Clavier';
 import LettresMobiles from './LettresMobiles';
+import { diagrammeJouable } from '../../lib/diagramme';
 import { useMelange } from '../../lib/melange';
 import { accentsComptent, modeSaisie } from '../../lib/saisie';
 import type { Props } from './partage';
 import VraiFaux from './VraiFaux';
 import Association from './Association';
+import Diagramme from './Diagramme';
 import Dictee from './Dictee';
 
 export type { Reponse } from './partage';
@@ -438,6 +440,8 @@ export function estJouable(item: ItemRow): boolean {
         tableau(a.order) &&
         (a.order as unknown[]).length === (p.tokens as unknown[]).length
       );
+    case 'diagramme':
+      return diagrammeJouable(p, a);
     case 'texte_a_trous':
       return (
         typeof p.text === 'string' &&
@@ -472,6 +476,8 @@ export default function ItemPlayer(props: Props) {
       return <Dictee {...props} />;
     case 'chronologie':
       return <Chronologie {...props} />;
+    case 'diagramme':
+      return <Diagramme {...props} />;
     default:
       return <TexteATrous {...props} />;
   }

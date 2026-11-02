@@ -513,6 +513,13 @@ LECONS = [
                     ('texte_a_trous', 3,
                      {'text': 'The universal set is 1 to 10, so n(U) = {{1}}.', 'blanks': 1},
                      {'values': ['10']}, 'Ten elements, the ones outside the ovals included.'),
+                    ('diagramme', 2,
+                     {'question': 'Represent sets C and D on the diagram.',
+                      'sets': ['C', 'D'],
+                      'elements': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']},
+                     {'regions': {'C': ['1', '2', '3'], 'CD': ['4', '5'], 'D': ['6', '7'],
+                                  'dehors': ['8', '9', '10']}},
+                     'C = 1, 2, 3, 4, 5 and D = 4, 5, 6, 7. The rest of U stays outside.'),
                     ('vrai_faux', 4, {'statement': 'C∪D is always at least as big as C∩D.'},
                      {'value': True}, 'True. The union holds the intersection, and usually more.'),
                     ('qcm', 4, {'question': 'Which sign asks for the common part only?',
@@ -550,6 +557,13 @@ LECONS = [
                     ('texte_a_trous', 3,
                      {'text': 'The universal set is 1 to 12, so n(U) = {{1}}.', 'blanks': 1},
                      {'values': ['12']}, 'Twelve, counting the five written outside the ovals.'),
+                    ('diagramme', 2,
+                     {'question': 'Represent sets K, L and M on the diagram.',
+                      'sets': ['K', 'L', 'M'],
+                      'elements': ['1', '2', '3', '4', '5', '6', '7', '8', '9']},
+                     {'regions': {'K': ['1'], 'KL': ['2'], 'KLM': ['3'], 'KM': ['4'],
+                                  'L': ['5'], 'LM': ['6'], 'M': ['7'], 'dehors': ['8', '9']}},
+                     'K = 1, 2, 3, 4. L = 2, 3, 5, 6. M = 3, 4, 6, 7. 8 and 9 are in no set.'),
                     ('vrai_faux', 4,
                      {'statement': 'If 3 is in K, in L and in M, it is written in the middle region.'},
                      {'value': True}, 'True. The middle belongs to the three sets.'),
@@ -594,6 +608,13 @@ LECONS = [
                      {'text': 'A∪B∪C = 11, 12, 13, 15, 17, 18, 19, 20, so it has {{1}} elements.',
                       'blanks': 1},
                      {'values': ['8']}, 'Eight elements in all.'),
+                    ('diagramme', 3,
+                     {'question': 'Draw the diagram: represent sets A, B and C.',
+                      'sets': ['A', 'B', 'C'],
+                      'elements': ['11', '12', '13', '15', '17', '18', '19', '20']},
+                     {'regions': {'A': ['11', '17'], 'B': ['12', '18'], 'C': ['20'],
+                                  'AC': ['13'], 'ABC': ['15', '19'], 'AB': [], 'BC': []}},
+                     'A = 11, 13, 15, 17, 19. B = 12, 15, 18, 19. C = 13, 15, 19, 20.'),
                     ('vrai_faux', 4, {'statement': '15 and 19 belong to A, to B and to C.'},
                      {'value': True}, 'True, which is why they go in the middle.'),
                     ('qcm', 4, {'question': 'B = 12, 15, 18, 19. Which one of them belongs to B alone?',
@@ -652,6 +673,23 @@ def verifier():
                         # impossible à écrire, quoi que l-enfant sache.
                         assert ' ' not in v, 'réponse en plusieurs mots : ' + v
                         assert v.strip() == v and v != '', 'réponse mal cadrée : ' + repr(v)
+                elif ikind == 'diagramme':
+                    # Mêmes règles que la garde du composant, écrites ici pour
+                    # qu-une question fautive ne parte jamais en base.
+                    noms = payload['sets']
+                    assert 2 <= len(noms) <= 3 and len(set(noms)) == len(noms), payload
+                    assert all(1 <= len(n) <= 2 for n in noms), payload
+                    elements = payload['elements']
+                    assert elements and len(set(elements)) == len(elements), payload
+                    regions = set()
+                    for masque in range(1 << len(noms)):
+                        pris = ''.join(n for i, n in enumerate(noms) if masque & (1 << i))
+                        regions.add(pris or 'dehors')
+                    poses = []
+                    for cle, liste in answer['regions'].items():
+                        assert cle in regions, 'région inconnue : ' + cle
+                        poses += liste
+                    assert sorted(poses) == sorted(elements),                         'chaque élément se range une fois et une seule : ' + str(payload)
                 elif ikind in ('chronologie', 'association'):
                     longueur = len(payload['tokens'] if ikind == 'chronologie' else payload['gauche'])
                     assert sorted(answer['order']) == list(range(longueur)), payload

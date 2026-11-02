@@ -41,6 +41,7 @@ const NOM_DU_TYPE: Record<ItemKind, string> = {
   texte_a_trous: 'les textes à trous',
   vrai_faux: 'les vrai ou faux',
   dictee: 'les dictées',
+  diagramme: 'les éléments à placer dans un diagramme',
   restitution_audio: 'les réponses orales',
   defi_chrono: 'les défis chronométrés',
 };
