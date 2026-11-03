@@ -15,6 +15,11 @@ work/video-*/*.mp3
 work/video-*/*.wav
 work/video-*/*.mp4
 
+# Le dossier de montage : rushes, plans intermédiaires et films finis. Les
+# films déposés vivent dans Supabase Storage ; ici ce ne sont que des sorties
+# refabriquables à partir du script, du module d'animation et des voix.
+work/video-sortie/
+
 # Secrets / configuration locale
 .env
 .env.*

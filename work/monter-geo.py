@@ -13,13 +13,17 @@ motion-geo.py sont calés pour être terminés vers trois secondes et demie,
 donc l-image se stabilise avant la fin de la phrase — un plan qui bouge
 encore quand la voix se tait donne l-impression qu-on a coupé trop tôt.
 
-Les voix doivent être dans le dossier passé en argument, nommées
-`vivrieres-1.mp3` … `vivrieres-9.mp3` et `rente-1.mp3` … `rente-9.mp3`.
+Les voix vivent à côté de leur script, dans `work/video-<film>/vo1.mp3` …
+`vo9.mp3`, comme pour tous les films précédents. Elles sont hors de git —
+trop lourdes — mais pas hors du projet : une voix rangée dans un dossier
+temporaire se perd, et refaire le film coûterait une seconde fois des
+crédits pour redire exactement les mêmes phrases.
+
 Le script refuse de monter s-il en manque une : un film amputé d-un plan
 enseignerait une liste trouée, et c-est exactement ce qu-on cherche à
 éviter en géographie.
 
-Usage :  python work/monter-geo.py <dossier-des-voix>
+Usage :  python work/monter-geo.py [dossier-de-sortie]
 """
 
 import importlib.util
@@ -53,25 +57,28 @@ def duree(fichier):
     return int(h) * 3600 + int(m) * 60 + float(s)
 
 
-def verifier_voix(source):
+def voix(cle, i):
+    return os.path.join(_ICI, 'video-' + cle, 'vo%d.mp3' % i)
+
+
+def verifier_voix():
     """Toutes les voix doivent être là avant qu-on commence à monter."""
     manquantes = []
     for cle in FILMS:
         manifeste = json.load(io.open(
             os.path.join(_ICI, 'video-' + cle, 'script_manifest.json'), encoding='utf-8'))
         for i in range(1, len(manifeste['blocks']) + 1):
-            chemin = os.path.join(source, '%s-%d.mp3' % (cle, i))
-            if not os.path.exists(chemin):
-                manquantes.append(os.path.basename(chemin))
+            if not os.path.exists(voix(cle, i)):
+                manquantes.append('video-%s/vo%d.mp3' % (cle, i))
     assert not manquantes, 'voix manquantes : ' + ', '.join(manquantes)
 
 
-def monter(cle, blocs, source, sortie):
+def monter(cle, blocs, travail, sortie):
     morceaux, total = [], 0.0
     for i, bloc in enumerate(blocs, start=1):
-        base = os.path.join(source, '%s-%d' % (cle, i))
-        voix = duree(base + '.mp3')
-        longueur = max(DUREE_MIN, voix + RESPIRATION)
+        son = voix(cle, i)
+        base = os.path.join(travail, '%s-%d' % (cle, i))
+        longueur = max(DUREE_MIN, duree(son) + RESPIRATION)
         total += longueur
 
         muet = base + '-muet.mp4'
@@ -80,7 +87,7 @@ def monter(cle, blocs, source, sortie):
         plan = base + '-monte.mp4'
         subprocess.run([
             FFMPEG, '-y', '-loglevel', 'error',
-            '-i', muet, '-i', base + '.mp3',
+            '-i', muet, '-i', son,
             '-filter_complex',
             # La voix part après un souffle : le premier mot doit être à
             # l-écran avant d-être prononcé.
@@ -91,7 +98,7 @@ def monter(cle, blocs, source, sortie):
         ], check=True)
         morceaux.append(plan)
 
-    liste = os.path.join(source, cle + '-liste.txt')
+    liste = os.path.join(travail, cle + '-liste.txt')
     io.open(liste, 'w', encoding='utf-8', newline='\n').write(
         '\n'.join("file '%s'" % os.path.abspath(m).replace('\\', '/') for m in morceaux) + '\n')
     subprocess.run([FFMPEG, '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0',
@@ -100,14 +107,15 @@ def monter(cle, blocs, source, sortie):
 
 
 if __name__ == '__main__':
-    source = sys.argv[1]
+    travail = sys.argv[1] if len(sys.argv) > 1 else os.path.join(_ICI, 'video-sortie')
+    os.makedirs(travail, exist_ok=True)
     motion.controler()
-    verifier_voix(source)
+    verifier_voix()
     for cle in FILMS:
         manifeste = json.load(io.open(
             os.path.join(_ICI, 'video-' + cle, 'script_manifest.json'), encoding='utf-8'))
-        sortie = os.path.join(source, 'film-' + cle + '.mp4')
-        secondes = monter(cle, manifeste['blocks'], source, sortie)
+        sortie = os.path.join(travail, 'film-' + cle + '.mp4')
+        secondes = monter(cle, manifeste['blocks'], travail, sortie)
         print('%-10s %2d plans  %5.1f s  %6.1f Ko  %s'
               % (cle, len(manifeste['blocks']), secondes,
                  os.path.getsize(sortie) / 1024, manifeste['title']))
