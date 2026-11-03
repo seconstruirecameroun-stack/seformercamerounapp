@@ -838,7 +838,16 @@ function Etape({
         ) : null}
 
         <div className="mt-5">
+          {/* La clé force un lecteur neuf à chaque question. Sans elle, React
+              gardait le même composant d'une question à la suivante et, avec
+              lui, tout son état : l'ordre tiré au sort et les liens déjà
+              posés. Une association à trois paires qui suivait une question à
+              deux n'affichait que deux étiquettes à droite — la troisième
+              n'existait pas — et se concluait toute seule après deux liens,
+              comptée fausse. 32 des 45 leçons enchaînent des questions d'un
+              même type et de tailles différentes. */}
           <ItemPlayer
+            key={index + ':' + question.item.id}
             item={question.item}
             onRepondre={repondre}
             verrouille={verrouille}

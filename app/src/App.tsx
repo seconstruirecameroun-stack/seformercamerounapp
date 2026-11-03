@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import Banc from './pages/Banc';
 import { SessionProvider, useSession } from './lib/auth';
 import { Loading } from './components/ui';
 import LoginPage from './pages/Login';
@@ -83,6 +84,7 @@ export default function App() {
             </RequireParent>
           }
         />
+        <Route path="/banc" element={<Banc />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </SessionProvider>
