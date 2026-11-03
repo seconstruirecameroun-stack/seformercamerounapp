@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   DEHORS,
   disposition,
   memeRangement,
+  placerEtiquettes,
   posees,
   regionDuPoint,
   type Rangement,
@@ -79,37 +80,18 @@ export default function Diagramme({ item, onRepondre, verrouille, visuel }: Prop
   const bonneRegion = (element: string) =>
     Object.entries(attendu).find(([, liste]) => liste.includes(element))?.[0] ?? DEHORS;
 
-  const pastille = (element: string, region: string, i: number, total: number) => {
-    const juste = verrouille ? bonneRegion(element) === region : null;
-    const ancre = d.ancres[region];
-    const ecart = 23;
-    return (
-      <button
-        key={element}
-        type="button"
-        disabled={verrouille}
-        onClick={(e) => {
-          e.stopPropagation();
-          reprendre(element);
-        }}
-        style={{
-          left: `${((ancre.x - (ecart * (total - 1)) / 2 + i * ecart) / d.largeur) * 100}%`,
-          top: `${(ancre.y / d.hauteur) * 100}%`,
-        }}
-        className={
-          'absolute -translate-x-1/2 -translate-y-1/2 rounded-lg border-2 px-1.5 py-0.5 ' +
-          'text-kid-xs font-black shadow-[var(--shadow-tile)] ' +
-          (juste === null
-            ? 'border-ink bg-white-warm text-ink'
-            : juste
-              ? 'border-leaf bg-leaf text-white-warm'
-              : 'border-clay bg-clay text-white-warm')
-        }
-      >
-        {element}
-      </button>
-    );
-  };
+  // Les places sont recalculées quand le rangement change, et seulement
+  // alors : chercher une place balaie un quadrillage, ce n-est pas gratuit.
+  const places = useMemo(
+    () =>
+      Object.entries(range).map(([region, liste]) => ({
+        region,
+        liste,
+        ou: placerEtiquettes(d, region, liste),
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(range), payload.sets.join('|')],
+  );
 
   return (
     <>
@@ -164,11 +146,56 @@ export default function Diagramme({ item, onRepondre, verrouille, visuel }: Prop
               {payload.sets[i]}
             </text>
           ))}
-        </svg>
 
-        {Object.entries(range).map(([region, liste]) =>
-          liste.map((element, i) => pastille(element, region, i, liste.length)),
-        )}
+          {places.map(({ region, liste, ou }) =>
+            liste.map((element, i) => {
+              const place = ou[i];
+              const juste = verrouille ? bonneRegion(element) === region : null;
+              return (
+                <g
+                  key={element}
+                  role="button"
+                  aria-label={`${element}, dans ${region === DEHORS ? 'le rectangle seul' : region}`}
+                  className={verrouille ? '' : 'cursor-pointer'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    reprendre(element);
+                  }}
+                >
+                  <rect
+                    x={place.x - place.w / 2}
+                    y={place.y - place.h / 2}
+                    width={place.w}
+                    height={place.h}
+                    rx={5}
+                    className={
+                      'stroke-[var(--color-ink)] ' +
+                      (juste === null
+                        ? 'fill-[var(--color-white-warm)]'
+                        : juste
+                          ? 'fill-[var(--color-leaf)]'
+                          : 'fill-[var(--color-clay)]')
+                    }
+                    strokeWidth={1.6}
+                  />
+                  <text
+                    x={place.x}
+                    y={place.y + place.h * 0.3}
+                    textAnchor="middle"
+                    fontSize={place.h * 0.72}
+                    className={
+                      'font-black ' +
+                      (juste === null ? 'fill-[var(--color-ink)]' : 'fill-[var(--color-white-warm)]')
+                    }
+                  >
+                    {element}
+                  </text>
+                </g>
+              );
+            }),
+          )}
+
+        </svg>
       </div>
 
       {verrouille ? (

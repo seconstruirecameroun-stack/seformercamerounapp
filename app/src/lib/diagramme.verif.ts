@@ -19,6 +19,8 @@ import {
   diagrammeJouable,
   disposition,
   memeRangement,
+  capaciteRegion,
+  placerEtiquettes,
   regionDuPoint,
   toutesLesRegions,
 } from './diagramme';
@@ -53,6 +55,14 @@ for (const noms of [['A', 'B'], ['A', 'B', 'C']]) {
   // Hors du rectangle, on ne range rien.
   ok(`${noms.length} ensembles : hors cadre refusé`, regionDuPoint(d, { x: 2, y: 2 }) === null);
   ok(`${noms.length} ensembles : sous le cadre refusé`, regionDuPoint(d, { x: 160, y: 226 }) === null);
+  // La lettre elle-même doit rester dans le rectangle : en élargissant les
+  // cercles, le K du haut est passé sous le bord du cadre, et c-est le père
+  // qui l-aurait vu avant moi.
+  for (const e of d.etiquettes) {
+    ok(`${noms.length} ensembles : lettre dans le cadre`,
+       e.x - 13 >= d.cadre.x && e.x + 13 <= d.cadre.x + d.cadre.w &&
+       e.y - 13 >= d.cadre.y && e.y + 13 <= d.cadre.y + d.cadre.h);
+  }
   // Les étiquettes des noms ne doivent pas se poser sur une ancre.
   for (const e of d.etiquettes) {
     ok(`${noms.length} ensembles : étiquette hors des ancres`,
@@ -63,7 +73,7 @@ for (const noms of [['A', 'B'], ['A', 'B', 'C']]) {
 // Le milieu des trois ovales doit vraiment appartenir aux trois.
 const d3 = disposition(['A', 'B', 'C']);
 ok('le centre est bien ABC', regionDuPoint(d3, d3.ancres.ABC) === 'ABC');
-ok('le haut est A seul', regionDuPoint(d3, { x: 160, y: 20 }) === 'A');
+ok('le haut est A seul', regionDuPoint(d3, { x: 160, y: 24 }) === 'A');
 
 // Comparaison des rangements.
 ok('ordre indifférent dans une région',
@@ -98,6 +108,74 @@ ok('élément en double dans l-énoncé refusé',
 ok('régions vides acceptées',
    diagrammeJouable({ question: 'x', sets: ['A', 'B'], elements: ['1'] },
                     { regions: { A: ['1'], AB: [], B: [], dehors: [] } }));
+
+// ───────────────────────────────────────────────────────────────────────────
+// Les places des étiquettes.
+//
+// Elles étaient posées sur une seule rangée centrée sur l-ancre : à cinq,
+// elles sortaient franchement du cercle. Un élément dessiné hors de sa
+// région dit le contraire de ce que l-exercice enseigne — et le père l-a vu
+// avant moi, sur une capture.
+
+// Ce que chaque région peut porter, et qui ne doit pas rétrécir sans qu-on
+// le sache : une géométrie retouchée pourrait fermer une lentille en
+// silence, et une question parfaitement écrite deviendrait illisible.
+const MINIMUM = { lentille: 4, large: 8 };
+
+for (const noms of [['A', 'B'], ['A', 'B', 'C']]) {
+  const d = disposition(noms);
+  for (const region of toutesLesRegions(noms)) {
+    const capacite = capaciteRegion(d, region);
+    const lentille = region !== DEHORS && region.length > 1;
+    ok(`${noms.length} ensembles, ${region} : capacité ${capacite}`,
+       capacite >= (lentille ? MINIMUM.lentille : MINIMUM.large));
+
+    // Jusqu-à sa capacité, une région doit poser proprement : dedans, et
+    // sans recouvrement. Au-delà, le dessin serait de toute façon illisible
+    // et la question n-aurait pas dû être écrite ainsi.
+    for (let combien = 1; combien <= capacite; combien += 1) {
+      const etiquettes = Array.from({ length: combien }, (_, i) => String(10 + i));
+      const places = placerEtiquettes(d, region, etiquettes);
+      ok(`${region} × ${combien} : autant de places que d-étiquettes`,
+         places.length === combien);
+
+      // Chaque pastille, coins compris, doit être dans sa région.
+      const dehors = places.filter((p) => {
+        const dx = p.w / 2;
+        const dy = p.h / 2;
+        return [
+          { x: p.x - dx, y: p.y - dy }, { x: p.x + dx, y: p.y - dy },
+          { x: p.x - dx, y: p.y + dy }, { x: p.x + dx, y: p.y + dy },
+        ].some((c) => regionDuPoint(d, c) !== region);
+      });
+      ok(`${region} × ${combien} : aucune pastille hors de sa région (${dehors.length})`,
+         dehors.length === 0);
+
+      // Et elles ne doivent pas se recouvrir.
+      let collisions = 0;
+      for (let i = 0; i < places.length; i += 1) {
+        for (let j = i + 1; j < places.length; j += 1) {
+          if (Math.abs(places[i].x - places[j].x) < (places[i].w + places[j].w) / 2 &&
+              Math.abs(places[i].y - places[j].y) < places[i].h) collisions += 1;
+        }
+      }
+      ok(`${region} × ${combien} : aucune pastille sur une autre`, collisions === 0);
+    }
+  }
+}
+
+// Le cas qui a déclenché tout cela : dix éléments, le rangement attendu de
+// la question réellement en base.
+const d2 = disposition(['C', 'D']);
+for (const [region, liste] of Object.entries({
+  C: ['1', '2', '3'], CD: ['4', '5'], D: ['6', '7'], dehors: ['8', '9', '10'],
+})) {
+  const places = placerEtiquettes(d2, region, liste);
+  const toutesDedans = places.every((p) =>
+    regionDuPoint(d2, { x: p.x - p.w / 2, y: p.y }) === region &&
+    regionDuPoint(d2, { x: p.x + p.w / 2, y: p.y }) === region);
+  ok(`question en base, région ${region} : tout tient dedans`, toutesDedans);
+}
 
 if (ko > 0) throw new Error(ko + ' echec(s)');
 console.log('diagramme : geometrie et garde verifiees, tout passe');

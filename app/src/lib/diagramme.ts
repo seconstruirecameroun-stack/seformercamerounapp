@@ -89,18 +89,22 @@ export function disposition(noms: string[]): Disposition {
   // troisième disque opposé — à mi-chemin elles tombaient encore DANS ce
   // troisième disque, et l-étiquette se serait affichée dans la mauvaise
   // région. C-est vérifié, pas supposé : voir diagramme.verif.ts.
-  const r = 56;
+  // Rayon 60 et écart 32, mesurés et non choisis : c-est le couple qui ouvre
+  // le plus les lentilles — la région commune à B et C passe de deux places à
+  // cinq, le centre des trois de trois à huit — sans qu-aucun cercle ne sorte
+  // du rectangle. Au-delà, le haut du cercle A dépasse le cadre.
+  const r = 60;
   const cercles = [
-    { nom: noms[0], cx: 160, cy: 67, r },
-    { nom: noms[1], cx: 188.6, cy: 116.5, r },
-    { nom: noms[2], cx: 131.4, cy: 116.5, r },
+    { nom: noms[0], cx: 160, cy: 68, r },
+    { nom: noms[1], cx: 187.71, cy: 116, r },
+    { nom: noms[2], cx: 132.29, cy: 116, r },
   ];
   const [a, b, c] = noms;
   return {
     ...commun,
     cercles,
     ancres: {
-      [a]: { x: 160, y: 39 },
+      [a]: { x: 160, y: 48 },
       [b]: { x: 213, y: 130 },
       [c]: { x: 107, y: 130 },
       [a + b]: { x: 189, y: 84 },
@@ -109,10 +113,13 @@ export function disposition(noms: string[]): Disposition {
       [a + b + c]: { x: 160, y: 100 },
       [DEHORS]: { x: 42, y: 185 },
     },
+    // La lettre du haut est DANS son ovale : au-dessus, il ne reste plus
+    // rien depuis que les cercles se sont élargis, et elle sortait du cadre.
+    // Les deux autres gardent leur place à l-extérieur, à gauche et à droite.
     etiquettes: [
-      { x: 160, y: 18 },
-      { x: 268, y: 150 },
-      { x: 52, y: 150 },
+      { x: 160, y: 24 },
+      { x: 272, y: 148 },
+      { x: 48, y: 148 },
     ],
   };
 }
@@ -187,4 +194,184 @@ export function diagrammeJouable(p: Record<string, unknown>, a: Record<string, u
   // serait impossible à réussir ou réussie sans tout poser.
   if (vues.length !== elements.length) return false;
   return [...vues].sort().join('\u0000') === [...(elements as string[])].sort().join('\u0000');
+}
+
+/* ────────────────────────── où poser les étiquettes ──────────────────────── */
+
+/**
+ * Une étiquette posée, en coordonnées du dessin.
+ *
+ * Les pastilles vivent désormais DANS le svg, dans les mêmes unités que les
+ * cercles. En html, elles gardaient leur taille en pixels pendant que le
+ * dessin, lui, s-étirait à la largeur de l-écran : la place qu-elles
+ * occupaient dans la figure changeait d-un téléphone à l-autre, et le calcul
+ * ne pouvait pas être juste partout à la fois.
+ */
+export type Place = Point & { w: number; h: number };
+
+export const HAUTEUR_PASTILLE = 16;
+
+export function largeurPastille(texte: string): number {
+  return Math.max(18, 9 + texte.length * 8);
+}
+
+/** Le pas du quadrillage où l-on cherche une place. */
+const PAS = 4;
+
+const lattices = new Map<string, Array<Point & { region: string }>>();
+
+function quadrillage(d: Disposition): Array<Point & { region: string }> {
+  const cle = d.cercles.map((c) => c.nom).join('|');
+  const connu = lattices.get(cle);
+  if (connu) return connu;
+  const points: Array<Point & { region: string }> = [];
+  const { x, y, w, h } = d.cadre;
+  for (let py = y + 2; py <= y + h - 2; py += PAS) {
+    for (let px = x + 2; px <= x + w - 2; px += PAS) {
+      const region = regionDuPoint(d, { x: px, y: py });
+      if (region) points.push({ x: px, y: py, region });
+    }
+  }
+  lattices.set(cle, points);
+  return points;
+}
+
+/** La pastille entière tient-elle dans la région, coins compris ? */
+function tientDedans(d: Disposition, region: string, p: Point, w: number, h: number): boolean {
+  const dx = w / 2;
+  const dy = h / 2;
+  const coins = [
+    p,
+    { x: p.x - dx, y: p.y - dy },
+    { x: p.x + dx, y: p.y - dy },
+    { x: p.x - dx, y: p.y + dy },
+    { x: p.x + dx, y: p.y + dy },
+  ];
+  return coins.every((c) => regionDuPoint(d, c) === region);
+}
+
+/**
+ * Où poser les étiquettes d-une région, sans qu-aucune n-en sorte.
+ *
+ * Elles étaient alignées sur une seule rangée centrée sur l-ancre : à cinq,
+ * elles débordaient largement du cercle, et un élément dessiné hors de sa
+ * région dit le contraire de ce que l-exercice enseigne.
+ *
+ * On cherche donc de vraies places : les points du quadrillage qui sont dans
+ * la région ET dont la pastille entière y tient, les plus proches du centre
+ * d-abord, sans qu-elles se recouvrent. Le groupe se forme alors tout seul,
+ * en grappe plutôt qu-en file, et il épouse la forme de la région — large
+ * dans un croissant, empilé dans une lentille étroite.
+ *
+ * Si la région est vraiment trop petite, on empile sur l-ancre plutôt que de
+ * ne rien afficher : mieux vaut une pastille serrée qu-un élément invisible.
+ */
+/**
+ * Les tailles essayées, de la plus confortable à la plus serrée.
+ *
+ * Une lentille de trois ovales est étroite : à taille pleine, deux pastilles
+ * n-y tiennent pas côte à côte. Plutôt que de les laisser déborder, on les
+ * rétrécit — jusqu-à un plancher, en dessous duquel un enfant de sept ans ne
+ * lirait plus le nombre.
+ */
+const ECHELLES = [1, 0.86, 0.74, 0.62];
+
+/** La place que prend le nom d-un ensemble, et qu-aucune pastille ne doit prendre. */
+const BOITE_LETTRE = { w: 26, h: 26 };
+
+function surUneLettre(d: Disposition, p: Point, w: number, h: number): boolean {
+  return d.etiquettes.some(
+    (e) =>
+      Math.abs(e.x - p.x) < (BOITE_LETTRE.w + w) / 2 &&
+      Math.abs(e.y - p.y) < (BOITE_LETTRE.h + h) / 2,
+  );
+}
+
+function essayer(
+  d: Disposition,
+  region: string,
+  nombre: number,
+  w: number,
+  h: number,
+): Place[] | null {
+  const ancre = d.ancres[region];
+  if (!ancre) return null;
+  const candidats = quadrillage(d)
+    .filter((p) => p.region === region)
+    .sort(
+      (a, b) =>
+        Math.hypot(a.x - ancre.x, a.y - ancre.y) - Math.hypot(b.x - ancre.x, b.y - ancre.y),
+    );
+  const places: Place[] = [];
+  for (const c of candidats) {
+    if (places.length >= nombre) break;
+    if (!tientDedans(d, region, c, w, h)) continue;
+    if (surUneLettre(d, c, w, h)) continue;
+    if (places.some((p) => Math.abs(p.x - c.x) < (p.w + w) / 2 + 2 && Math.abs(p.y - c.y) < h + 2)) {
+      continue;
+    }
+    places.push({ x: c.x, y: c.y, w, h });
+  }
+  return places.length === nombre ? places : null;
+}
+
+/**
+ * Où poser les étiquettes d-une région, sans qu-aucune n-en sorte.
+ *
+ * Elles étaient alignées sur une seule rangée centrée sur l-ancre : à cinq,
+ * elles débordaient largement du cercle. Un élément dessiné hors de sa
+ * région dit le contraire de ce que l-exercice enseigne — et c-est le père
+ * qui l-a vu, sur une capture, avant moi.
+ *
+ * On cherche donc de vraies places : les points du quadrillage qui sont dans
+ * la région et dont la pastille entière y tient, les plus proches du centre
+ * d-abord, sans recouvrement. Le groupe se forme alors tout seul, en grappe
+ * plutôt qu-en file, et il épouse la forme de la région — étalé dans un
+ * croissant, empilé dans une lentille étroite.
+ *
+ * Si rien ne tient même à la plus petite taille, on empile sur l-ancre : un
+ * élément serré reste visible, un élément absent ne l-est pas. Mais ce cas
+ * ne doit pas arriver dans une question écrite avec soin, et `capaciteRegion`
+ * permet de le vérifier avant.
+ */
+export function placerEtiquettes(
+  d: Disposition,
+  region: string,
+  etiquettes: string[],
+): Place[] {
+  if (etiquettes.length === 0) return [];
+  const base = Math.max(...etiquettes.map(largeurPastille));
+  for (const e of ECHELLES) {
+    const trouve = essayer(d, region, etiquettes.length, base * e, HAUTEUR_PASTILLE * e);
+    if (trouve) return trouve;
+  }
+  const ancre = d.ancres[region] ?? { x: d.cadre.x + 20, y: d.cadre.y + 20 };
+  const h = HAUTEUR_PASTILLE * ECHELLES[ECHELLES.length - 1];
+  return etiquettes.map((_, i) => ({
+    x: ancre.x,
+    y: ancre.y + (i - (etiquettes.length - 1) / 2) * (h + 1),
+    w: base * ECHELLES[ECHELLES.length - 1],
+    h,
+  }));
+}
+
+/**
+ * Combien d-étiquettes une région peut porter sans qu-aucune n-en sorte.
+ *
+ * Sert à écrire les questions en connaissance de cause : une région à
+ * laquelle on demande plus que sa capacité donnerait un dessin faux.
+ */
+export function capaciteRegion(
+  d: Disposition,
+  region: string,
+  // Deux chiffres : le cas courant, et le plus large de nos étiquettes. La
+  // mesurer avec une largeur arbitraire annonçait une capacité que le vrai
+  // placement ne tenait pas.
+  largeur = largeurPastille('10'),
+): number {
+  const petit = ECHELLES[ECHELLES.length - 1];
+  for (let n = 1; n <= 12; n += 1) {
+    if (!essayer(d, region, n, largeur * petit, HAUTEUR_PASTILLE * petit)) return n - 1;
+  }
+  return 12;
 }
