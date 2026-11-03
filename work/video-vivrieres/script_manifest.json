@@ -1,0 +1,151 @@
+{
+  "title": "Les cultures vivrières",
+  "lesson": "L’agriculture et les cultures vivrières",
+  "registre": "geographie",
+  "style": "Carte du Cameroun dessinée et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "voix française — la voix suit la langue de la leçon",
+  "mascotte": "Niba",
+  "through_line": "Ce qui pousse ici, et qui se mange ici.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "L’agriculture est une activité qui consiste à cultiver la terre.",
+      "scene": {
+        "scene": "champ"
+      },
+      "keywords": [
+        "CULTIVER LA TERRE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Au Cameroun, on distingue deux grandes sortes de cultures.",
+      "scene": {
+        "scene": "deux",
+        "gauche": "vivrières",
+        "droite": "de rente"
+      },
+      "keywords": [
+        "DEUX SORTES"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "Les cultures vivrières nourrissent les populations locales.",
+      "scene": {
+        "scene": "assiette",
+        "note": "elles restent ici"
+      },
+      "keywords": [
+        "VIVRIÈRES"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 4,
+      "vo_line": "Le mil, le maïs, le sorgho et les arachides poussent dans le Nord.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "nord"
+        ],
+        "cultures": [
+          "mil",
+          "maïs",
+          "sorgho",
+          "arachides"
+        ]
+      },
+      "keywords": [
+        "LE NORD"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 5,
+      "vo_line": "On les cultive principalement à Maroua, à Garoua et à Ngaoundéré.",
+      "scene": {
+        "scene": "villes",
+        "zones": [
+          "nord"
+        ],
+        "villes": [
+          "Maroua",
+          "Garoua",
+          "Ngaoundéré"
+        ]
+      },
+      "keywords": [
+        "TROIS VILLES"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 6,
+      "vo_line": "Les pommes de terre et les ignames sont cultivés à l’Ouest.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "ouest"
+        ],
+        "cultures": [
+          "pommes de terre",
+          "ignames"
+        ]
+      },
+      "keywords": [
+        "L’OUEST"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 7,
+      "vo_line": "Le manioc, le macabo et la patate, dans le Centre, le Sud et le Littoral.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "centre",
+          "sud",
+          "littoral"
+        ],
+        "cultures": [
+          "manioc",
+          "macabo",
+          "patate"
+        ]
+      },
+      "keywords": [
+        "LE CENTRE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 8,
+      "vo_line": "Les légumes frais, eux, sont cultivés dans les villes.",
+      "scene": {
+        "scene": "ville",
+        "note": "près de ceux qui les mangent"
+      },
+      "keywords": [
+        "LES VILLES"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 9,
+      "vo_line": "Tout cela reste au pays, et finit dans nos assiettes.",
+      "scene": {
+        "scene": "assiette",
+        "note": "destinées aux populations locales"
+      },
+      "keywords": [
+        "ICI"
+      ],
+      "niba": "fete"
+    }
+  ]
+}

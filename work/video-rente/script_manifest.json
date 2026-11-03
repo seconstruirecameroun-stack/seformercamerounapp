@@ -1,0 +1,151 @@
+{
+  "title": "Les cultures de rente",
+  "lesson": "Les cultures de rente",
+  "registre": "geographie",
+  "style": "Carte du Cameroun dessinée et Fredoka sur fond pastel, composé",
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "narrator": "voix française — la voix suit la langue de la leçon",
+  "mascotte": "Niba",
+  "through_line": "Ce qui part : l’usine, le bateau, et cinq régions.",
+  "blocks": [
+    {
+      "n": 1,
+      "vo_line": "Les cultures de rente sont transformées dans les industries.",
+      "scene": {
+        "scene": "usine"
+      },
+      "keywords": [
+        "L’USINE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 2,
+      "vo_line": "Ou bien elles sont vendues à l’étranger.",
+      "scene": {
+        "scene": "chemins",
+        "note": "vers ailleurs"
+      },
+      "keywords": [
+        "L’ÉTRANGER"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 3,
+      "vo_line": "On les appelle aussi cultures industrielles, ou cultures d’exportation.",
+      "scene": {
+        "scene": "noms",
+        "noms": [
+          "de rente",
+          "industrielles",
+          "d’exportation"
+        ]
+      },
+      "keywords": [
+        "TROIS NOMS"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 4,
+      "vo_line": "Le cacao, le café et le thé sont cultivés à l’Ouest.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "ouest"
+        ],
+        "cultures": [
+          "cacao",
+          "café",
+          "thé"
+        ]
+      },
+      "keywords": [
+        "L’OUEST"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 5,
+      "vo_line": "Le coton, au Nord du Cameroun.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "nord"
+        ],
+        "cultures": [
+          "coton"
+        ]
+      },
+      "keywords": [
+        "LE NORD"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 6,
+      "vo_line": "La canne à sucre, au Centre.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "centre"
+        ],
+        "cultures": [
+          "canne à sucre"
+        ]
+      },
+      "keywords": [
+        "LE CENTRE"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 7,
+      "vo_line": "Le palmier à huile, dans le Sud.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "sud"
+        ],
+        "cultures": [
+          "palmier à huile"
+        ]
+      },
+      "keywords": [
+        "LE SUD"
+      ],
+      "niba": "content"
+    },
+    {
+      "n": 8,
+      "vo_line": "Et le tabac, à l’Est du pays.",
+      "scene": {
+        "scene": "zone",
+        "zones": [
+          "est"
+        ],
+        "cultures": [
+          "tabac"
+        ]
+      },
+      "keywords": [
+        "L’EST"
+      ],
+      "niba": "encourage"
+    },
+    {
+      "n": 9,
+      "vo_line": "La même terre, deux chemins : l’un reste ici, l’autre prend le bateau.",
+      "scene": {
+        "scene": "chemins",
+        "note": "vivrière ou de rente"
+      },
+      "keywords": [
+        "DEUX CHEMINS"
+      ],
+      "niba": "fete"
+    }
+  ]
+}
