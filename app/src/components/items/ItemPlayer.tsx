@@ -303,10 +303,21 @@ function TexteATrous({ item, onRepondre, verrouille, visuel, rang }: Props) {
     });
   }
 
+  // Un texte long n'est pas une phrase à compléter : c'est un problème, avec
+  // sa situation à lire avant de calculer. « Complète la phrase » dirait à
+  // l'enfant de chercher un mot là où on attend un résultat.
+  const probleme = payload.text.length >= 160;
+
   return (
     <>
-      <Enonce visuel={visuel}>Complète la phrase</Enonce>
-      <p className="mt-5 text-kid leading-[2.3]">
+      <Enonce visuel={visuel}>
+        {probleme ? 'Lis bien, puis calcule' : 'Complète la phrase'}
+      </Enonce>
+      {/* L'interligne large laisse respirer les cases d'une phrase à trous.
+          Sur un problème de six lignes, il devient un défilement : la
+          situation ne tient plus d'un seul regard, et l'enfant perd le début
+          en lisant la fin. */}
+      <p className={'mt-5 text-kid ' + (probleme ? 'leading-[1.85] text-left' : 'leading-[2.3]')}>
         {morceaux.map((morceau, i) => (
           <span key={i}>
             {morceau}

@@ -136,8 +136,12 @@ LECONS = [
               ('qcm', 2, {'question': 'Combien de décalitres font 1 000 l ?',
                           'options': ['100 dal', '10 dal', '1 000 dal']},
                {'index': 0}, 'Cent décalitres.'),
-              ('texte_a_trous', 3, {'text': '560 l + 440 l = {{1}} l.', 'blanks': 1},
-               {'values': ['1000']}, 'Mille litres.'),
+              ('texte_a_trous', 3,
+               {'text': 'Dans la réserve de l’école, un fût contient déjà 560 l d’huile. '
+                        'Le magasinier y verse encore 440 l apportés le matin même. Quelle '
+                        'quantité de liquide le fût contient-il maintenant ? Donne ta '
+                        'réponse en litres. Le fût contient {{1}} l.', 'blanks': 1},
+               {'values': ['1000']}, '560 + 440 = 1 000 litres.'),
               ('qcm', 4, {'question': 'Un fût de 2 hl est rempli de 85 l. Combien de litres manque-t-il ?',
                           'options': ['115 l', '15 l', '185 l']},
                {'index': 0}, '2 hl font 200 l, et 200 − 85 = 115.')]),
@@ -184,8 +188,11 @@ LECONS = [
               ('qcm', 2, {'question': 'Par combien divise-t-on la somme de ces cinq notes ?',
                           'options': ['par 5', 'par 65', 'par 20']},
                {'index': 0}, 'Par le nombre de notes, donc par 5.'),
-              ('texte_a_trous', 3, {'text': '65 ÷ 5 = {{1}}.', 'blanks': 1},
-               {'values': ['13']}, 'Treize.'),
+              ('texte_a_trous', 3,
+               {'text': 'Lors d’une évaluation, Jores a eu les notes suivantes : 15 sur 20, '
+                        '18 sur 20, 10 sur 20, 12 sur 20 et 10 sur 20. Calcule sa note '
+                        'moyenne. La somme fait {{1}}, et sa moyenne est de {{2}}.', 'blanks': 2},
+               {'values': ['65', '13']}, 'La somme fait 65, et 65 ÷ 5 = 13.'),
               ('qcm', 4, {'question': 'Un élève a 12, 14 et 16. Quelle est sa moyenne ?',
                           'options': ['14', '42', '13']},
                {'index': 0}, '12 + 14 + 16 = 42, et 42 ÷ 3 = 14.')]),
@@ -221,8 +228,12 @@ LECONS = [
               ('qcm', 2, {'question': 'Dictée 14, maths 12, sciences 15, anglais 16. Combien font-elles ?',
                           'options': ['57', '47', '67']},
                {'index': 0}, '14 + 12 + 15 + 16 = 57.'),
-              ('texte_a_trous', 3, {'text': '70 − 57 = {{1}}.', 'blanks': 1},
-               {'values': ['13']}, 'Treize, la note de TIC.'),
+              ('texte_a_trous', 3,
+               {'text': 'Au bulletin, le total des cinq notes est 70. La dictée fait 14, '
+                        'les maths 12, les sciences 15 et l’anglais 16. La note de TIC a été '
+                        'effacée. Les quatre notes connues font {{1}}, donc celle de TIC '
+                        'vaut {{2}}.', 'blanks': 2},
+               {'values': ['57', '13']}, '14 + 12 + 15 + 16 = 57, et 70 − 57 = 13.'),
               ('qcm', 4, {'question': 'Quatre notes font 48. Le total doit faire 62. Que vaut la cinquième ?',
                           'options': ['14', '110', '12']},
                {'index': 0}, '62 − 48 = 14.')]),
@@ -286,8 +297,12 @@ LECONS = [
               ('qcm', 2, {'question': 'Sur 300 candidats, 240 sont reçus. Quel calcul donne le pourcentage ?',
                           'options': ['240 × 100 ÷ 300', '300 × 100 ÷ 240', '240 ÷ 300 ÷ 100']},
                {'index': 0}, 'L’effectif reçu fois cent, divisé par le total.'),
-              ('texte_a_trous', 3, {'text': '240 × 100 ÷ 300 = {{1}}.', 'blanks': 1},
-               {'values': ['80']}, 'Quatre-vingts pour cent.'),
+              ('texte_a_trous', 3,
+               {'text': 'Sur 300 candidats qui se sont présentés à l’examen du permis de '
+                        'conduire, 240 ont réussi l’épreuve et tous les autres ont été '
+                        'recalés. Quel est le pourcentage de réussite à cet examen ? '
+                        'Le pourcentage de réussite est de {{1}} %.', 'blanks': 1},
+               {'values': ['80']}, '240 × 100 ÷ 300 = 80.'),
               ('qcm', 4, {'question': 'Sur 250 élèves, 150 sont reçus. Quel est le pourcentage de réussite ?',
                           'options': ['60 %', '40 %', '15 %']},
                {'index': 0}, '150 × 100 ÷ 250 = 60.')]),
@@ -339,8 +354,13 @@ LECONS = [
               ('qcm', 2, {'question': 'Quel est le pourcentage d’échec à Bangang ?',
                           'options': ['25 %', '20 %', '75 %']},
                {'index': 0}, '200 × 100 ÷ 800 = 25.'),
-              ('texte_a_trous', 3, {'text': '600 × 100 ÷ 800 = {{1}}.', 'blanks': 1},
-               {'values': ['75']}, 'Soixante-quinze pour cent.'),
+              ('texte_a_trous', 3,
+               {'text': 'L’école publique de Bangang a présenté 800 candidats au concours '
+                        'd’entrée en sixième. À la publication des résultats, 600 ont réussi '
+                        'et tous les autres ont été recalés. Calcule le pourcentage de '
+                        'réussite, puis celui d’échec. La réussite est de {{1}} %, et '
+                        'l’échec de {{2}} %.', 'blanks': 2},
+               {'values': ['75', '25']}, '600 × 100 ÷ 800 = 75, et 100 − 75 = 25.'),
               ('qcm', 4, {'question': 'Une école a 90 % de réussite sur 200 candidats. Combien ont réussi ?',
                           'options': ['180', '90', '110']},
                {'index': 0}, '200 × 90 ÷ 100 = 180.')]),
@@ -369,8 +389,12 @@ LECONS = [
               ('chronologie', 2, {'question': 'Range les quatre temps du problème.',
                                   'tokens': ['lire', 'poser', 'calculer', 'répondre']},
                {'order': [0, 1, 2, 3]}, 'Lire, poser, calculer, répondre.'),
-              ('texte_a_trous', 3, {'text': 'Après avoir calculé, on écrit la phrase-{{1}}.', 'blanks': 1},
-               {'values': ['réponse']}, 'La phrase-réponse.'),
+              ('texte_a_trous', 3,
+               {'text': 'Un maçon construit le mur d’une case. Il pose 125 briques chaque '
+                        'jour et il travaille pendant 8 jours de suite. Avant de calculer, '
+                        'demande-toi ce qu’on cherche : le nombre total de briques posées. '
+                        'Il en a posé {{1}} en tout.', 'blanks': 1},
+               {'values': ['1000']}, '125 × 8 = 1 000 briques.'),
               ('qcm', 4, {'question': 'Un problème demande un partage équitable. Quelle opération ?',
                           'options': ['une division', 'une addition', 'une multiplication']},
                {'index': 0}, 'Partager également, c’est diviser.')]),
@@ -387,8 +411,12 @@ LECONS = [
               ('qcm', 2, {'question': 'Combien font 7 500 + 6 000 ?',
                           'options': ['13 500', '12 500', '14 500']},
                {'index': 0}, 'Treize mille cinq cents.'),
-              ('texte_a_trous', 3, {'text': '7500 + 6000 + 21000 = {{1}} F.', 'blanks': 1},
-               {'values': ['34500']}, 'Trente-quatre mille cinq cents.'),
+              ('texte_a_trous', 3,
+               {'text': 'À Baleng, trois femmes cultivent ensemble un champ communautaire. '
+                        'Cette année, les arachides ont rapporté 7 500 F, le maïs 6 000 F et '
+                        'les pistaches 21 000 F. Quel est le gain total du champ ? '
+                        'Le gain total est de {{1}} F.', 'blanks': 1},
+               {'values': ['34500']}, '7 500 + 6 000 + 21 000 = 34 500 F.'),
               ('qcm', 4, {'question': 'Les pistaches rapportent le double du maïs. Le maïs fait 6 000 F. Et elles ?',
                           'options': ['12 000 F', '21 000 F', '3 000 F']},
                {'index': 0}, 'Le double de 6 000, donc 12 000 F.')]),
@@ -406,8 +434,11 @@ LECONS = [
               ('qcm', 2, {'question': 'Quelle opération partage 34 500 F entre 3 femmes ?',
                           'options': ['34 500 ÷ 3', '34 500 × 3', '34 500 − 3']},
                {'index': 0}, 'Une division.'),
-              ('texte_a_trous', 3, {'text': '34500 ÷ 3 = {{1}} F.', 'blanks': 1},
-               {'values': ['11500']}, 'Onze mille cinq cents francs.'),
+              ('texte_a_trous', 3,
+               {'text': 'Les trois femmes de Baleng ont gagné 34 500 F en tout avec leur '
+                        'champ. Elles décident de partager cette somme équitablement entre '
+                        'elles. Quelle somme aura chacune ? Chacune aura {{1}} F.', 'blanks': 1},
+               {'values': ['11500']}, '34 500 ÷ 3 = 11 500 F pour chacune.'),
               ('qcm', 4, {'question': 'Si elles étaient 5 au lieu de 3, combien recevrait chacune ?',
                           'options': ['6 900 F', '11 500 F', '8 625 F']},
                {'index': 0}, '34 500 ÷ 5 = 6 900 F.')]),
@@ -424,8 +455,13 @@ LECONS = [
               ('qcm', 2, {'question': 'Quelle opération donne le prix de 15 kg de riz à 200 F le kg ?',
                           'options': ['15 × 200', '15 + 200', '200 ÷ 15']},
                {'index': 0}, 'Une multiplication.'),
-              ('texte_a_trous', 3, {'text': '11200 + 3000 = {{1}} F.', 'blanks': 1},
-               {'values': ['14200']}, 'Quatorze mille deux cents francs.'),
+              ('texte_a_trous', 3,
+               {'text': 'Un épicier a vendu 28 barres de chocolat à 400 F la barre, puis '
+                        '15 kg de riz à 200 F le kilo. Quelle somme a-t-il reçue en tout ? '
+                        'Le chocolat rapporte {{1}} F, et il a reçu {{2}} F en tout.',
+                'blanks': 2},
+               {'values': ['11200', '14200']},
+               '28 × 400 = 11 200, plus 15 × 200 = 3 000, donc 14 200 F.'),
               ('qcm', 4, {'question': 'L’épicier rend la monnaie sur 20 000 F. Combien rend-il ?',
                           'options': ['5 800 F', '6 800 F', '4 200 F']},
                {'index': 0}, '20 000 − 14 200 = 5 800 F.')]),
@@ -442,8 +478,12 @@ LECONS = [
               ('qcm', 2, {'question': 'Combien font 7 × 75 ?',
                           'options': ['525', '515', '535']},
                {'index': 0}, 'Cinq cent vingt-cinq.'),
-              ('texte_a_trous', 3, {'text': '70 × 75 = {{1}} kg.', 'blanks': 1},
-               {'values': ['5250']}, 'Cinq mille deux cent cinquante kilogrammes.'),
+              ('texte_a_trous', 3,
+               {'text': 'Une camionnette emmène des moutons au marché. Elle en charge 70, '
+                        'et chacun de ces moutons pèse 75 kg. Calcule la masse totale des '
+                        'moutons qu’elle transporte, puis donne cette masse en kilogrammes. '
+                        'La masse totale est de {{1}} kg.', 'blanks': 1},
+               {'values': ['5250']}, '70 × 75 = 5 250 kg.'),
               ('qcm', 4, {'question': 'La camionnette porte 6 tonnes au plus. Peut-elle prendre les 70 moutons ?',
                           'options': ['oui, 5 250 kg tiennent', 'non, c’est trop lourd',
                                       'non, il faut deux voyages']},
@@ -647,6 +687,31 @@ def verifier():
     # faut CALCULER quelque chose qui n-est écrit nulle part. On vérifie
     # qu-il y en a au moins une par notion.
     assert durs >= notions_vues, 'il manque des questions de Défi : %d pour %d notions' % (durs, notions_vues)
+
+    # UN PROBLÈME EST UN TEXTE, PAS UNE OPÉRATION POSÉE.
+    #
+    # La première version de ces leçons n-en contenait aucun : le plus long
+    # énoncé de la leçon « Les problèmes » faisait 76 signes, et les
+    # questions portaient SUR les problèmes au lieu d-en être. La cause
+    # était une de mes propres règles — la question d-un choix tient en
+    # 90 signes, ce qui est juste pour un enfant de neuf ans, mais interdit
+    # précisément ce qu-est un problème : une situation à lire avant de
+    # calculer.
+    #
+    # Un vrai problème vit donc dans un texte à trous, dont le texte n-est
+    # pas limité. On exige ici qu-il y en ait un par notion de la leçon des
+    # problèmes, et au moins dix en tout.
+    enonces = 0
+    for titre, _c, _d, _o, _r, _i, _p, notions in LECONS:
+        for _k, phrase, _ni, _np, _ex, items in notions:
+            longs = [it for it in items
+                     if it[0] == 'texte_a_trous' and len(it[2]['text']) >= 180]
+            enonces += len(longs)
+            if titre == 'Les problèmes':
+                assert longs, \
+                    ('« %s » n-a pas de problème rédigé. Un énoncé de moins de 180 signes '
+                     'est une opération posée, pas un problème.' % phrase[:60])
+    assert enonces >= 10, 'trop peu de problèmes rédigés : %d' % enonces
 
     # Et les clés d-images doivent être exactement celles que le module dessine.
     ici = os.path.dirname(os.path.abspath(__file__))

@@ -74,6 +74,8 @@ const ASSO_3 = fabriquer(
 );
 
 const ONGLETS = [
+  { cle: 'probleme', titre: 'Les problemes',
+    note: 'Les enonces rediges, lus en base. Une situation, puis le resultat a ecrire.' },
   { cle: 'suite', titre: 'Deux questions de suite',
     note: 'Deux paires, puis trois. Décoche la clé pour revoir le défaut.' },
   { cle: 'diagramme', titre: 'Poser les éléments', note: 'Les 3 questions lues en base.' },
@@ -84,10 +86,24 @@ const ONGLETS = [
 ];
 
 export default function Banc() {
-  const [onglet, setOnglet] = useState('suite');
+  const [onglet, setOnglet] = useState('probleme');
   const [avecCle, setAvecCle] = useState(true);
   const [n, setN] = useState(0);
   const [etat, setEtat] = useState<{ correct: boolean } | null>(null);
+
+  // Les problemes : on lit les textes a trous les plus longs, ceux qui
+  // portent une situation et non une operation posee.
+  const problemes = useQuery({
+    queryKey: ['banc-probleme'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('items').select('*').eq('kind', 'texte_a_trous').order('level');
+      if (error) throw error;
+      return (data as ItemRow[]).filter(
+        (i) => String((i.payload as { text?: string }).text ?? '').length >= 180,
+      );
+    },
+  });
 
   const live = useQuery({
     queryKey: ['banc-diagramme'],
@@ -103,7 +119,9 @@ export default function Banc() {
   const actif = ONGLETS.find((o) => o.cle === onglet)!;
 
   let item: ItemRow | null = null;
-  if (onglet === 'suite') item = n % 2 === 0 ? ASSO_2 : ASSO_3;
+  if (onglet === 'probleme') {
+    item = problemes.data?.[n % Math.max(1, problemes.data.length)] ?? null;
+  } else if (onglet === 'suite') item = n % 2 === 0 ? ASSO_2 : ASSO_3;
   else if (onglet === 'diagramme') item = live.data?.[n % Math.max(1, live.data.length)] ?? null;
   else if (onglet === 'clavier') item = CLAVIER;
   else if (onglet === 'clavier2') item = CLAVIER_DOUX;
@@ -142,7 +160,9 @@ export default function Banc() {
           onClick={rejouer}
           className="rounded-full border-2 border-clay px-3 py-1 text-kid-xs font-black text-clay-dark"
         >
-          {onglet === 'diagramme' || onglet === 'suite' ? 'Question suivante' : 'Rejouer'}
+          {onglet === 'diagramme' || onglet === 'suite' || onglet === 'probleme'
+            ? 'Question suivante'
+            : 'Rejouer'}
         </button>
         {onglet === 'suite' ? (
           <label className="flex items-center gap-1.5 text-kid-xs font-bold text-ink">
