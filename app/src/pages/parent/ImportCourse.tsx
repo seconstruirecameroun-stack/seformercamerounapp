@@ -46,21 +46,45 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
       const parentId = auth.user?.id;
       if (!parentId) throw new Error('Session expirée, reconnectez-vous.');
 
-      const depot = await importerCours({
-        parentId,
-        childId,
-        subjectId: null,
-        taughtOn: null,
-        kind: 'cours',
-        fichiers,
-        onProgress: (fait, total) => setAvancement(`Envoi de la page ${fait} sur ${total}…`),
-      });
+      // « Failed to fetch » ne dit rien au parent : la même phrase sort d'un
+      // réseau coupé, d'un envoi trop lourd ou d'une fonction tombée. On dit
+      // au moins QUELLE étape a lâché — c'est ce qui manquait au premier
+      // essai depuis un téléphone.
+      const etape = async <T,>(quoi: string, f: () => Promise<T>): Promise<T> => {
+        try {
+          return await f();
+        } catch (e) {
+          const m = e instanceof Error ? e.message : String(e);
+          throw new Error(
+            /fetch|network|réseau/i.test(m)
+              ? `${quoi} : la connexion a été coupée. Réessayez, les pages déjà envoyées ne sont pas perdues.`
+              : `${quoi} : ${m}`,
+          );
+        }
+      };
+
+      const depot = await etape('Envoi des pages', () =>
+        importerCours({
+          parentId,
+          childId,
+          subjectId: null,
+          taughtOn: null,
+          kind: 'cours',
+          fichiers,
+          onProgress: (fait, total, phase) =>
+            setAvancement(
+              phase === 'reduction'
+                ? `Préparation de la page ${fait} sur ${total}…`
+                : `Envoi de la page ${fait} sur ${total}…`,
+            ),
+        }),
+      );
       setRefuses(depot.refuses);
 
       setAvancement('Lecture du cahier…');
-      const lu = await supabase.functions.invoke('analyze-document', {
-        body: { batch_id: depot.batchId },
-      });
+      const lu = await etape('Lecture du cahier', () =>
+        supabase.functions.invoke('analyze-document', { body: { batch_id: depot.batchId } }),
+      );
       if (lu.error) throw lu.error;
       const lecture = lu.data as {
         lecons: Array<{ id: string; titre: string; notions: number }>;
@@ -182,6 +206,13 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
             <li className="mt-1 text-sm text-muted">
               {fichiers.length} fichier{fichiers.length > 1 ? 's' : ''} ·{' '}
               {(total / 1024 / 1024).toFixed(1)} Mo au total
+            </li>
+            {/* Le poids affiché est celui des photos telles qu'elles sortent du
+                téléphone. Sans cette ligne, 38,8 Mo sur une connexion mobile
+                font renoncer avant d'avoir essayé. */}
+            <li className="text-sm text-muted">
+              Réduites avant l’envoi : environ{' '}
+              {Math.max(0.1, total / 1024 / 1024 / 7).toFixed(1)} Mo partiront réellement.
             </li>
           </ul>
         ) : null}
