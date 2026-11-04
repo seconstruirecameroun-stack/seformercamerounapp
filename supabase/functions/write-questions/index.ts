@@ -27,8 +27,8 @@ import {
   HONNETETE,
   lireJson,
   TON,
-} from '../_shared/maison.ts';
-import type { Item } from '../_shared/maison.ts';
+} from './maison.ts';
+import type { Item } from './maison.ts';
 
 const REGISTRES = ['simple', 'analogie', 'histoire', 'visuel', 'pas_a_pas'];
 

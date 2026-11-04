@@ -31,7 +31,7 @@
 
 import Anthropic from 'npm:@anthropic-ai/sdk@0.74.0';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { base64, CORS, HONNETETE, lireJson, TON } from '../_shared/maison.ts';
+import { base64, CORS, HONNETETE, lireJson, TON } from './maison.ts';
 
 /**
  * Le style maison, identique à celui de la chaîne vidéo.
