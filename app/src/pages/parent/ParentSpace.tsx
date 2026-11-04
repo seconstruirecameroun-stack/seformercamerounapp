@@ -263,7 +263,29 @@ function BoutonLecture({ batchId, stage }: { batchId: string | null; stage: stri
         body: { batch_id: batchId },
       });
       if (error) throw error;
-      return data as { notions?: number; avertissements?: string[] };
+      const lecture = data as {
+        lecons?: Array<{ id: string; titre: string; notions: number }>;
+        notions?: number;
+        avertissements?: string[];
+      };
+
+      // La relance enchaîne comme l'envoi : une lecture sans questions donne
+      // une leçon que l'enfant peut lire mais pas jouer.
+      const avertissements = [...(lecture.avertissements ?? [])];
+      let questions = 0;
+      for (const L of lecture.lecons ?? []) {
+        const q = await supabase.functions.invoke('write-questions', {
+          body: { lesson_id: L.id },
+        });
+        if (q.error) {
+          avertissements.push(`« ${L.titre} » : questions non écrites (${q.error.message}).`);
+          continue;
+        }
+        const res = q.data as { questions: number; avertissements?: string[] };
+        questions += res.questions;
+        avertissements.push(...(res.avertissements ?? []));
+      }
+      return { notions: lecture.notions, questions, avertissements };
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['documents'] });
@@ -289,7 +311,7 @@ function BoutonLecture({ batchId, stage }: { batchId: string | null; stage: stri
       ) : null}
       {lire.data ? (
         <p className="mt-2 text-sm text-leaf">
-          {lire.data.notions} notions extraites. À relire dans « À valider ».
+          {lire.data.notions} notions et {lire.data.questions} questions. À relire dans « À valider ».
         </p>
       ) : null}
       {lire.data?.avertissements && lire.data.avertissements.length > 0 ? (

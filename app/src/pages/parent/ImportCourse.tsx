@@ -1,119 +1,104 @@
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
-import { importerCours, matiereDeClasse, TAILLE_MAX, TYPES_ACCEPTES } from '../../lib/import';
+import { importerCours, TAILLE_MAX, TYPES_ACCEPTES } from '../../lib/import';
 import type { FichierRefuse } from '../../lib/import';
 import { Button, Card, ErrorNote, Pill } from '../../components/ui';
 
 type ChildOption = { id: string; first_name: string };
 
+/**
+ * Un enfant, des photos, un bouton.
+ *
+ * La version précédente demandait aussi la matière, le jour et le type de
+ * document — quatre champs avant d'avoir le droit d'envoyer. Trois d'entre
+ * eux sont écrits sur la page que le parent vient de photographier : les
+ * demander, c'est faire recopier à la main ce que la lecture sait lire.
+ *
+ * L'envoi enchaîne donc tout seul :
+ *   1. le dépôt des pages,
+ *   2. la lecture, qui découpe en leçons et devine matière, jour et titre,
+ *   3. l'écriture des questions, leçon par leçon.
+ *
+ * Ce qui en sort n'est pas publié : tout attend dans « À valider », où le
+ * parent voit la photo à côté du texte. Le choix de rendre l'import simple
+ * ne déplace pas le contrôle, il le met au seul endroit où il sert — devant
+ * le résultat, pas devant un formulaire vide.
+ */
 export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [childId, setChildId] = useState('');
-  const [matiere, setMatiere] = useState('');
-  /** L'intitulé saisi quand la matière du cahier n'est pas au tableau. */
-  const [nouvelle, setNouvelle] = useState('');
-  /** Le jour écrit en haut de la page. Vide tant que le parent ne l'a pas lu. */
-  const [date, setDate] = useState('');
-  const [kind, setKind] = useState<'cours' | 'devoir' | 'autre'>('cours');
+  const [childId, setChildId] = useState(enfants.length === 1 ? enfants[0].id : '');
   const [fichiers, setFichiers] = useState<File[]>([]);
   const [avancement, setAvancement] = useState<string | null>(null);
   const [refuses, setRefuses] = useState<FichierRefuse[]>([]);
 
-  // La classe de l'enfant commande les matières proposées. Sans ce filtre,
-  // l'import inventait sa matière à chaque cahier — six en une seule fois,
-  // dont deux qui n'existaient pas au tableau de l'école.
-  const classe = useQuery({
-    queryKey: ['classe-enfant', childId],
-    enabled: childId !== '',
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('children')
-        .select('class_id')
-        .eq('id', childId)
-        .single();
-      if (error) throw error;
-      return (data as { class_id: string | null }).class_id;
-    },
-  });
-
-  const matieres = useQuery({
-    queryKey: ['subjects', classe.data],
-    enabled: Boolean(classe.data),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('id, label, official_fr')
-        .eq('class_id', classe.data!)
-        .order('label');
-      if (error) throw error;
-      return data as Array<{ id: string; label: string; official_fr: string | null }>;
-    },
-  });
-
-  /**
-   * Les matières du jour, d'après l'emploi du temps.
-   *
-   * Un parent photographie le cahier le soir même : les trois ou quatre
-   * matières de la journée couvrent presque toujours ce qu'il envoie, et
-   * elles lui évitent de parcourir seize lignes.
-   */
-  const duJour = useQuery({
-    queryKey: ['matieres-du-jour', classe.data],
-    enabled: Boolean(classe.data),
-    queryFn: async () => {
-      const jour = new Date().getDay();
-      if (jour < 1 || jour > 5) return [] as string[];
-      const { data, error } = await supabase
-        .from('timetable_slots')
-        .select('subject_id, debut')
-        .eq('class_id', classe.data!)
-        .eq('day', jour)
-        .eq('kind', 'cours')
-        .order('debut');
-      if (error) throw error;
-      const vus = new Set<string>();
-      for (const c of (data ?? []) as Array<{ subject_id: string | null }>) {
-        if (c.subject_id) vus.add(c.subject_id);
-      }
-      return [...vus];
-    },
-  });
+  type Bilan = {
+    lecons: Array<{ titre: string; notions: number; questions: number }>;
+    avertissements: string[];
+  };
+  const [bilan, setBilan] = useState<Bilan | null>(null);
 
   const envoi = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<Bilan> => {
       const { data: auth } = await supabase.auth.getUser();
       const parentId = auth.user?.id;
       if (!parentId) throw new Error('Session expirée, reconnectez-vous.');
-      // « Une autre matière » : on l'ajoute au catalogue de la classe, pour
-      // qu'elle soit proposée au prochain import.
-      let subjectId: string | null = matiere || null;
-      if (matiere === 'autre') {
-        if (!classe.data) throw new Error('Classe de l’enfant inconnue.');
-        if (!nouvelle.trim()) throw new Error('Donnez l’intitulé de la matière.');
-        subjectId = await matiereDeClasse(parentId, classe.data, nouvelle);
-      }
 
-      return importerCours({
+      const depot = await importerCours({
         parentId,
         childId,
-        subjectId,
-        taughtOn: date || null,
-        kind,
+        subjectId: null,
+        taughtOn: null,
+        kind: 'cours',
         fichiers,
-        onProgress: (fait, total) => setAvancement(`Envoi ${fait} / ${total}`),
+        onProgress: (fait, total) => setAvancement(`Envoi de la page ${fait} sur ${total}…`),
       });
+      setRefuses(depot.refuses);
+
+      setAvancement('Lecture du cahier…');
+      const lu = await supabase.functions.invoke('analyze-document', {
+        body: { batch_id: depot.batchId },
+      });
+      if (lu.error) throw lu.error;
+      const lecture = lu.data as {
+        lecons: Array<{ id: string; titre: string; notions: number }>;
+        avertissements?: string[];
+      };
+
+      const avertissements = [...(lecture.avertissements ?? [])];
+      const lecons: Bilan['lecons'] = [];
+
+      // Une leçon à la fois : un appel court aboutit, et une panne au milieu
+      // ne perd que la leçon en cours.
+      for (let i = 0; i < lecture.lecons.length; i++) {
+        const L = lecture.lecons[i];
+        setAvancement(
+          `Questions de « ${L.titre} » (${i + 1} sur ${lecture.lecons.length})…`,
+        );
+        const q = await supabase.functions.invoke('write-questions', {
+          body: { lesson_id: L.id },
+        });
+        if (q.error) {
+          avertissements.push(`« ${L.titre} » : questions non écrites (${q.error.message}).`);
+          lecons.push({ titre: L.titre, notions: L.notions, questions: 0 });
+          continue;
+        }
+        const res = q.data as { questions: number; notions: number; avertissements?: string[] };
+        avertissements.push(...(res.avertissements ?? []));
+        lecons.push({ titre: L.titre, notions: res.notions, questions: res.questions });
+      }
+
+      return { lecons, avertissements };
     },
     onSuccess: (res) => {
       setFichiers([]);
-      setNouvelle('');
-      setDate('');
       setAvancement(null);
-      setRefuses(res.refuses);
+      setBilan(res);
       if (inputRef.current) inputRef.current.value = '';
       qc.invalidateQueries({ queryKey: ['documents'] });
+      qc.invalidateQueries({ queryKey: ['validation'] });
       qc.invalidateQueries({ queryKey: ['subjects'] });
     },
     onError: () => setAvancement(null),
@@ -121,6 +106,8 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
 
   function submit(event: FormEvent) {
     event.preventDefault();
+    setBilan(null);
+    setRefuses([]);
     envoi.mutate();
   }
 
@@ -129,126 +116,26 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
 
   return (
     <Card
-      titre="Importer un cours"
-      sous="Photographiez chaque page du cahier. Plusieurs photos envoyées ensemble forment un seul cours, dans l’ordre où vous les choisissez."
+      titre="Envoyer un cours"
+      sous="Choisissez l’enfant et photographiez les pages. La matière, le jour et le découpage en leçons sont lus sur le cahier."
       actions={<Pill>photos ou PDF</Pill>}
     >
       <form onSubmit={submit} className="grid gap-4">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold">
-              Pour quel enfant
-            </span>
-            <select
-              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
-              value={childId}
-              onChange={(e) => setChildId(e.target.value)}
-              required
-            >
-              <option value="">Choisir…</option>
-              {enfants.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.first_name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold">
-              Matière
-            </span>
-            <select
-              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay disabled:opacity-50"
-              value={matiere}
-              onChange={(e) => setMatiere(e.target.value)}
-              disabled={!classe.data}
-            >
-              <option value="">{classe.data ? 'Choisir…' : 'Choisissez l’enfant d’abord'}</option>
-              {(matieres.data ?? []).map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.label}
-                </option>
-              ))}
-              {/* L'emploi du temps ne dit pas tout : le cahier de KLEIN porte
-                  une « éducation à la paix » qui n'y figure pas. La liste
-                  guide, elle n'enferme pas. */}
-              <option value="autre">Une autre matière…</option>
-            </select>
-            {matiere === 'autre' ? (
-              <input
-                className="mt-2 w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
-                value={nouvelle}
-                onChange={(e) => setNouvelle(e.target.value)}
-                placeholder="Intitulé du cahier"
-                autoFocus
-              />
-            ) : null}
-            <span className="mt-1 block text-sm text-muted">
-              {matiere === 'autre'
-                ? 'Elle sera ajoutée aux matières de cette classe.'
-                : 'Les matières de la classe, telles que l’école les nomme.'}
-            </span>
-          </label>
-
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold">
-              Date du cours
-            </span>
-            <input
-              type="date"
-              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              max={new Date().toISOString().slice(0, 10)}
-            />
-            <span className="mt-1 block text-sm text-muted">
-              Celle du cahier. Laissez vide si la page n’en porte pas.
-            </span>
-          </label>
-
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-bold">
-              Type
-            </span>
-            <select
-              className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
-              value={kind}
-              onChange={(e) => setKind(e.target.value as 'cours' | 'devoir' | 'autre')}
-            >
-              <option value="cours">Cours</option>
-              <option value="devoir">Devoir</option>
-              <option value="autre">Autre</option>
-            </select>
-          </label>
-        </div>
-
-        {(duJour.data ?? []).length > 0 ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-bold text-muted">
-              Au programme aujourd’hui
-            </span>
-            {(duJour.data ?? []).map((id) => {
-              const m = (matieres.data ?? []).find((x) => x.id === id);
-              if (!m) return null;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setMatiere(id)}
-                  className={
-                    'rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors ' +
-                    (matiere === id
-                      ? 'border-ink bg-ink text-white-warm'
-                      : 'border-line bg-white-warm text-ink-2 hover:border-ink-2')
-                  }
-                >
-                  {m.label}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-bold">Pour qui ?</span>
+          <select
+            value={childId}
+            onChange={(e) => setChildId(e.target.value)}
+            className="w-full rounded-2xl border-2 border-line bg-white-warm px-4 py-3 text-base text-ink outline-none transition focus:border-clay"
+          >
+            <option value="">Choisir l’enfant</option>
+            {enfants.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.first_name}
+              </option>
+            ))}
+          </select>
+        </label>
 
         {/* Le sélecteur natif annonce « Aucun fichier choisi » dans la langue
             du navigateur, au milieu d'une interface qui ne ressemble à rien de
@@ -262,7 +149,9 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
                 : `${fichiers.length} page${fichiers.length > 1 ? 's' : ''} choisie${fichiers.length > 1 ? 's' : ''}`}
             </strong>
             <span className="text-sm text-muted">
-              {fichiers.length === 0 ? 'ou le PDF du cours' : 'Toucher pour en choisir d’autres'}
+              {fichiers.length === 0
+                ? 'plusieurs jours à la fois, ce n’est pas grave'
+                : 'Toucher pour en choisir d’autres'}
             </span>
             <input
               ref={inputRef}
@@ -310,12 +199,40 @@ export default function ImportCourse({ enfants }: { enfants: ChildOption[] }) {
 
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={!pret}>
-            {envoi.isPending ? (avancement ?? 'Envoi…') : 'Importer'}
+            {envoi.isPending ? (avancement ?? 'Envoi…') : 'Envoyer'}
           </Button>
-          {envoi.isSuccess && refuses.length === 0 ? (
-            <span className="text-sm text-leaf">Import enregistré.</span>
+          {envoi.isPending ? (
+            <span className="text-sm text-muted">
+              La lecture prend une à deux minutes. Ne fermez pas la page.
+            </span>
           ) : null}
         </div>
+
+        {bilan ? (
+          <div className="grid gap-2 rounded-2xl border-2 border-leaf/40 bg-leaf/10 px-4 py-3">
+            <strong className="text-base">
+              {bilan.lecons.length} leçon{bilan.lecons.length > 1 ? 's' : ''} à relire
+            </strong>
+            <ul className="grid gap-1 text-sm text-ink-2">
+              {bilan.lecons.map((l, i) => (
+                <li key={i}>
+                  <strong>{l.titre}</strong> — {l.notions} notion{l.notions > 1 ? 's' : ''},{' '}
+                  {l.questions} question{l.questions > 1 ? 's' : ''}
+                </li>
+              ))}
+            </ul>
+            <span className="text-sm text-muted">
+              Rien n’est publié : tout vous attend dans « À valider ».
+            </span>
+            {bilan.avertissements.length > 0 ? (
+              <ul className="mt-1 grid gap-1 rounded-xl bg-gold/25 px-3 py-2 text-sm">
+                {bilan.avertissements.map((a, i) => (
+                  <li key={i}>⚠ {a}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
       </form>
     </Card>
   );
