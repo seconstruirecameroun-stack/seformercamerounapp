@@ -416,19 +416,19 @@ def _fab_seul(nom):
     memes dessins que dans les grilles, mais nus.
     """
     def f(t):
-        OUTILS[nom](t, 160, 150)
+        OUTILS[nom](t, 85, 84)
     return f
 
 
 FIGURES = [
     # ---- Les outils seuls, pour les questions a images -------------------
-    ('kn-ag-1-hoe', 320, 320, _fab_seul('hoe')),
-    ('kn-ag-1-cutlass', 320, 320, _fab_seul('cutlass')),
-    ('kn-ag-1-spade', 320, 320, _fab_seul('spade')),
-    ('kn-ag-1-rake', 320, 320, _fab_seul('rake')),
-    ('kn-ag-1-fork', 320, 320, _fab_seul('digging fork')),
-    ('kn-ag-1-pick', 320, 320, _fab_seul('pick axe')),
-    ('kn-ag-1-bar', 320, 320, _fab_seul('crow bar')),
+    ('kn-ag-1-hoe', 170, 170, _fab_seul('hoe')),
+    ('kn-ag-1-cutlass', 170, 170, _fab_seul('cutlass')),
+    ('kn-ag-1-spade', 170, 170, _fab_seul('spade')),
+    ('kn-ag-1-rake', 170, 170, _fab_seul('rake')),
+    ('kn-ag-1-fork', 170, 170, _fab_seul('digging fork')),
+    ('kn-ag-1-pick', 170, 170, _fab_seul('pick axe')),
+    ('kn-ag-1-bar', 170, 170, _fab_seul('crow bar')),
 
     # ---- 33. Agricultural tools and their care --------------------------
     ('kn-ag-couv', 960, 540, couv_outils),
