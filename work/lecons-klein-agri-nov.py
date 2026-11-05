@@ -32,7 +32,12 @@ import os
 FIGURE = ('Figure composée, non générée, dessinée par '
           'work/figures-klein-agri-nov.py. ')
 
-MATIERE = 'Sciences et technologies'
+# La classe de KLEIN porte deja une matiere « Metiers », dont les alias
+# sont Economie familiale, Agropastoral, Travaux manuels. C-est l-etagere
+# de ces pages : le cahier fait de l-agropastoral, pas des sciences.
+# Le zoo, lui, parle du vivant et reste en Sciences et technologies.
+MATIERE = 'Métiers'
+MATIERE_PAR_ORDRE = {41: 'Sciences et technologies'}
 CLASSE = 'CE1'
 ENFANT = 'KLEIN'
 LANGUE = 'en'
@@ -761,6 +766,7 @@ def paquet():
         'matiere': MATIERE, 'classe': CLASSE, 'enfant': ENFANT, 'lang': LANGUE,
         'lecons': [
             {
+                'matiere': MATIERE_PAR_ORDRE.get(ordre, MATIERE),
                 'title': titre, 'chapter': chapitre, 'taught_on': date, 'sort_order': ordre,
                 'summary': resume, 'illustration': img, 'illustration_prompt': FIGURE + prompt,
                 'notions': [

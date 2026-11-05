@@ -349,7 +349,7 @@ def _fab_seul(table_, nom):
     La toile fait donc 170, l-objet en remplit les deux tiers.
     """
     def f(t):
-        table_[nom](t, 85, 84)
+        table_[nom](t, 120, 84)
     return f
 
 
@@ -427,15 +427,15 @@ def couv_maison(t):
 
 FIGURES = [
     # ---- Les objets seuls, pour les questions a images -------------------
-    ('kn-u1-mortier', 170, 170, _fab_seul(USTENSILES, 'mortar and pestle')),
-    ('kn-u1-marmite', 170, 170, _fab_seul(USTENSILES, 'pot')),
-    ('kn-u1-couteau', 170, 170, _fab_seul(USTENSILES, 'knife')),
-    ('kn-u1-rape', 170, 170, _fab_seul(USTENSILES, 'grater')),
-    ('kn-u1-planche', 170, 170, _fab_seul(USTENSILES, 'chopping board')),
-    ('kn-m1-chaise', 170, 170, _fab_seul(MEUBLES, 'chair')),
-    ('kn-m1-table', 170, 170, _fab_seul(MEUBLES, 'table')),
-    ('kn-m1-lit', 170, 170, _fab_seul(MEUBLES, 'bed')),
-    ('kn-m1-armoire', 170, 170, _fab_seul(MEUBLES, 'cupboard')),
+    ('kn-u1-mortier', 240, 170, _fab_seul(USTENSILES, 'mortar and pestle')),
+    ('kn-u1-marmite', 240, 170, _fab_seul(USTENSILES, 'pot')),
+    ('kn-u1-couteau', 240, 170, _fab_seul(USTENSILES, 'knife')),
+    ('kn-u1-rape', 240, 170, _fab_seul(USTENSILES, 'grater')),
+    ('kn-u1-planche', 240, 170, _fab_seul(USTENSILES, 'chopping board')),
+    ('kn-m1-chaise', 240, 170, _fab_seul(MEUBLES, 'chair')),
+    ('kn-m1-table', 240, 170, _fab_seul(MEUBLES, 'table')),
+    ('kn-m1-lit', 240, 170, _fab_seul(MEUBLES, 'bed')),
+    ('kn-m1-armoire', 240, 170, _fab_seul(MEUBLES, 'cupboard')),
 
     # ---- 37. Food and its six classes ------------------------------------
     ('kn-fo-couv', 960, 540, couv_aliments),

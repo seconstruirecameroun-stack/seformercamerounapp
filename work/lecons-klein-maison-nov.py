@@ -32,7 +32,9 @@ import os
 FIGURE = ('Figure composée, non générée, dessinée par '
           'work/figures-klein-maison-nov.py. ')
 
-MATIERE = 'Sciences et technologies'
+# Economie familiale : nourriture, cuisine, conservation, maison. La
+# matiere « Metiers » de la classe de KLEIN porte exactement cet alias.
+MATIERE = 'Métiers'
 CLASSE = 'CE1'
 ENFANT = 'KLEIN'
 LANGUE = 'en'
