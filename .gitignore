@@ -24,6 +24,8 @@ work/video-sortie/
 .env
 .env.*
 !.env.example
+# Le gabarit de l'agent : il ne porte aucun secret, seulement leur forme.
+!.env.cours.example
 # La clé privée VAPID, qui signe les notifications. Seule la clé publique,
 # qui part dans le navigateur, a sa place dans le dépôt.
 work/vapid.json
@@ -58,3 +60,7 @@ supabase/.temp/
 # Le bundle de la vérification de la manche : il se refabrique en une commande,
 # documentée en tête de app/src/lib/manche.verif.ts.
 work/*.mjs
+# Sauf l'outil de l'agent : c'est du code source écrit à la main, pas un
+# bundle refabricable. Sans cette ligne il disparaissait du dépôt sans bruit,
+# et la tâche planifiée n'aurait rien trouvé à appeler.
+!work/cours.mjs
