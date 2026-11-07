@@ -23,8 +23,13 @@ import { supabase } from './supabase';
  *
  * Valider une leçon demande le sans-faute sur toutes ses questions, et c'est
  * le seul acte du jeu qui vaille autant pour un CE1 que pour un CM1 — la
- * difficulté est celle de SA leçon à lui. Elle compte donc pour vingt
- * questions, le même nombre pour les deux, quel que soit leur niveau.
+ * difficulté est celle de SA leçon à lui. Elle compte donc pour un nombre
+ * FIXE de questions, le même pour les deux, quel que soit leur niveau.
+ *
+ * La valeur a été réglée sur les chiffres réels. À vingt, le duel de la
+ * semaine basculait : KLEIN menait de 56 questions et passait second. À
+ * quinze, les deux mesures restent dans le même ordre — l-effort brut garde
+ * le dernier mot, et la validation réduit l-écart sans le renverser.
  *
  * Le bonus est FIXE, et c'est ce qui le rend acceptable. Le payer au prorata
  * de la longueur de la manche rouvrirait exactement l'écart que la règle des
@@ -35,7 +40,7 @@ import { supabase } from './supabase';
  */
 
 /** Ce que vaut une manche gagnée dans le duel, en questions. */
-export const BONUS_MANCHE_DUEL = 20;
+export const BONUS_MANCHE_DUEL = 15;
 
 export type Concurrent = {
   childId: string;

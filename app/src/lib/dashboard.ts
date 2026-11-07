@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { etapeCourante, etapeImage, imageGagnee, reussitesParNiveau } from './paliers';
-import { lireValidation, type MancheRow } from './manche';
+import { lireValidation, serieParfaite, type MancheRow } from './manche';
 import {
   calculerSerie,
   construireContexte,
@@ -99,6 +99,14 @@ export type TableauDeBord = {
   trophees: Trophee[];
   /** Jours où l'enfant a répondu, du plus récent au plus ancien. */
   jours: string[];
+  /**
+   * Manches parfaites d'affilée, toutes leçons confondues.
+   *
+   * Elle est calculée ici plutôt que par une requête à part : les manches
+   * de l'enfant sont déjà lues à cet endroit, de la plus récente à la plus
+   * ancienne, qui est exactement l'ordre que serieParfaite attend.
+   */
+  serieManches: number;
   autocollants: Autocollant[];
   prochaineLecon: string | null;
 };
@@ -159,6 +167,10 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
 
   if (lecons.error) throw lecons.error;
   if (manches.error) throw manches.error;
+
+  // Toutes les manches de l'enfant, déjà triées de la plus récente à la
+  // plus ancienne par la requête : c'est l'ordre que serieParfaite attend.
+  const toutesLesManches = (manches.data ?? []) as MancheRow[];
 
   // Les manches de chaque leçon, de la plus récente à la plus ancienne.
   const manchesParLecon = new Map<string, MancheRow[]>();
@@ -389,6 +401,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       meilleureSerieDefi,
     }),
     jours,
+    serieManches: serieParfaite(toutesLesManches),
     autocollants,
     prochaineLecon: prochaine?.id ?? resumes[0]?.id ?? null,
   };
