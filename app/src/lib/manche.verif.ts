@@ -1,4 +1,13 @@
-import { lireValidation, questionsDeLaManche, type MancheRow, type Reponse } from './manche';
+import {
+  lireValidation,
+  meilleurJustes,
+  pointsConsolation,
+  pointsManche,
+  questionsDeLaManche,
+  serieParfaite,
+  type MancheRow,
+  type Reponse,
+} from './manche';
 import type { NotionAvecItems } from './paliers';
 
 /**
@@ -139,6 +148,49 @@ export function verifierManche(): number {
   verifie(
     'manche : notion par notion, du plus facile au plus dur',
     q.map((x) => x.item.id).join() === 'a1,a4,b2',
+  );
+
+  // ── Le barème ────────────────────────────────────────────────────────────
+  // Il décide de ce que l'enfant reçoit. Les scores cités sont ceux que
+  // BRAYNE et KLEIN ont réellement obtenus sur les quarante premières manches.
+
+  verifie('gain : proportionnel à la longueur', pointsManche(40) === 200);
+  verifie('gain : une manche courte rapporte moins', pointsManche(15) === 75);
+
+  verifie('consolation : 24/25 au premier essai', pointsConsolation(24, 25, 0) === 48);
+  verifie('consolation : 38/40, le vrai score de BRAYNE', pointsConsolation(38, 40, 0) === 76);
+  verifie(
+    'consolation : refaire le même score ne rapporte rien',
+    pointsConsolation(24, 25, 24) === 0,
+  );
+  verifie('consolation : progresser rapporte', pointsConsolation(24, 25, 23) === 48);
+  verifie('consolation : sous 80 %, rien', pointsConsolation(19, 25, 0) === 0);
+  verifie('consolation : à 80 % pile, elle est versée', pointsConsolation(20, 25, 0) === 40);
+  verifie(
+    'consolation : une manche gagnée nest pas une consolation',
+    pointsConsolation(25, 25, 0) === 0,
+  );
+  verifie('consolation : une manche vide ne rapporte rien', pointsConsolation(0, 0, 0) === 0);
+
+  verifie(
+    'meilleur score : la plus haute des manches jouées',
+    meilleurJustes([manche('2026-11-02', false, ['n1']), manche('2026-11-01', true)]) === 20,
+  );
+  verifie('meilleur score : aucune manche jouée', meilleurJustes([]) === 0);
+
+  verifie('série : aucune manche', serieParfaite([]) === 0);
+  verifie(
+    'série : deux parfaites puis une ratée',
+    serieParfaite([
+      manche('2026-11-03', true),
+      manche('2026-11-02', true),
+      manche('2026-11-01', false, ['n1']),
+      manche('2026-10-31', true),
+    ]) === 2,
+  );
+  verifie(
+    'série : la dernière est ratée, la série est rompue',
+    serieParfaite([manche('2026-11-03', false, ['n1']), manche('2026-11-02', true)]) === 0,
   );
 
   console.log(echecs === 0 ? '\nTout passe.' : '\n' + echecs + ' échec(s).');

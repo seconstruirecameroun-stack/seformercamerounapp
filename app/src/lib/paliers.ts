@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import {
   lireValidation,
+  meilleurJustes as meilleurDesManches,
   questionsDeLaManche,
   TAILLE_REPRISE,
   type EtatValidation,
@@ -138,6 +139,15 @@ export type Seance = {
   questions: Question[];
   /** Notions encore à valider après cette séance, si elle est parfaite. */
   restantAprès: number;
+  /**
+   * Le meilleur nombre de bonnes réponses déjà obtenu sur cette leçon.
+   *
+   * Il sert à décider de la consolation d-une manche ratée de peu : elle
+   * n-est versée que si le score progresse. Il est calculé ici parce que
+   * les manches de la leçon sont déjà lues à cet endroit, et nulle part
+   * ailleurs.
+   */
+  meilleurJustes: number;
 };
 
 /**
@@ -369,7 +379,9 @@ export async function construireSeance(childId: string, lessonId: string): Promi
     }))
     .filter((r) => r.notion_id !== '');
 
-  const validation = lireValidation((manchesRes.data ?? []) as MancheRow[], reponses);
+  const manches = (manchesRes.data ?? []) as MancheRow[];
+  const validation = lireValidation(manches, reponses);
+  const meilleur = meilleurDesManches(manches);
 
   const { niveau, termine } = etapeCourante(notions, reussiesParNiveau);
   const palier = PALIERS.find((p) => p.niveau === niveau) ?? PALIERS[0];
@@ -395,6 +407,7 @@ export async function construireSeance(childId: string, lessonId: string): Promi
       reussies: 0,
       questions,
       restantAprès: 0,
+      meilleurJustes: meilleur,
     };
   }
 
@@ -410,6 +423,7 @@ export async function construireSeance(childId: string, lessonId: string): Promi
       reussies: 0,
       questions,
       restantAprès: 0,
+      meilleurJustes: meilleur,
     };
   }
 
@@ -439,5 +453,6 @@ export async function construireSeance(childId: string, lessonId: string): Promi
     reussies: termine ? aFaire.length : ok.size,
     questions,
     restantAprès: Math.max(0, restantes.length - questions.length),
+    meilleurJustes: meilleur,
   };
 }

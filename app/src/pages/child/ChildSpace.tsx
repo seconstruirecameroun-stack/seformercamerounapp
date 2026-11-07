@@ -19,7 +19,13 @@ import {
   reussitesParNiveau,
   SECONDES_DEFI,
 } from '../../lib/paliers';
-import { enregistrerManche, POINTS_MANCHE } from '../../lib/manche';
+import {
+  enregistrerManche,
+  pointsConsolation,
+  pointsManche,
+  serieParfaite,
+  type MancheRow,
+} from '../../lib/manche';
 import { rangDeLaClasse } from '../../lib/saisie';
 import { stopper } from '../../lib/voix';
 import type { Palier } from '../../lib/paliers';
@@ -473,6 +479,11 @@ function Etape({
     if (estManche) {
       const gagnee = justes === s.questions.length;
       const manquantes = s.questions.length - justes;
+      // Recalculée ici, et non passée depuis la réponse : la fonction est
+      // pure, donc les deux endroits disent forcément la même chose.
+      const consolation = gagnee
+        ? 0
+        : pointsConsolation(justes, s.questions.length, s.meilleurJustes);
       return (
         <div className="grid gap-3">
           {gagnee ? <Confettis /> : null}
@@ -486,14 +497,20 @@ function Etape({
                 {justes} bonnes réponses sur {s.questions.length}
               </p>
               {gagnee ? (
-                <p className="grimpe mt-3 text-kid-lg font-black text-gold">+{POINTS_MANCHE} ★</p>
+                <p className="grimpe mt-3 text-kid-lg font-black text-gold">
+                  +{pointsManche(s.questions.length)} ★
+                </p>
+              ) : consolation > 0 ? (
+                <p className="grimpe mt-3 text-kid-lg font-black text-gold">+{consolation} ★</p>
               ) : null}
             </div>
             <div className="px-6 py-6">
               <p className="text-kid-sm text-muted">
                 {gagnee
                   ? 'Toute la leçon, sans une faute. Tu la sais.'
-                  : `Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'}. On va revoir ce que tu as raté, puis tu retenteras la manche.`}
+                  : consolation > 0
+                    ? `C’est ton meilleur score sur cette leçon. Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'} pour la valider : on va les revoir.`
+                    : `Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'}. On va revoir ce que tu as raté, puis tu retenteras la manche.`}
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 <GrosBouton onClick={continuer}>
@@ -633,11 +650,20 @@ function Etape({
 
       // Les trois bonus partent avec la tentative : une seule écriture, et
       // le total affiché est celui qui est réellement en base.
+      // La manche ratée de peu rapporte quand même, à deux conditions :
+      // avoir dépassé 80 %, et avoir fait mieux que la dernière fois sur
+      // cette leçon. C-est le progrès qu-on paie, pas la répétition.
+      const consolation =
+        derniereDeLaManche && !mancheGagnee
+          ? pointsConsolation(justesFinal, s.questions.length, s.meilleurJustes)
+          : 0;
+
       const bonus =
         (valide ? POINTS_NOTION : 0) +
         (acquise ? POINTS_IMAGE : 0) +
         (franchie ? POINTS_ETAPE : 0) +
-        (mancheGagnee ? POINTS_MANCHE : 0);
+        (mancheGagnee ? pointsManche(s.questions.length) : 0) +
+        consolation;
 
       // Le total d'étoiles avant la réponse, lu dans le cache : il sert à
       // savoir si cette réponse-là fait franchir un rang.
@@ -740,9 +766,21 @@ function Etape({
             son: 'etape',
             titre: 'Leçon validée !',
             texte: 'Toute la leçon, sans une faute.',
-            points: POINTS_MANCHE,
+            points: pointsManche(s.questions.length),
             vignette: 'medaille',
             humeur: null,
+          });
+        } else if (consolation > 0) {
+          // Pas de médaille et pas de confettis : la leçon n-est pas validée.
+          // Mais le progrès est nommé, parce qu-il a eu lieu.
+          fenetres.push({
+            ton: 'juste',
+            son: 'juste',
+            titre: 'Ton meilleur score !',
+            texte: `${justesFinal} bonnes réponses sur ${s.questions.length}.`,
+            points: consolation,
+            vignette: null,
+            humeur: 'encourage',
           });
         }
         qc.invalidateQueries({ queryKey: ['manches', childId] });
@@ -1002,6 +1040,29 @@ export default function ChildSpace() {
     },
   });
 
+  /**
+   * La série de manches parfaites en cours, toutes leçons confondues.
+   *
+   * Elle se lit sur toutes les manches de l-enfant, et pas sur celles de la
+   * leçon ouverte : une série qui se remettrait à zéro en changeant de
+   * leçon ne voudrait rien dire. Les cinquante dernières suffisent — une
+   * série plus longue que cinquante manches parfaites n-a jamais existé.
+   */
+  const serie = useQuery({
+    queryKey: ['manches', childId],
+    enabled: Boolean(childId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('manches')
+        .select('lesson_id, questions, justes, reussie, notions_ratees, created_at')
+        .eq('child_id', childId!)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return serieParfaite((data ?? []) as MancheRow[]);
+    },
+  });
+
   const points = useQuery({
     queryKey: ['points', childId],
     enabled: Boolean(childId),
@@ -1044,10 +1105,21 @@ export default function ChildSpace() {
               {bundle?.subjects?.label ?? 'Mes leçons'}
             </span>
           </Link>
-          <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
-            <span aria-hidden="true">★</span>
-            {points.data ?? 0}
-          </span>
+          <div className="flex items-center gap-2">
+            {serie.data ? (
+              <span
+                className="flex items-center gap-1.5 rounded-full bg-leaf/30 px-3 py-2 text-kid-sm font-black"
+                title={`${serie.data} manches parfaites de suite`}
+              >
+                <span aria-hidden="true">🎯</span>
+                {serie.data}
+              </span>
+            ) : null}
+            <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
+              <span aria-hidden="true">★</span>
+              {points.data ?? 0}
+            </span>
+          </div>
         </header>
 
         {!bundle ? (

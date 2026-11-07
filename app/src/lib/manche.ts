@@ -34,8 +34,88 @@ import type { NotionAvecItems, Question } from './paliers';
  * corrigée à chaque erreur en révision, et finirait par mentir.
  */
 
-/** La manche réussie : la plus grosse récompense de toute la leçon. */
-export const POINTS_MANCHE = 120;
+/**
+ * Ce que rapporte une manche.
+ *
+ * Elle valait 120 étoiles à plat, et rien du tout en cas de faute. Les
+ * quarante premières manches jouées ont montré deux défauts de cette règle :
+ *
+ *   Une manche de 40 questions rapportait autant qu-une de 15, alors
+ *   qu-elle demande près de trois fois le travail.
+ *
+ *   Vingt-huit manches ont été ratées, dont NEUF par une seule faute —
+ *   38/40, 31/32, 29/30. Celui qui manquait une question recevait
+ *   exactement ce que recevait celui qui en manquait douze : zéro.
+ *
+ * D-où les deux règles ci-dessous. Elles ne touchent qu-aux ÉTOILES : la
+ * validation, elle, continue d-exiger le sans-faute. On sépare la
+ * récompense, qui encourage, du certificat, qui affirme au parent que
+ * l-enfant sait sa leçon. Une affirmation ne se donne pas au prorata.
+ */
+
+/** La manche gagnée : cinq étoiles par question, donc proportionnelle. */
+export const POINTS_PAR_QUESTION = 5;
+
+/**
+ * La consolation : deux étoiles par bonne réponse, à partir de 80 %.
+ *
+ * Elle n-est versée que si le score BAT le meilleur déjà fait sur cette
+ * leçon. Sans cette condition, rejouer indéfiniment la même manche à 24/25
+ * rapporterait à chaque fois — on paierait la répétition au lieu du
+ * progrès, et l-enfant n-aurait plus de raison de chercher la vingt-cinquième.
+ */
+export const POINTS_PAR_JUSTE = 2;
+export const SEUIL_CONSOLATION = 0.8;
+
+/** Les étoiles d-une manche gagnée, proportionnelles à sa longueur. */
+export function pointsManche(questions: number): number {
+  return POINTS_PAR_QUESTION * questions;
+}
+
+/**
+ * Les étoiles d-une manche ratée mais passée tout près.
+ *
+ * `meilleurPrecedent` est le plus grand nombre de bonnes réponses déjà
+ * obtenu sur cette leçon, manches gagnées comprises. Zéro si c-est la
+ * première.
+ */
+export function pointsConsolation(
+  justes: number,
+  questions: number,
+  meilleurPrecedent: number,
+): number {
+  if (questions <= 0) return 0;
+  if (justes >= questions) return 0; // gagnée : ce n-est pas une consolation
+  if (justes / questions < SEUIL_CONSOLATION) return 0;
+  if (justes <= meilleurPrecedent) return 0;
+  return POINTS_PAR_JUSTE * justes;
+}
+
+/** Le meilleur nombre de bonnes réponses déjà obtenu sur une leçon. */
+export function meilleurJustes(manches: MancheRow[]): number {
+  let meilleur = 0;
+  for (const m of manches) if (m.justes > meilleur) meilleur = m.justes;
+  return meilleur;
+}
+
+/**
+ * La série de manches parfaites en cours, toutes leçons confondues.
+ *
+ * On compte depuis la plus récente et on s-arrête à la première ratée. Une
+ * série se voit, se rompt et se reconstruit : c-est ce qui en fait un
+ * encouragement plutôt qu-un total de plus.
+ *
+ * `manches` arrive de la plus récente à la plus ancienne, comme partout
+ * ailleurs dans ce fichier.
+ */
+export function serieParfaite(manches: MancheRow[]): number {
+  let serie = 0;
+  for (const m of manches) {
+    if (!m.reussie) break;
+    serie += 1;
+  }
+  return serie;
+}
 
 /** Au-delà, la reprise devient une séance comme une autre. */
 export const TAILLE_REPRISE = 6;
