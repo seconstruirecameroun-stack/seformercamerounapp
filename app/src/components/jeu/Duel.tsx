@@ -1,4 +1,4 @@
-import type { Duel as DuelData } from '../../lib/duel';
+import { BONUS_MANCHE_DUEL, type Duel as DuelData } from '../../lib/duel';
 
 /**
  * Le duel de la semaine.
@@ -13,6 +13,10 @@ import type { Duel as DuelData } from '../../lib/duel';
  *
  * Le texte ne tombe jamais dans la moquerie du second. Un chiffre à
  * rattraper appelle ; « tu es dernier » n'appelle à rien.
+ *
+ * Le détail du total est montré dès qu'une manche y entre. Un bonus de
+ * vingt qui tombe sans explication ne récompense rien : l'enfant doit voir
+ * d'où vient son avance pour savoir comment la refaire.
  */
 export default function Duel({ duel, childId }: { duel: DuelData; childId: string }) {
   const max = Math.max(1, ...duel.concurrents.map((c) => c.reussites));
@@ -65,6 +69,12 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
                     style={{ width: `${Math.round((c.reussites / max) * 100)}%` }}
                   />
                 </div>
+                {c.manches > 0 ? (
+                  <p className="mt-0.5 text-kid-xs text-muted">
+                    {c.questions} question{c.questions > 1 ? 's' : ''} et {c.manches} manche
+                    {c.manches > 1 ? 's' : ''} gagnée{c.manches > 1 ? 's' : ''}
+                  </p>
+                ) : null}
               </div>
             </li>
           );
@@ -80,6 +90,12 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
               ? `Il te mène de ${duel.ecart} question${duel.ecart > 1 ? 's' : ''}. Rattrapable !`
               : 'La semaine commence. À toi de prendre la tête.'}
       </p>
+
+      {duel.concurrents.some((c) => c.manches > 0) ? (
+        <p className="mt-1 text-kid-xs text-muted">
+          Une manche gagnée vaut {BONUS_MANCHE_DUEL} questions.
+        </p>
+      ) : null}
 
       {duel.gagnantPasse ? (
         <p className="mt-1 text-kid-xs text-muted">
