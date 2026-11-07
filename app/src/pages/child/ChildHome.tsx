@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { chargerTableauDeBord } from '../../lib/dashboard';
@@ -6,7 +6,9 @@ import { PALIERS } from '../../lib/paliers';
 import { phraseDAccueil } from '../../lib/jeu';
 import type { Serie } from '../../lib/jeu';
 import CarteMatiere from '../../components/CarteMatiere';
-import type { Autocollant } from '../../lib/dashboard';
+import CarteLecon from '../../components/CarteLecon';
+import type { Autocollant, MatiereResume, LeconResume } from '../../lib/dashboard';
+import { grouperEnAlbums, grouperParMois } from '../../lib/rangement';
 import Illustration from '../../components/Illustration';
 import Mascotte from '../../components/jeu/Mascotte';
 import type { Humeur } from '../../components/jeu/Mascotte';
@@ -75,31 +77,49 @@ function Semaine({ jours, serie }: { jours: string[]; serie: Serie }) {
   );
 }
 
-function Collection({ autocollants }: { autocollants: Autocollant[] }) {
-  const avec = autocollants.filter((a) => a.illustration);
-  if (avec.length === 0) return null;
-  const gagnes = avec.filter((a) => a.acquis).length;
-  const reste = avec.length - gagnes;
-
+/**
+ * La collection, rangée en albums.
+ *
+ * Elle était une seule grille de deux cents images : trente rangées
+ * qu-aucun enfant ne parcourt. Un album par matière, replié, montre d-un
+ * coup d-oeil où on en est partout, et s-ouvre sur celui qu-on veut.
+ *
+ * Les albums sont repliés par défaut, sauf s-il n-y en a qu-un : plier une
+ * seule section n-économise rien et ajoute un clic.
+ */
+function Album({ album, seul }: { album: ReturnType<typeof grouperEnAlbums>[number]; seul: boolean }) {
+  const complet = album.gagnes === album.total;
   return (
-    <section>
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-kid-lg font-extrabold">Ma collection</h2>
-        <span className="text-kid-sm font-bold text-muted">
-          {gagnes} sur {avec.length}
+    <details open={seul} className="rounded-[var(--radius-card)] border border-line bg-white-warm/80">
+      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
+        <span
+          aria-hidden="true"
+          className="h-8 w-1.5 shrink-0 rounded-full"
+          style={{ backgroundColor: album.couleur ?? 'var(--color-clay)' }}
+        />
+        <span className="min-w-0 flex-1">
+          <span className="flex items-baseline justify-between gap-2">
+            <span className="truncate text-kid-sm font-extrabold">
+              {album.titre}
+              {complet ? <span aria-label="album complet"> 🏅</span> : null}
+            </span>
+            <span className="shrink-0 text-kid-xs font-black tabular-nums text-muted">
+              {album.gagnes}/{album.total}
+            </span>
+          </span>
+          <span className="mt-1 block h-2 overflow-hidden rounded-full bg-line">
+            <span
+              className="block h-full rounded-full transition-[width] duration-700"
+              style={{
+                width: `${Math.round((album.gagnes / Math.max(1, album.total)) * 100)}%`,
+                backgroundColor: album.couleur ?? 'var(--color-gold)',
+              }}
+            />
+          </span>
         </span>
-      </div>
-      <p className="mt-1 text-kid-sm text-muted">
-        {/* Dire ce qui manque, et à quelle condition : « gagne-les en jouant »
-            n'apprend pas à l'enfant comment on les gagne. */}
-        {gagnes === 0
-          ? 'Monte une leçon jusqu’à l’étape 3 pour gagner ta première image.'
-          : reste === 0
-            ? 'Collection complète. Bravo !'
-            : `Encore ${reste} image${reste > 1 ? 's' : ''} à trouver.`}
-      </p>
-      <ul className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">
-        {avec.map((a) => (
+      </summary>
+      <ul className="grid grid-cols-4 gap-2 px-4 pb-4 sm:grid-cols-6">
+        {album.images.map((a) => (
           <li key={a.notionId}>
             <div
               title={a.statement}
@@ -128,12 +148,128 @@ function Collection({ autocollants }: { autocollants: Autocollant[] }) {
           </li>
         ))}
       </ul>
+    </details>
+  );
+}
+
+function Collection({
+  autocollants,
+  matieres,
+}: {
+  autocollants: Autocollant[];
+  matieres: MatiereResume[];
+}) {
+  const avec = autocollants.filter((a) => a.illustration);
+  if (avec.length === 0) return null;
+  const gagnes = avec.filter((a) => a.acquis).length;
+  const reste = avec.length - gagnes;
+  const albums = grouperEnAlbums(autocollants, matieres);
+
+  return (
+    <section>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="text-kid-lg font-extrabold">Ma collection</h2>
+        <span className="text-kid-sm font-bold text-muted">
+          {gagnes} sur {avec.length}
+        </span>
+      </div>
+      <p className="mt-1 text-kid-sm text-muted">
+        {/* Dire ce qui manque, et à quelle condition : « gagne-les en jouant »
+            n'apprend pas à l'enfant comment on les gagne. */}
+        {gagnes === 0
+          ? 'Monte une leçon jusqu’à l’étape 3 pour gagner ta première image.'
+          : reste === 0
+            ? 'Collection complète. Bravo !'
+            : `Encore ${reste} image${reste > 1 ? 's' : ''} à trouver.`}
+      </p>
+      <div className="mt-3 grid gap-2">
+        {albums.map((album) => (
+          <Album key={album.matiereId ?? 'autres'} album={album} seul={albums.length === 1} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Les leçons, par matière ou par date.
+ *
+ * Deux façons de chercher, parce qu-on cherche deux choses différentes.
+ * « Où est la leçon sur le vent ? » se cherche par matière. « Qu-est-ce
+ * qu-on a fait en octobre ? » se cherche par date — et c-est cette
+ * question-là qu-on se pose la veille d-un contrôle.
+ *
+ * Le choix tient dans l-URL (#date) plutôt que dans un état React : revenir
+ * à la page par le bouton arrière retrouve la vue qu-on avait, et un parent
+ * peut envoyer le lien directement.
+ */
+function MesLecons({
+  lecons,
+  matieres,
+  childId,
+  parDate,
+}: {
+  lecons: LeconResume[];
+  matieres: MatiereResume[];
+  childId: string;
+  parDate: boolean;
+}) {
+  const mois = grouperParMois(lecons);
+  return (
+    <section>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-kid-lg font-extrabold">Mes leçons</h2>
+        <div className="flex gap-1 rounded-full bg-line/60 p-1">
+          <Link
+            replace
+            to={`/enfant/${childId}`}
+            className={
+              'rounded-full px-3 py-1 text-kid-xs font-black ' +
+              (parDate ? 'text-ink-2' : 'bg-white-warm shadow-[var(--shadow-tile)]')
+            }
+          >
+            Par matière
+          </Link>
+          <Link
+            replace
+            to={`/enfant/${childId}#date`}
+            className={
+              'rounded-full px-3 py-1 text-kid-xs font-black ' +
+              (parDate ? 'bg-white-warm shadow-[var(--shadow-tile)]' : 'text-ink-2')
+            }
+          >
+            Par date
+          </Link>
+        </div>
+      </div>
+
+      {parDate ? (
+        <div className="mt-2 grid gap-4">
+          {mois.map((groupe) => (
+            <div key={groupe.cle || 'sans-date'} className="grid gap-2">
+              <h3 className="text-kid font-extrabold text-ink-2">{groupe.titre}</h3>
+              {groupe.lecons.map((lecon) => (
+                <CarteLecon key={lecon.id} lecon={lecon} childId={childId} montrerMatiere />
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {matieres.map((matiere) => (
+            <CarteMatiere key={matiere.id} matiere={matiere} childId={childId} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
 
 export default function ChildHome() {
   const { childId } = useParams<{ childId: string }>();
+  // La vue des leçons tient dans l-ancre : le bouton arrière la retrouve,
+  // et un parent peut envoyer le lien de la vue chronologique.
+  const parDate = useLocation().hash === '#date';
 
   const enfant = useQuery({
     queryKey: ['child', childId],
@@ -311,19 +447,15 @@ export default function ChildHome() {
         {/* Avec une seule leçon, cette liste répéterait la carte du dessus.
             Elle n'apparaît qu'à partir de la deuxième. */}
         {d.lecons.length > 1 ? (
-          <section>
-            <h2 className="text-kid-lg font-extrabold">Mes matières</h2>
-            {/* Deux colonnes : des tuiles assez grandes pour un doigt, et
-                toute la liste visible sans défiler longtemps. */}
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {d.matieres.map((matiere) => (
-                <CarteMatiere key={matiere.id} matiere={matiere} childId={childId!} />
-              ))}
-            </div>
-          </section>
+          <MesLecons
+            lecons={d.lecons}
+            matieres={d.matieres}
+            childId={childId!}
+            parDate={parDate}
+          />
         ) : null}
 
-        <Collection autocollants={d.autocollants} />
+        <Collection autocollants={d.autocollants} matieres={d.matieres} />
 
         <Trophees trophees={d.trophees} />
       </div>
