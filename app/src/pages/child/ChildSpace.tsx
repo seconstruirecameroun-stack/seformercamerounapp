@@ -443,7 +443,16 @@ function Etape({
           <div className="bg-gold/25 px-6 py-7">
             <Mascotte humeur="encourage" taille={96} className="mx-auto" />
             <p className="mt-2 text-kid-xs font-black tracking-widest text-clay-dark uppercase">
-              {aRegagner ? 'À regagner' : derniere ? 'Dernière série' : 'Dernière épreuve'}
+              {/* « Dernière épreuve » au-dessus de « Série 1 sur 9 » se
+                  contredit tout seul : l'épreuve n'est dernière que pour la
+                  leçon, et l'enfant lit le titre juste en dessous. */}
+              {aRegagner
+                ? 'À regagner'
+                : derniere
+                  ? 'Dernière série'
+                  : plusieurs
+                    ? 'La validation'
+                    : 'Dernière épreuve'}
             </p>
             <h2 className="mt-1 text-kid-2xl font-black">
               {plusieurs ? `Série ${s.serie.rang} sur ${s.serie.total}` : 'La manche'}
@@ -480,9 +489,14 @@ function Etape({
                   <span className="font-black text-leaf">★</span>
                   <span>
                     Une série gagnée reste gagnée : tu ne la rejoues pas.{' '}
-                    {restantes > 1
-                      ? `Il en reste ${restantes} pour valider la leçon.`
-                      : 'Celle-ci est la dernière.'}
+                    {/* « Il en reste 9 » juste après se lit « 9 APRÈS
+                        celle-ci ». On dit donc ce qu'il tient déjà, qui est
+                        de toute façon ce qu'on veut lui montrer. */}
+                    {restantes === 1
+                      ? 'Celle-ci est la dernière.'
+                      : s.serie.tenues > 0
+                        ? `Tu en as déjà ${s.serie.tenues} ; il t’en reste ${restantes}.`
+                        : `Il y en a ${s.serie.total} à gagner en tout.`}
                   </span>
                 </li>
               ) : null}
