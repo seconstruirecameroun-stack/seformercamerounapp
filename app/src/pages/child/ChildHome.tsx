@@ -337,12 +337,12 @@ export default function ChildHome() {
           </Link>
           <div className="flex items-center gap-2">
             <Flamme serie={d.serie} />
-            {/* La série de manches parfaites, à côté de celle des jours : la
-                flamme dit qu-il revient, la cible dit qu-il réussit. */}
+            {/* Les séries sans faute enchaînées, à côté de celle des jours :
+                la flamme dit qu-il revient, la cible dit qu-il réussit. */}
             {d.serieManches > 0 ? (
               <span
                 className="flex items-center gap-1.5 rounded-full bg-leaf/30 px-3 py-2 text-kid-sm font-black"
-                title={`${d.serieManches} manche${d.serieManches > 1 ? 's' : ''} parfaite${d.serieManches > 1 ? 's' : ''} de suite`}
+                title={`${d.serieManches} série${d.serieManches > 1 ? 's' : ''} sans faute de suite`}
               >
                 <span aria-hidden="true">🎯</span>
                 {d.serieManches}

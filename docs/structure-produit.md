@@ -213,15 +213,50 @@ Pour « Le cube », ce sont les vingt questions de ses quatre notions. C'est le
 choix du parent, fait en connaissance de la conséquence : une leçon ne sera
 validée que rarement, et seulement quand elle est vraiment sue.
 
+#### Elle se joue en séries
+
+La règle du sans-faute ne se négocie pas. La DISTANCE sur laquelle on l'exige,
+elle, a été mesurée — et elle était fausse.
+
+Les quarante premières manches jouées : les leçons récentes font 25 à 32
+questions, douze manches ont été gagnées, vingt-huit ratées, dont **neuf par
+une seule faute** (38/40, 31/32, 29/30). De ces chiffres se déduit la justesse
+par question : si 28 questions passent sans faute trois fois sur dix, chaque
+question tombe juste à **96 %**. L'enfant sait sa leçon. C'est la longueur qui
+l'écrase :
+
+| Longueur | Chance de sans-faute à 96 % |
+|---|---|
+| 10 questions | 65 % |
+| 20 questions | 42 % |
+| 30 questions | 27 % |
+| 40 questions | 18 % |
+
+Il échouait donc sept fois sur dix, et chaque échec lui coûtait trente
+questions avant de recommencer les trente mêmes : environ **93 questions** pour
+valider une leçon.
+
+La leçon se découpe donc en **séries d'une dizaine de questions**, sur les
+frontières de notions — une notion n'est jamais coupée en deux, pour qu'une
+série se dise en une phrase : « ces trois notions, complètement ». Chaque série
+se joue sans faute. **Une série gagnée reste gagnée**, et ne se reperd que par
+la règle d'en bas. La leçon est validée quand toutes ses séries sont tenues.
+Coût moyen : une quarantaine de questions, et il ne rejoue jamais que la série
+qu'il a manquée.
+
+Le découpage ne change ni le prix d'une leçon — cinq étoiles par question,
+série par série, fait le même total — ni ce que la validation affirme : chaque
+question de la leçon doit toujours tomber juste.
+
 Deux conséquences de mécanique, qui ne changent pas la règle mais la rendent
 tenable :
 
-- **La manche va jusqu'au bout.** Une faute ne l'interrompt pas. L'enfant
-  répond aux vingt questions, voit la correction de chacune, et le verdict
-  tombe à la fin. Couper la manche à la première erreur lui retirerait les dix-
-  neuf explications qu'il avait encore à lire, et la punirait deux fois.
-- **Ce qu'il a raté est ce qu'on lui redonne.** Avant de reproposer la manche,
-  l'app fait revenir les notions fautives seules. Rejouer vingt questions
+- **La série va jusqu'au bout.** Une faute ne l'interrompt pas. L'enfant
+  répond à toutes ses questions, voit la correction de chacune, et le verdict
+  tombe à la fin. Couper à la première erreur lui retirerait les explications
+  qu'il avait encore à lire, et le punirait deux fois.
+- **Ce qu'il a raté est ce qu'on lui redonne.** Avant de reproposer la série,
+  l'app fait revenir les notions fautives seules. Rejouer dix questions
   identiques pour une erreur sur les arêtes n'apprend rien sur les arêtes.
 
 Et la validation n'est pas définitive : voir « Une validation qui se perd »
@@ -230,8 +265,8 @@ plus bas.
 ### Une validation qui se perd
 
 La révision espacée ramène les notions à intervalles. Si l'enfant rate une
-notion d'une leçon validée, **la leçon redevient à valider** : la manche sans
-faute est à refaire.
+notion d'une leçon validée, **la leçon redevient à valider** : le sans-faute
+est à refaire — sur la série qui portait cette notion, et sur elle seule.
 
 C'est la seule exception au principe « rater fait revenir, pas reculer », et
 elle est assumée. Ce principe protège l'apprentissage, qui est fragile ; la
@@ -240,7 +275,7 @@ reste vraie quand elle est devenue fausse ne vaut rien.
 
 Ce qui est perdu est la validation, pas le reste : les étapes franchies, les
 images gagnées, les étoiles et les trophées ne bougent pas. L'enfant ne
-redescend pas l'escalier, il a une manche à rejouer.
+redescend pas l'escalier, il a une série à rejouer.
 
 ### L'image se gagne à la troisième marche
 

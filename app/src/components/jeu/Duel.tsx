@@ -14,8 +14,8 @@ import { BONUS_MANCHE_DUEL, type Duel as DuelData } from '../../lib/duel';
  * Le texte ne tombe jamais dans la moquerie du second. Un chiffre à
  * rattraper appelle ; « tu es dernier » n'appelle à rien.
  *
- * Le détail du total est montré dès qu'une manche y entre. Un bonus de
- * vingt qui tombe sans explication ne récompense rien : l'enfant doit voir
+ * Le détail du total est montré dès qu'une série sans faute y entre. Un
+ * bonus qui tombe sans explication ne récompense rien : l'enfant doit voir
  * d'où vient son avance pour savoir comment la refaire.
  */
 export default function Duel({ duel, childId }: { duel: DuelData; childId: string }) {
@@ -71,8 +71,8 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
                 </div>
                 {c.manches > 0 ? (
                   <p className="mt-0.5 text-kid-xs text-muted">
-                    {c.questions} question{c.questions > 1 ? 's' : ''} et {c.manches} manche
-                    {c.manches > 1 ? 's' : ''} gagnée{c.manches > 1 ? 's' : ''}
+                    {c.questions} question{c.questions > 1 ? 's' : ''} et {c.manches} série
+                    {c.manches > 1 ? 's' : ''} sans faute
                   </p>
                 ) : null}
               </div>
@@ -93,7 +93,7 @@ export default function Duel({ duel, childId }: { duel: DuelData; childId: strin
 
       {duel.concurrents.some((c) => c.manches > 0) ? (
         <p className="mt-1 text-kid-xs text-muted">
-          Une manche gagnée vaut {BONUS_MANCHE_DUEL} questions.
+          Une série sans faute vaut {BONUS_MANCHE_DUEL} questions.
         </p>
       ) : null}
 

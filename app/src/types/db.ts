@@ -165,6 +165,8 @@ export interface MancheRow {
   justes: number;
   reussie: boolean;
   notions_ratees: string[];
+  /** Les notions de la série jouée. Vide = toute la leçon (manches d'avant). */
+  notions: string[];
   created_at: string;
 }
 

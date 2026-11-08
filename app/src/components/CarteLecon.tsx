@@ -71,14 +71,21 @@ export default function CarteLecon({
         <p className="mt-1 flex items-center gap-2 text-kid-xs font-bold text-muted">
           {/* L'escalier gravi n'est pas la leçon sue : tant que la manche
               n'est pas passée, la carte annonce ce qu'il reste à faire plutôt
-              qu'une révision tranquille. */}
+              qu'une révision tranquille.
+
+              Le rang de la série y est, et il compte : « la manche t'attend »
+              laissait croire qu'il fallait reprendre les trente questions
+              alors qu'il en avait déjà tenu deux tiers. Ce qui reste à faire
+              doit se lire sans ouvrir la leçon. */}
           <span className={lecon.validee ? 'font-black text-leaf' : undefined}>
             {lecon.validee
               ? '✓ Leçon validée'
               : lecon.validationPerdue
-                ? 'À revalider'
+                ? `À revalider · série ${lecon.seriesTenues + 1}/${lecon.seriesTotal}`
                 : lecon.etapeTerminee
-                  ? 'La manche t’attend'
+                  ? lecon.seriesTotal > 1
+                    ? `Série ${lecon.seriesTenues + 1}/${lecon.seriesTotal} t’attend`
+                    : 'La manche t’attend'
                   : `Étape ${lecon.etape} · ${lecon.etapeFaites}/${lecon.etapeTotal}`}
           </span>
           {/* Le jour du cahier : ce n'est pas ce que l'enfant vient chercher,

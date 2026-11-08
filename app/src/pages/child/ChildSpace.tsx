@@ -194,15 +194,21 @@ function BarreEtape({
  * Elle ne montre pas une progression mais un capital : les fautes restantes,
  * et il n'y en a aucune. Une barre qui se remplit dirait « tu avances » alors
  * que la seule chose qui compte est de n'avoir rien raté.
+ *
+ * Le rang de la série y figure, parce que la distance à tenir a changé : une
+ * faute coûte dix questions et non trente, et l'enfant doit le savoir pendant
+ * qu'il joue, pas seulement dans l'annonce.
  */
 function BarreManche({
   faites,
   total,
   fautes,
+  serie,
 }: {
   faites: number;
   total: number;
   fautes: number;
+  serie: { rang: number; total: number };
 }) {
   return (
     <div
@@ -213,7 +219,7 @@ function BarreManche({
     >
       <div className="flex items-baseline justify-between gap-2">
         <span className="shrink-0 text-kid-xs font-black tracking-widest text-clay-dark uppercase">
-          La manche
+          {serie.total > 1 ? `Série ${serie.rang}/${serie.total}` : 'La manche'}
         </span>
         <span className="truncate text-kid font-extrabold">
           Question {Math.min(faites + 1, total)} sur {total}
@@ -222,7 +228,7 @@ function BarreManche({
       <p className="mt-2 text-kid-sm font-bold text-ink-2">
         {fautes === 0
           ? 'Sans faute pour l’instant. Continue !'
-          : `${fautes} ${fautes > 1 ? 'fautes' : 'faute'} : la manche sera à refaire. Va jusqu’au bout, tu apprends à chaque question.`}
+          : `${fautes} ${fautes > 1 ? 'fautes' : 'faute'} : ${serie.total > 1 ? 'cette série' : 'la manche'} sera à refaire. Va jusqu’au bout, tu apprends à chaque question.`}
       </p>
     </div>
   );
@@ -419,36 +425,67 @@ function Etape({
   const estManche = s.mode === 'manche';
   const estReprise = s.mode === 'reprise';
 
-  // L'enjeu s'annonce avant la première question. Lancer vingt questions sans
+  // L'enjeu s'annonce avant la première question. Lancer dix questions sans
   // prévenir qu'une seule faute les annule serait un piège : l'enfant doit
   // savoir dans quoi il entre, et pouvoir y entrer quand il se sent prêt.
+  //
+  // Et il doit savoir que ce qu'il gagne ne se rejoue pas. C'est la promesse
+  // du découpage en séries : sans elle, « une faute et c'est à refaire »
+  // s'entend encore comme les trente questions d'avant.
   if (estManche && !mancheLancee) {
-    const perdue = s.validation.perdueLe !== null;
+    const aRegagner = s.validation.serieARegagner;
+    const plusieurs = s.serie.total > 1;
+    const derniere = plusieurs && s.serie.tenues + 1 === s.serie.total;
+    const restantes = s.serie.total - s.serie.tenues;
     return (
       <div className="grid gap-3">
         <div className="monte overflow-hidden rounded-[var(--radius-card)] border-2 border-gold bg-white-warm text-center shadow-[var(--shadow-card)]">
           <div className="bg-gold/25 px-6 py-7">
             <Mascotte humeur="encourage" taille={96} className="mx-auto" />
             <p className="mt-2 text-kid-xs font-black tracking-widest text-clay-dark uppercase">
-              {perdue ? 'À revalider' : 'Dernière épreuve'}
+              {aRegagner ? 'À regagner' : derniere ? 'Dernière série' : 'Dernière épreuve'}
             </p>
-            <h2 className="mt-1 text-kid-2xl font-black">La manche</h2>
+            <h2 className="mt-1 text-kid-2xl font-black">
+              {plusieurs ? `Série ${s.serie.rang} sur ${s.serie.total}` : 'La manche'}
+            </h2>
           </div>
           <div className="px-6 py-6">
             <p className="text-kid font-bold">
-              {perdue
-                ? 'Tu avais validé cette leçon, puis tu as raté une notion. Il faut la regagner.'
-                : 'Tu as gravi les quatre étapes. Il reste à valider la leçon.'}
+              {aRegagner
+                ? 'Tu avais gagné cette série, puis tu as raté une notion. Il faut la regagner.'
+                : derniere
+                  ? 'Plus qu’une série, et la leçon est validée !'
+                  : plusieurs
+                    ? `Tu as gravi les quatre étapes. La leçon se valide en ${s.serie.total} séries, chacune sans faute.`
+                    : 'Tu as gravi les quatre étapes. Il reste à valider la leçon.'}
             </p>
             <ul className="mx-auto mt-4 grid max-w-sm gap-2 text-left text-kid-sm text-ink-2">
               <li className="flex gap-2">
                 <span className="font-black text-clay-dark">{s.questions.length}</span>
-                <span>questions : toute la leçon, du début à la fin.</span>
+                <span>
+                  {plusieurs
+                    ? `questions : ${s.notionsDeLaSerie.length} ${s.notionsDeLaSerie.length > 1 ? 'notions' : 'notion'} de la leçon, complètement.`
+                    : 'questions : toute la leçon, du début à la fin.'}
+                </span>
               </li>
               <li className="flex gap-2">
                 <span className="font-black text-clay-dark">0</span>
-                <span>faute permise. Une seule, et la manche est à refaire.</span>
+                <span>
+                  faute permise. Une seule, et {plusieurs ? 'cette série' : 'la manche'} est à
+                  refaire.
+                </span>
               </li>
+              {plusieurs ? (
+                <li className="flex gap-2">
+                  <span className="font-black text-leaf">★</span>
+                  <span>
+                    Une série gagnée reste gagnée : tu ne la rejoues pas.{' '}
+                    {restantes > 1
+                      ? `Il en reste ${restantes} pour valider la leçon.`
+                      : 'Celle-ci est la dernière.'}
+                  </span>
+                </li>
+              ) : null}
               <li className="flex gap-2">
                 <span className="font-black text-clay-dark">✓</span>
                 <span>
@@ -479,6 +516,11 @@ function Etape({
     if (estManche) {
       const gagnee = justes === s.questions.length;
       const manquantes = s.questions.length - justes;
+      // La série gagnée ne valide la leçon que si c'était la dernière qui
+      // manquait. Les autres sont déjà tenues : on le sait sans rien relire.
+      const plusieurs = s.serie.total > 1;
+      const valideeMaintenant = gagnee && s.serie.tenues + 1 === s.serie.total;
+      const restantes = s.serie.total - s.serie.tenues - (gagnee ? 1 : 0);
       // Recalculée ici, et non passée depuis la réponse : la fonction est
       // pure, donc les deux endroits disent forcément la même chose.
       const consolation = gagnee
@@ -491,7 +533,11 @@ function Etape({
             <div className={'px-6 py-7 ' + (gagnee ? 'bg-leaf/25' : 'bg-clay/15')}>
               <Mascotte humeur={gagnee ? 'fete' : 'encourage'} taille={96} className="mx-auto" />
               <h2 className="mt-2 text-kid-2xl font-black">
-                {gagnee ? 'Leçon validée !' : 'Pas encore'}
+                {valideeMaintenant
+                  ? 'Leçon validée !'
+                  : gagnee
+                    ? `Série ${s.serie.rang} gagnée !`
+                    : 'Pas encore'}
               </h2>
               <p className="mt-1 text-kid font-bold text-ink-2">
                 {justes} bonnes réponses sur {s.questions.length}
@@ -506,15 +552,21 @@ function Etape({
             </div>
             <div className="px-6 py-6">
               <p className="text-kid-sm text-muted">
-                {gagnee
+                {valideeMaintenant
                   ? 'Toute la leçon, sans une faute. Tu la sais.'
-                  : consolation > 0
-                    ? `C’est ton meilleur score sur cette leçon. Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'} pour la valider : on va les revoir.`
-                    : `Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'}. On va revoir ce que tu as raté, puis tu retenteras la manche.`}
+                  : gagnee
+                    ? `Sans une faute : cette série est acquise, tu ne la rejoues pas. Il en reste ${restantes} pour valider la leçon.`
+                    : consolation > 0
+                      ? `C’est ton meilleur score sur cette série. Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'} : on va les revoir.`
+                      : `Il te manque ${manquantes} ${manquantes > 1 ? 'questions' : 'question'}. On va revoir ce que tu as raté, puis tu retenteras ${plusieurs ? 'la série' : 'la manche'}.`}
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 <GrosBouton onClick={continuer}>
-                  {gagnee ? 'Continuer' : 'Revoir ce que j’ai raté'}
+                  {valideeMaintenant
+                    ? 'Continuer'
+                    : gagnee
+                      ? 'La série suivante'
+                      : 'Revoir ce que j’ai raté'}
                 </GrosBouton>
                 <GrosBouton variante="douce" onClick={() => navigate(`/enfant/${childId}`)}>
                   Mes leçons
@@ -748,9 +800,10 @@ function Etape({
         });
       }
 
-      // La manche jouée est écrite une fois sa dernière question répondue.
+      // La série jouée est écrite une fois sa dernière question répondue.
       // C'est elle qui porte la validation, et les notions à redonner si
-      // l'enfant ferme l'app avant la reprise.
+      // l'enfant ferme l'app avant la reprise. `notions` dit ce qu'elle
+      // couvrait : sans cette liste, la ligne ne se déduit plus.
       if (derniereDeLaManche) {
         await enregistrerManche({
           parentId,
@@ -759,15 +812,21 @@ function Etape({
           questions: s.questions.length,
           justes: justesFinal,
           notionsRatees: [...toutesRatees],
+          notions: s.notionsDeLaSerie,
         });
         if (mancheGagnee) {
+          // La médaille n'est pas pour la série : elle est pour la leçon. Une
+          // série gagnée sur trois ne se célèbre pas comme une leçon sue.
+          const derniereSerie = s.serie.tenues + 1 === s.serie.total;
           fenetres.push({
             ton: 'fete',
             son: 'etape',
-            titre: 'Leçon validée !',
-            texte: 'Toute la leçon, sans une faute.',
+            titre: derniereSerie ? 'Leçon validée !' : 'Série sans faute !',
+            texte: derniereSerie
+              ? 'Toute la leçon, sans une faute.'
+              : `Série ${s.serie.rang} sur ${s.serie.total}. Elle est acquise.`,
             points: pointsManche(s.questions.length),
-            vignette: 'medaille',
+            vignette: derniereSerie ? 'medaille' : null,
             humeur: null,
           });
         } else if (consolation > 0) {
@@ -837,14 +896,20 @@ function Etape({
   return (
     <div className="grid gap-3">
       {estManche ? (
-        <BarreManche faites={index} total={s.questions.length} fautes={ratees.size} />
+        <BarreManche
+          faites={index}
+          total={s.questions.length}
+          fautes={ratees.size}
+          serie={s.serie}
+        />
       ) : estReprise ? (
         <div className="rounded-[var(--radius-card)] border-2 border-clay/50 bg-clay/10 p-4 shadow-[var(--shadow-tile)]">
           <span className="text-kid-xs font-black tracking-widest text-clay-dark uppercase">
             Ce que tu as raté
           </span>
           <p className="mt-1 text-kid-sm font-bold text-ink-2">
-            On revoit {s.total} {s.total > 1 ? 'notions' : 'notion'}, puis tu retentes la manche.
+            On revoit {s.total} {s.total > 1 ? 'notions' : 'notion'}, puis tu retentes
+            {s.serie.total > 1 ? ` la série ${s.serie.rang}` : ' la manche'}.
           </p>
         </div>
       ) : (
@@ -860,7 +925,7 @@ function Etape({
         </div>
 
         {/* Le sablier suit le niveau de la QUESTION, pas celui de la séance.
-            Dans la manche, les questions de toutes les étapes se suivent :
+            Dans une série, les questions de toutes les étapes se suivent :
             chronométrer une question de Découverte parce que la séance est
             au sommet de l’escalier n’aurait aucun sens. */}
         {estChronometre(question.item.level) ? (
@@ -1041,12 +1106,12 @@ export default function ChildSpace() {
   });
 
   /**
-   * La série de manches parfaites en cours, toutes leçons confondues.
+   * Les séries sans faute enchaînées, toutes leçons confondues.
    *
    * Elle se lit sur toutes les manches de l-enfant, et pas sur celles de la
-   * leçon ouverte : une série qui se remettrait à zéro en changeant de
+   * leçon ouverte : un compteur qui se remettrait à zéro en changeant de
    * leçon ne voudrait rien dire. Les cinquante dernières suffisent — une
-   * série plus longue que cinquante manches parfaites n-a jamais existé.
+   * suite plus longue que cinquante séries sans faute n-a jamais existé.
    */
   const serie = useQuery({
     queryKey: ['manches', childId],
@@ -1109,7 +1174,7 @@ export default function ChildSpace() {
             {serie.data ? (
               <span
                 className="flex items-center gap-1.5 rounded-full bg-leaf/30 px-3 py-2 text-kid-sm font-black"
-                title={`${serie.data} manches parfaites de suite`}
+                title={`${serie.data} série${serie.data > 1 ? 's' : ''} sans faute de suite`}
               >
                 <span aria-hidden="true">🎯</span>
                 {serie.data}

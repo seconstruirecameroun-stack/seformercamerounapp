@@ -1,6 +1,11 @@
 import { supabase } from './supabase';
 import { etapeCourante, etapeImage, imageGagnee, reussitesParNiveau } from './paliers';
-import { lireValidation, serieParfaite, type MancheRow } from './manche';
+import {
+  decouperEnSeries,
+  lireValidation,
+  serieParfaite,
+  type MancheRow,
+} from './manche';
 import {
   calculerSerie,
   construireContexte,
@@ -66,6 +71,15 @@ export type LeconResume = {
   validee: boolean;
   /** Elle l'a été, puis une notion a été ratée : la manche est à refaire. */
   validationPerdue: boolean;
+  /**
+   * Où en est la manche, série par série.
+   *
+   * La manche se joue en séries d'une dizaine de questions, chacune sans
+   * faute. La carte de la leçon le montre, sinon l'enfant ne saurait pas
+   * qu'il lui reste une série et non la leçon entière.
+   */
+  seriesTenues: number;
+  seriesTotal: number;
 };
 
 /**
@@ -131,7 +145,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .from('lessons')
       .select(
         'id, title, illustration, subject_id, chapter, taught_on, subjects(label, color), ' +
-          'notions(id, statement, illustration, status, items(id, level, status))',
+          'notions(id, statement, illustration, status, sort_order, items(id, level, status))',
       )
       .eq('status', 'approved')
       .or(classe ? `class_id.eq.${classe},class_id.is.null` : 'class_id.is.null')
@@ -160,7 +174,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .eq('correct', false),
     supabase
       .from('manches')
-      .select('lesson_id, questions, justes, reussie, notions_ratees, created_at')
+      .select('lesson_id, questions, justes, reussie, notions_ratees, notions, created_at')
       .eq('child_id', childId)
       .order('created_at', { ascending: false }),
   ]);
@@ -199,6 +213,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       statement: string;
       illustration: string | null;
       status: string;
+      sort_order: number | null;
       items: Array<{ id: string; level: number; status: string }>;
     }>;
   }>;
@@ -217,8 +232,16 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     if (!connu || jour < connu) premierJuste.set(j.item_id, jour);
   }
 
+  // Les notions sont remises dans l'ordre de la leçon. PostgREST ne promet
+  // aucun ordre sur une table imbriquée, et la salle de jeu, elle, trie par
+  // sort_order : sans ce tri les séries de la manche n'auraient pas été
+  // découpées au même endroit ici et là-bas, et la carte aurait annoncé une
+  // série que l'enfant n'allait pas jouer. L'ordre de la collection, qui suit
+  // celui-ci, devient par la même occasion celui du cahier.
   for (const lecon of brutes) {
-    const notions = lecon.notions.filter((n) => n.status === 'approved');
+    const notions = lecon.notions
+      .filter((n) => n.status === 'approved')
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
     let acquises = 0;
     let dues = 0;
     let aRevoir = 0;
@@ -245,7 +268,12 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
         created_at: r.created_at,
       }))
       .filter((r) => r.notion_id !== '');
-    const validation = lireValidation(manchesParLecon.get(lecon.id) ?? [], reponsesDeLaLecon);
+    const series = decouperEnSeries(avecItems).map((s) => s.map((n) => n.id));
+    const validation = lireValidation(
+      series,
+      manchesParLecon.get(lecon.id) ?? [],
+      reponsesDeLaLecon,
+    );
 
     for (const n of avecItems) {
       for (const i of n.items) {
@@ -302,6 +330,8 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       etapeTerminee: termine,
       validee: validation.validee,
       validationPerdue: validation.perdueLe !== null && !validation.validee,
+      seriesTenues: validation.seriesTenues,
+      seriesTotal: validation.seriesTotal,
       etapeFaites: termine ? aValider.length : (reussies.get(niveau)?.size ?? 0),
       etapeTotal: aValider.length,
     });

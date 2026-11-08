@@ -1,4 +1,5 @@
 import {
+  decouperEnSeries,
   lireValidation,
   meilleurJustes,
   pointsConsolation,
@@ -17,6 +18,19 @@ import type { NotionAvecItems } from './paliers';
  * parent : « il sait cette leçon ». Une erreur ici ne casse rien à l'écran,
  * elle ment — c'est pourquoi elle se vérifie à part, et pourquoi chaque cas
  * porte le nom de la situation réelle qu'il représente.
+ *
+ * Depuis le découpage en séries, trois choses de plus se jouent ici :
+ *
+ *   Le découpage lui-même. Une notion coupée en deux, ou une série de trois
+ *   questions laissée en moignon, et la règle du sans-faute perd son sens.
+ *
+ *   Ce qu'une manche COUVRE. Une série n'est tenue que par une manche qui
+ *   portait au moins ses notions. Si cette règle se relâche, l'app affirme
+ *   une leçon sue sur la foi d'une série voisine.
+ *
+ *   Les manches d'avant. Elles n'ont pas de liste de notions, et elles
+ *   portaient toute la leçon : elles doivent donc tenir chaque série, sans
+ *   qu'on réécrive quoi que ce soit en base.
  *
  * Le projet n'a pas de lanceur de tests. Celui-ci se construit et se joue :
  *
@@ -38,13 +52,38 @@ function verifie(nom: string, condition: boolean) {
   }
 }
 
-/** Une manche jouée : vingt questions, et celles qui ont été ratées. */
+/** La leçon des cas d'avant : une seule série, qui est toute la leçon. */
+const TOUT = [['n1', 'n2', 'n3', 'n4', 'n5']];
+
+/**
+ * Une manche d'avant le découpage : vingt questions, sans liste de notions.
+ *
+ * C'est exactement ce que porte la base aujourd'hui, et le but est que ces
+ * lignes continuent de valider ce qu'elles validaient.
+ */
 const manche = (iso: string, reussie: boolean, ratees: string[] = []): MancheRow => ({
   lesson_id: 'L',
   questions: 20,
   justes: reussie ? 20 : 20 - ratees.length,
   reussie,
   notions_ratees: ratees,
+  created_at: iso,
+});
+
+/** Une série jouée, avec les notions qu'elle couvrait. */
+const serie = (
+  iso: string,
+  notions: string[],
+  justes: number,
+  questions = 10,
+  ratees: string[] = [],
+): MancheRow => ({
+  lesson_id: 'L',
+  questions,
+  justes,
+  reussie: justes === questions,
+  notions_ratees: ratees,
+  notions,
   created_at: iso,
 });
 
@@ -59,60 +98,112 @@ const juste = (notion: string, iso: string): Reponse => ({
   created_at: iso,
 });
 
+/** Une notion de n questions, pour éprouver le découpage. */
+const n = (id: string, questions: number) => ({ id, items: Array(questions).fill(0) });
+const tailles = (series: Array<{ items: unknown[] }[]>) =>
+  series.map((s) => s.reduce((t, x) => t + x.items.length, 0)).join();
+
 export function verifierManche(): number {
+  // ── Le découpage en séries ───────────────────────────────────────────────
+  // Une notion n'est jamais coupée en deux, donc les séries ne font pas
+  // exactement dix : elles font la longueur des notions qu'elles contiennent.
+
+  const dixDeTrois = decouperEnSeries(Array.from({ length: 10 }, (_, i) => n('n' + i, 3)));
+  verifie('découpage : 30 questions font trois séries', dixDeTrois.length === 3);
+  verifie('découpage : 30 questions en 9, 12, 9', tailles(dixDeTrois) === '9,12,9');
+  verifie(
+    'découpage : aucune notion perdue',
+    dixDeTrois.flat().map((x) => x.id).join() === 'n0,n1,n2,n3,n4,n5,n6,n7,n8,n9',
+  );
+
+  const septDeQuatre = decouperEnSeries(Array.from({ length: 7 }, (_, i) => n('n' + i, 4)));
+  verifie('découpage : 28 questions font trois séries', septDeQuatre.length === 3);
+  verifie('découpage : 28 questions en 8, 12, 8', tailles(septDeQuatre) === '8,12,8');
+
+  // Pas de moignon : le pire défaut d'un découpage glouton est de laisser
+  // trois questions à la fin, qui se gagnent sans rien prouver.
+  verifie(
+    'découpage : aucune série de moins de six questions',
+    [...dixDeTrois, ...septDeQuatre].every(
+      (s) => s.reduce((t, x) => t + x.items.length, 0) >= 6,
+    ),
+  );
+
+  verifie('découpage : une leçon courte reste une seule manche',
+    decouperEnSeries([n('a', 4), n('b', 3), n('c', 3)]).length === 1);
+  verifie(
+    'découpage : une notion ne se coupe pas, même à 40 questions',
+    tailles(decouperEnSeries([n('a', 40)])) === '40',
+  );
+  verifie('découpage : une leçon vide ne donne rien', decouperEnSeries([]).length === 0);
+  verifie(
+    'découpage : une notion sans question est écartée',
+    tailles(decouperEnSeries([n('a', 5), n('vide', 0), n('b', 5)])) === '10',
+  );
+
   // ── Avant toute manche ──────────────────────────────────────────────────
-  let v = lireValidation([], []);
+  let v = lireValidation(TOUT, [], []);
   verifie('jamais tentée : la leçon n’est pas validée', !v.validee && !v.dejaTentee);
   verifie('jamais tentée : rien à reprendre', v.aReprendre.length === 0);
+  verifie('jamais tentée : on joue la première série', v.serieEnCours === 1);
+  verifie('jamais tentée : rien de tenu', v.seriesTenues === 0 && v.seriesTotal === 1);
 
   // ── Une manche ratée ────────────────────────────────────────────────────
-  v = lireValidation([manche('2026-10-18T10:00:00Z', false, ['n1', 'n3'])], [
+  v = lireValidation(TOUT, [manche('2026-10-18T10:00:00Z', false, ['n1', 'n3'])], [
     faux('n1', '2026-10-18T10:00:00Z'),
   ]);
   verifie('manche ratée : non validée', !v.validee && v.dejaTentee);
   verifie('manche ratée : on redonne ses notions fautives', v.aReprendre.join() === 'n1,n3');
+  verifie('manche ratée : ce n’est pas une série à regagner', !v.serieARegagner);
 
   // ── La reprise se termine ───────────────────────────────────────────────
   // Sans cette sortie, la manche ratée garderait pour toujours la trace des
   // notions manquées, et l’enfant rejouerait les mêmes questions à l’infini.
-  v = lireValidation([manche('2026-10-18T10:00:00Z', false, ['n1', 'n3'])], [
+  v = lireValidation(TOUT, [manche('2026-10-18T10:00:00Z', false, ['n1', 'n3'])], [
     faux('n1', '2026-10-18T10:00:00Z'),
     juste('n1', '2026-10-18T10:30:00Z'),
   ]);
   verifie('reprise : la notion réussie sort de la liste', v.aReprendre.join() === 'n3');
 
-  v = lireValidation([manche('2026-10-18T10:00:00Z', false, ['n1', 'n3'])], [
+  v = lireValidation(TOUT, [manche('2026-10-18T10:00:00Z', false, ['n1', 'n3'])], [
     juste('n1', '2026-10-18T10:30:00Z'),
     juste('n3', '2026-10-18T10:31:00Z'),
   ]);
   verifie('reprise finie : la manche revient', v.aReprendre.length === 0 && !v.validee);
 
-  v = lireValidation([manche('2026-10-18T10:00:00Z', false, ['n1'])], [
+  v = lireValidation(TOUT, [manche('2026-10-18T10:00:00Z', false, ['n1'])], [
     juste('n1', '2026-10-18T10:30:00Z'),
     faux('n1', '2026-10-18T10:40:00Z'),
   ]);
   verifie('reprise : ratée de nouveau, la notion reste', v.aReprendre.join() === 'n1');
 
   // ── Une manche réussie ──────────────────────────────────────────────────
-  v = lireValidation([manche('2026-10-18T11:00:00Z', true)], [faux('n1', '2026-10-18T09:00:00Z')]);
+  v = lireValidation(TOUT, [manche('2026-10-18T11:00:00Z', true)], [
+    faux('n1', '2026-10-18T09:00:00Z'),
+  ]);
   verifie('réussie : validée malgré une faute antérieure', v.validee && v.perdueLe === null);
   verifie('réussie : rien à reprendre', v.aReprendre.length === 0);
+  verifie('réussie : plus de série à jouer', v.serieEnCours === 0 && v.seriesTenues === 1);
 
   // ── La validation se perd ───────────────────────────────────────────────
-  v = lireValidation([manche('2026-10-18T11:00:00Z', true)], [faux('n2', '2026-10-25T08:00:00Z')]);
+  v = lireValidation(TOUT, [manche('2026-10-18T11:00:00Z', true)], [
+    faux('n2', '2026-10-25T08:00:00Z'),
+  ]);
   verifie('faute postérieure : validation perdue', !v.validee);
   verifie('faute postérieure : datée', v.perdueLe === '2026-10-25T08:00:00Z');
   verifie('faute postérieure : on sait qu’il l’avait sue', v.obtenueLe === '2026-10-18T11:00:00Z');
   verifie('faute postérieure : on redonne la notion ratée', v.aReprendre.join() === 'n2');
+  verifie('faute postérieure : la série est à regagner', v.serieARegagner);
 
   v = lireValidation(
+    TOUT,
     [manche('2026-10-18T11:00:00Z', true)],
     [faux('n4', '2026-11-02T08:00:00Z'), faux('n2', '2026-10-25T08:00:00Z')],
   );
   verifie('fautes multiples : on date la première', v.perdueLe === '2026-10-25T08:00:00Z');
   verifie('fautes multiples : on redonne les deux', [...v.aReprendre].sort().join() === 'n2,n4');
 
-  v = lireValidation([manche('2026-10-18T11:00:00Z', true)], [
+  v = lireValidation(TOUT, [manche('2026-10-18T11:00:00Z', true)], [
     faux('n2', '2026-10-25T08:00:00Z'),
     juste('n2', '2026-10-25T08:05:00Z'),
   ]);
@@ -124,12 +215,14 @@ export function verifierManche(): number {
 
   // ── On revalide ─────────────────────────────────────────────────────────
   v = lireValidation(
+    TOUT,
     [manche('2026-11-10T09:00:00Z', true), manche('2026-10-18T11:00:00Z', true)],
     [faux('n2', '2026-10-25T08:00:00Z')],
   );
   verifie('revalidée : la manche la plus récente fait foi', v.validee && v.perdueLe === null);
 
   v = lireValidation(
+    TOUT,
     [manche('2026-11-01T09:00:00Z', false, ['n2', 'n5']), manche('2026-10-18T11:00:00Z', true)],
     [faux('n2', '2026-10-25T08:00:00Z')],
   );
@@ -138,13 +231,91 @@ export function verifierManche(): number {
     [...v.aReprendre].sort().join() === 'n2,n5',
   );
 
+  // ── La leçon en plusieurs séries ─────────────────────────────────────────
+  // C'est tout l'objet du découpage : le sans-faute se tient sur dix
+  // questions, et ce qui est tenu ne se rejoue pas.
+  const DEUX = [
+    ['a', 'b'],
+    ['c', 'd'],
+  ];
+
+  v = lireValidation(DEUX, [], []);
+  verifie('deux séries : on commence par la première', v.serieEnCours === 1);
+  verifie('deux séries : la leçon n’est pas validée', !v.validee && v.seriesTotal === 2);
+
+  v = lireValidation(DEUX, [serie('2026-11-08T10:00:00Z', ['a', 'b'], 10)], []);
+  verifie('série 1 tenue : on passe à la deuxième', v.serieEnCours === 2 && v.seriesTenues === 1);
+  verifie('série 1 tenue : la leçon ne l’est pas pour autant', !v.validee);
+  verifie('série 1 tenue : rien de « validé le », la leçon n’a jamais été sue',
+    v.obtenueLe === null && v.perdueLe === null);
+  verifie('série 1 tenue : la deuxième n’a jamais été tentée', !v.dejaTentee);
+
+  v = lireValidation(
+    DEUX,
+    [serie('2026-11-08T11:00:00Z', ['c', 'd'], 10), serie('2026-11-08T10:00:00Z', ['a', 'b'], 10)],
+    [],
+  );
+  verifie('deux séries tenues : la leçon est validée', v.validee && v.seriesTenues === 2);
+  verifie('deux séries tenues : datée de la dernière', v.obtenueLe === '2026-11-08T11:00:00Z');
+  verifie('deux séries tenues : plus rien à jouer', v.serieEnCours === 0);
+
+  // Une faute sur la première série ne renvoie QUE la première série. C'est
+  // la raison d'être du découpage : il ne rejoue pas les trente questions.
+  v = lireValidation(
+    DEUX,
+    [serie('2026-11-08T11:00:00Z', ['c', 'd'], 10), serie('2026-11-08T10:00:00Z', ['a', 'b'], 10)],
+    [faux('a', '2026-11-12T08:00:00Z')],
+  );
+  verifie('faute sur la série 1 : elle seule revient', v.serieEnCours === 1 && !v.validee);
+  verifie('faute sur la série 1 : la série 2 reste tenue', v.seriesTenues === 1);
+  verifie('faute sur la série 1 : la validation est perdue, et datée',
+    v.perdueLe === '2026-11-12T08:00:00Z' && v.obtenueLe === '2026-11-08T11:00:00Z');
+  verifie('faute sur la série 1 : on redonne la notion ratée', v.aReprendre.join() === 'a');
+  verifie('faute sur la série 1 : elle est à regagner', v.serieARegagner);
+
+  // Une faute sur une notion d'une autre série ne casse rien.
+  v = lireValidation(
+    DEUX,
+    [serie('2026-11-08T11:00:00Z', ['c', 'd'], 10), serie('2026-11-08T10:00:00Z', ['a', 'b'], 10)],
+    [faux('c', '2026-11-12T08:00:00Z')],
+  );
+  verifie('faute sur la série 2 : la série 1 n’est pas touchée', v.serieEnCours === 2);
+
+  // Une série ratée ne dit rien d'une autre série.
+  v = lireValidation(
+    DEUX,
+    [serie('2026-11-08T10:00:00Z', ['c', 'd'], 8, 10, ['c'])],
+    [faux('c', '2026-11-08T10:00:00Z')],
+  );
+  verifie('série 2 ratée : la série 1 reste à jouer', v.serieEnCours === 1);
+  verifie('série 2 ratée : la série 1 n’est pas « déjà tentée »', !v.dejaTentee);
+  verifie('série 2 ratée : rien à reprendre sur la série 1', v.aReprendre.length === 0);
+
+  // ── Les manches d'avant le découpage ─────────────────────────────────────
+  // Elles portaient toute la leçon, donc elles tiennent chaque série. Ce
+  // n'est pas une indulgence : c'est exactement ce qui s'est passé.
+  v = lireValidation(DEUX, [manche('2026-10-18T11:00:00Z', true)], []);
+  verifie('manche d’avant : elle tient toutes les séries', v.validee && v.seriesTenues === 2);
+
+  v = lireValidation(DEUX, [manche('2026-10-18T11:00:00Z', false, ['a', 'c'])], []);
+  verifie('manche d’avant ratée : la série 1 est déjà tentée', v.dejaTentee);
+  verifie(
+    'manche d’avant ratée : on ne redonne que ce qui est dans la série',
+    v.aReprendre.join() === 'a',
+  );
+
+  // Une manche portant les quatre notions tient les deux séries : la règle
+  // est la couverture, et non l'égalité stricte.
+  v = lireValidation(DEUX, [serie('2026-11-08T10:00:00Z', ['a', 'b', 'c', 'd'], 20, 20)], []);
+  verifie('couverture : une série plus large tient les deux', v.validee);
+
   // ── L’ordre des questions ────────────────────────────────────────────────
   const notions = [
     { id: 'a', items: [{ id: 'a4', level: 4 }, { id: 'a1', level: 1 }] },
     { id: 'b', items: [{ id: 'b2', level: 2 }] },
   ] as unknown as NotionAvecItems[];
   const q = questionsDeLaManche(notions);
-  verifie('manche : toutes les questions de la leçon', q.length === 3);
+  verifie('manche : toutes les questions des notions données', q.length === 3);
   verifie(
     'manche : notion par notion, du plus facile au plus dur',
     q.map((x) => x.item.id).join() === 'a1,a4,b2',
@@ -155,32 +326,46 @@ export function verifierManche(): number {
   // BRAYNE et KLEIN ont réellement obtenus sur les quarante premières manches.
 
   verifie('gain : proportionnel à la longueur', pointsManche(40) === 200);
-  verifie('gain : une manche courte rapporte moins', pointsManche(15) === 75);
+  verifie('gain : une série courte rapporte moins', pointsManche(10) === 50);
+  verifie(
+    'gain : le découpage ne change pas le prix de la leçon',
+    pointsManche(9) + pointsManche(12) + pointsManche(9) === pointsManche(30),
+  );
 
-  verifie('consolation : 24/25 au premier essai', pointsConsolation(24, 25, 0) === 48);
+  verifie('consolation : 9/10 au premier essai', pointsConsolation(9, 10, 0) === 18);
   verifie('consolation : 38/40, le vrai score de BRAYNE', pointsConsolation(38, 40, 0) === 76);
   verifie(
     'consolation : refaire le même score ne rapporte rien',
-    pointsConsolation(24, 25, 24) === 0,
+    pointsConsolation(9, 10, 9) === 0,
   );
-  verifie('consolation : progresser rapporte', pointsConsolation(24, 25, 23) === 48);
-  verifie('consolation : sous 80 %, rien', pointsConsolation(19, 25, 0) === 0);
-  verifie('consolation : à 80 % pile, elle est versée', pointsConsolation(20, 25, 0) === 40);
+  verifie('consolation : progresser rapporte', pointsConsolation(9, 10, 8) === 18);
+  verifie('consolation : sous 80 %, rien', pointsConsolation(7, 10, 0) === 0);
+  verifie('consolation : à 80 % pile, elle est versée', pointsConsolation(8, 10, 0) === 16);
   verifie(
-    'consolation : une manche gagnée nest pas une consolation',
-    pointsConsolation(25, 25, 0) === 0,
+    'consolation : une série gagnée n’est pas une consolation',
+    pointsConsolation(10, 10, 0) === 0,
   );
-  verifie('consolation : une manche vide ne rapporte rien', pointsConsolation(0, 0, 0) === 0);
+  verifie('consolation : une série vide ne rapporte rien', pointsConsolation(0, 0, 0) === 0);
 
+  // Le meilleur score se compte SÉRIE PAR SÉRIE. Comparer les 9 justes d'une
+  // série de dix aux 20 justes d'une leçon entière interdirait toute
+  // consolation, à jamais.
+  const jouees = [
+    serie('2026-11-08T11:00:00Z', ['a', 'b'], 9, 10, ['a']),
+    serie('2026-11-08T10:00:00Z', ['a', 'b'], 7, 10, ['a', 'b']),
+    serie('2026-11-07T10:00:00Z', ['c', 'd'], 10),
+    manche('2026-10-18T11:00:00Z', true),
+  ];
+  verifie('meilleur score : la plus haute de CETTE série', meilleurJustes(jouees, ['a', 'b']) === 9);
   verifie(
-    'meilleur score : la plus haute des manches jouées',
-    meilleurJustes([manche('2026-11-02', false, ['n1']), manche('2026-11-01', true)]) === 20,
+    'meilleur score : une autre série ne compte pas',
+    meilleurJustes(jouees, ['e', 'f']) === 0,
   );
-  verifie('meilleur score : aucune manche jouée', meilleurJustes([]) === 0);
+  verifie('meilleur score : aucune série jouée', meilleurJustes([], ['a']) === 0);
 
-  verifie('série : aucune manche', serieParfaite([]) === 0);
+  verifie('suite : aucune manche', serieParfaite([]) === 0);
   verifie(
-    'série : deux parfaites puis une ratée',
+    'suite : deux sans faute puis une ratée',
     serieParfaite([
       manche('2026-11-03', true),
       manche('2026-11-02', true),
@@ -189,7 +374,7 @@ export function verifierManche(): number {
     ]) === 2,
   );
   verifie(
-    'série : la dernière est ratée, la série est rompue',
+    'suite : la dernière est ratée, la suite est rompue',
     serieParfaite([manche('2026-11-03', false, ['n1']), manche('2026-11-02', true)]) === 0,
   );
 

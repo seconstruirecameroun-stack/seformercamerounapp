@@ -19,28 +19,33 @@ import { supabase } from './supabase';
  * ne perd que sept jours, jamais son avance cumulée. Un classement à vie
  * décourage définitivement le second.
  *
- * UNE EXCEPTION, ET UNE SEULE : la manche gagnée.
+ * UNE EXCEPTION, ET UNE SEULE : la série gagnée sans faute.
  *
- * Valider une leçon demande le sans-faute sur toutes ses questions, et c'est
- * le seul acte du jeu qui vaille autant pour un CE1 que pour un CM1 — la
- * difficulté est celle de SA leçon à lui. Elle compte donc pour un nombre
- * FIXE de questions, le même pour les deux, quel que soit leur niveau.
+ * Le sans-faute est le seul acte du jeu qui vaille autant pour un CE1 que
+ * pour un CM1 — la difficulté est celle de SA leçon à lui. Il compte donc
+ * pour un nombre FIXE de questions, le même pour les deux, quel que soit
+ * leur niveau.
  *
- * La valeur a été réglée sur les chiffres réels. À vingt, le duel de la
- * semaine basculait : KLEIN menait de 56 questions et passait second. À
- * quinze, les deux mesures restent dans le même ordre — l-effort brut garde
- * le dernier mot, et la validation réduit l-écart sans le renverser.
+ * La valeur a été réglée sur les chiffres réels. Une leçon validée valait
+ * quinze questions : à vingt, le duel de la semaine basculait — KLEIN menait
+ * de 56 questions et passait second ; à quinze, les deux mesures restaient
+ * dans le même ordre, l-effort brut gardant le dernier mot.
+ *
+ * Le découpage de la manche en séries a cassé ce réglage sans rien changer
+ * au code : une leçon de trente questions écrit maintenant TROIS lignes
+ * réussies au lieu d-une, donc 45 au lieu de 15. Le bonus descend donc à
+ * cinq par série, ce qui rend à une leçon validée son prix mesuré.
  *
  * Le bonus est FIXE, et c'est ce qui le rend acceptable. Le payer au prorata
- * de la longueur de la manche rouvrirait exactement l'écart que la règle des
+ * de la longueur de la série rouvrirait exactement l'écart que la règle des
  * questions évite : l'aîné, dont les leçons sont plus longues, gagnerait
  * davantage à chaque validation sans travailler davantage.
  *
  * Tout se déduit du journal des tentatives et des manches, comme le reste.
  */
 
-/** Ce que vaut une manche gagnée dans le duel, en questions. */
-export const BONUS_MANCHE_DUEL = 15;
+/** Ce que vaut une série sans faute dans le duel, en questions. */
+export const BONUS_MANCHE_DUEL = 5;
 
 export type Concurrent = {
   childId: string;
@@ -50,7 +55,7 @@ export type Concurrent = {
   reussites: number;
   /** Questions réussies depuis lundi, sans le bonus. */
   questions: number;
-  /** Manches gagnées depuis lundi. */
+  /** Séries gagnées sans faute depuis lundi. */
   manches: number;
 };
 

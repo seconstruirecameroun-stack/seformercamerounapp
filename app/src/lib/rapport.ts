@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { decouperEnSeries, lireValidation, type MancheRow } from './manche';
 import type { ItemKind, Json, NotionKind } from '../types/db';
 
 /**
@@ -484,15 +485,11 @@ export async function chargerRapports(
 
   const { data: manchesBrutes, error: erreurManches } = await supabase
     .from('manches')
-    .select('lesson_id, questions, justes, reussie, notions_ratees, created_at')
+    .select('lesson_id, questions, justes, reussie, notions_ratees, notions, created_at')
     .eq('child_id', childId)
     .order('created_at', { ascending: false });
   if (erreurManches) throw erreurManches;
-  const manches = (manchesBrutes ?? []) as Array<{
-    lesson_id: string;
-    reussie: boolean;
-    created_at: string;
-  }>;
+  const manches = (manchesBrutes ?? []) as MancheRow[];
 
   // Les repères des seules questions touchées : inutile de charger le
   // catalogue entier pour raconter ce qu'un enfant a joué.
@@ -538,15 +535,55 @@ export async function chargerRapports(
     if (!premiereReponsePar.has(e.item_id)) premiereReponsePar.set(e.item_id, e.correct);
   }
 
-  // Une leçon validée : une manche réussie, et aucune faute depuis. La règle
-  // complète vit dans lib/manche.ts ; ici on ne compte que les leçons.
+  // Une leçon validée : TOUTES ses séries tenues. Une série réussie sur trois
+  // n'est pas une leçon sue, et c'est le genre de phrase qu'un rapport ne doit
+  // pas prononcer à tort — le parent la lit comme un certificat.
+  //
+  // La règle n'est pas recopiée ici : c'est lireValidation, la même fonction
+  // que la salle de jeu et le tableau de bord. Il lui faut le découpage en
+  // séries, donc les notions des leçons qui ont une manche — et elles seules,
+  // pas le catalogue entier.
   const leconsValidees = new Set<string>();
-  for (const m of manches) {
-    if (!m.reussie || leconsValidees.has(m.lesson_id)) continue;
-    const fauteDepuis = essais.some(
-      (e) => !e.correct && e.created_at > m.created_at && reperes.has(e.item_id),
-    );
-    if (!fauteDepuis) leconsValidees.add(m.lesson_id);
+  const avecManche = [...new Set(manches.map((m) => m.lesson_id))];
+  if (avecManche.length > 0) {
+    const { data, error } = await supabase
+      .from('notions')
+      .select('id, lesson_id, status, sort_order, items(id, status)')
+      .in('lesson_id', avecManche)
+      .eq('status', 'approved')
+      .order('sort_order');
+    if (error) throw error;
+
+    const parLecon = new Map<string, Array<{ id: string; items: unknown[] }>>();
+    const notionDeItem = new Map<string, string>();
+    for (const brut of (data ?? []) as unknown as Array<{
+      id: string;
+      lesson_id: string;
+      items: Array<{ id: string; status: string }> | null;
+    }>) {
+      const items = (brut.items ?? []).filter((i) => i.status === 'approved');
+      for (const i of items) notionDeItem.set(i.id, brut.id);
+      const liste = parLecon.get(brut.lesson_id) ?? [];
+      liste.push({ id: brut.id, items });
+      parLecon.set(brut.lesson_id, liste);
+    }
+
+    for (const [lecon, notions] of parLecon) {
+      const siennes = new Set(notions.map((n) => n.id));
+      const reponses = essais
+        .map((e) => ({
+          notion_id: notionDeItem.get(e.item_id) ?? '',
+          correct: e.correct,
+          created_at: e.created_at,
+        }))
+        .filter((r) => siennes.has(r.notion_id));
+      const etat = lireValidation(
+        decouperEnSeries(notions).map((serie) => serie.map((n) => n.id)),
+        manches.filter((m) => m.lesson_id === lecon),
+        reponses,
+      );
+      if (etat.validee) leconsValidees.add(lecon);
+    }
   }
 
   const limite = new Date(Date.now() - 7 * 86_400_000).toISOString();

@@ -5,28 +5,32 @@ import type { NotionAvecItems, Question } from './paliers';
  * La manche de validation.
  *
  * Franchir les quatre étapes fait avancer ; valider la leçon certifie. La
- * validation demande la note sur note : TOUTES les questions de la leçon,
- * toutes justes. Vingt pour « Le cube ». C'est volontairement dur — une leçon
- * sue ne se récite pas à huit sur dix.
+ * validation demande le sans-faute : chaque question doit tomber juste. C'est
+ * volontairement dur — une leçon sue ne se récite pas à huit sur dix.
+ *
+ * Elle se joue en SÉRIES d'une dizaine de questions. La règle du sans-faute
+ * ne change pas d'un iota ; c'est la distance sur laquelle on l'exige qui
+ * change, et le découpage est expliqué au-dessus de decouperEnSeries.
  *
  * Trois règles de mécanique l'accompagnent, et aucune n'est cosmétique :
  *
- *   La manche va jusqu'au bout. Une faute ne l'interrompt pas : l'enfant
+ *   La série va jusqu'au bout. Une faute ne l'interrompt pas : l'enfant
  *   répond à tout, voit chaque correction, et le verdict tombe à la fin.
- *   Couper à la première erreur lui retirerait les dix-neuf explications
- *   qu'il avait encore à lire, et le punirait deux fois.
+ *   Couper à la première erreur lui retirerait les explications qu'il avait
+ *   encore à lire, et le punirait deux fois.
  *
- *   Ce qu'il a raté est ce qu'on lui redonne. Avant de reproposer la manche,
- *   on repasse sur les notions fautives seules. Rejouer vingt questions
+ *   Ce qu'il a raté est ce qu'on lui redonne. Avant de reproposer la série,
+ *   on repasse sur les notions fautives seules. Rejouer dix questions
  *   identiques pour une erreur sur les arêtes n'apprend rien sur les arêtes.
  *
- *   La validation se perd. Si une notion d'une leçon validée est ratée plus
- *   tard en révision, la manche est à refaire. C'est la seule exception au
- *   principe « rater fait revenir, pas reculer » de toute l'app, et elle est
- *   assumée : ce principe protège l'apprentissage, qui est fragile, tandis
- *   que la validation est une affirmation faite au parent. Une affirmation
- *   devenue fausse ne vaut rien. Seule la validation se perd — les étapes,
- *   les images, les étoiles et les trophées ne bougent pas.
+ *   La validation se perd. Si une notion d'une série tenue est ratée plus
+ *   tard en révision, cette série est à refaire — elle seule, pas la leçon
+ *   entière. C'est la seule exception au principe « rater fait revenir, pas
+ *   reculer » de toute l'app, et elle est assumée : ce principe protège
+ *   l'apprentissage, qui est fragile, tandis que la validation est une
+ *   affirmation faite au parent. Une affirmation devenue fausse ne vaut rien.
+ *   Seule la validation se perd — les étapes, les images, les étoiles et les
+ *   trophées ne bougent pas.
  *
  * Rien de tout cela n'est stocké comme un état. La table manches journalise
  * ce qui a été joué, et l'état s'en déduit, comme l'étape courante se déduit
@@ -51,33 +55,35 @@ import type { NotionAvecItems, Question } from './paliers';
  * validation, elle, continue d-exiger le sans-faute. On sépare la
  * récompense, qui encourage, du certificat, qui affirme au parent que
  * l-enfant sait sa leçon. Une affirmation ne se donne pas au prorata.
+ *
+ * Le découpage en séries ne change pas le prix d-une leçon : cinq étoiles
+ * par question, série par série, fait exactement le total d-avant.
  */
 
-/** La manche gagnée : cinq étoiles par question, donc proportionnelle. */
+/** La série gagnée : cinq étoiles par question, donc proportionnelle. */
 export const POINTS_PAR_QUESTION = 5;
 
 /**
  * La consolation : deux étoiles par bonne réponse, à partir de 80 %.
  *
  * Elle n-est versée que si le score BAT le meilleur déjà fait sur cette
- * leçon. Sans cette condition, rejouer indéfiniment la même manche à 24/25
- * rapporterait à chaque fois — on paierait la répétition au lieu du
- * progrès, et l-enfant n-aurait plus de raison de chercher la vingt-cinquième.
+ * série. Sans cette condition, rejouer indéfiniment la même série à 9/10
+ * rapporterait à chaque fois — on paierait la répétition au lieu du progrès,
+ * et l-enfant n-aurait plus de raison de chercher la dixième.
  */
 export const POINTS_PAR_JUSTE = 2;
 export const SEUIL_CONSOLATION = 0.8;
 
-/** Les étoiles d-une manche gagnée, proportionnelles à sa longueur. */
+/** Les étoiles d-une série gagnée, proportionnelles à sa longueur. */
 export function pointsManche(questions: number): number {
   return POINTS_PAR_QUESTION * questions;
 }
 
 /**
- * Les étoiles d-une manche ratée mais passée tout près.
+ * Les étoiles d-une série ratée mais passée tout près.
  *
  * `meilleurPrecedent` est le plus grand nombre de bonnes réponses déjà
- * obtenu sur cette leçon, manches gagnées comprises. Zéro si c-est la
- * première.
+ * obtenu sur cette série. Zéro si c-est la première.
  */
 export function pointsConsolation(
   justes: number,
@@ -91,10 +97,114 @@ export function pointsConsolation(
   return POINTS_PAR_JUSTE * justes;
 }
 
-/** Le meilleur nombre de bonnes réponses déjà obtenu sur une leçon. */
-export function meilleurJustes(manches: MancheRow[]): number {
+/**
+ * La longueur visée d-une série.
+ *
+ * Dix, parce que c-est là que le sans-faute redevient atteignable. À 96 % de
+ * justesse par question — la justesse mesurée sur les quarante premières
+ * manches — dix questions passent sans faute deux fois sur trois, contre
+ * moins de trois fois sur dix pour une leçon entière.
+ *
+ * C-est une CIBLE et non un plafond : une notion n-est jamais coupée en deux,
+ * donc une série fait la longueur des notions qu-elle contient. Une leçon de
+ * 28 questions en sept notions de quatre donne 8, 12, 8 — et non 10, 10, 8.
+ */
+export const QUESTIONS_PAR_SERIE = 10;
+
+/** Le strict nécessaire pour découper : un identifiant, un nombre de questions. */
+export type NotionComptable = { id: string; items: unknown[] };
+
+/**
+ * La leçon découpée en séries, sur les frontières de notions.
+ *
+ * Pourquoi on ne coupe pas une notion : une série doit pouvoir se dire en une
+ * phrase — « ces trois notions, complètement ». Une demi-notion ne se dit pas,
+ * et l-enfant qui rate la seconde moitié ne saurait pas quoi réviser.
+ *
+ * Le nombre de séries est fixé d-abord, à partir du total, puis les notions
+ * sont réparties pour que les séries soient aussi égales que possible : à
+ * chaque notion on se demande si fermer ici approche la cible davantage que
+ * continuer. En cas d-égalité on continue, pour ne pas laisser de moignon de
+ * trois questions à la fin.
+ *
+ * Une notion sans question approuvée est écartée. Elle ne donnerait rien à
+ * jouer, et sa présence dans la liste d-une série empêcherait cette série
+ * d-être jamais reconnue comme couverte.
+ */
+export function decouperEnSeries<T extends NotionComptable>(notions: T[]): T[][] {
+  const jouables = notions.filter((n) => n.items.length > 0);
+  const total = jouables.reduce((n, x) => n + x.items.length, 0);
+  if (total === 0) return [];
+
+  // Au plus une série par notion : une notion ne se coupe pas.
+  const combien = Math.min(
+    jouables.length,
+    Math.max(1, Math.round(total / QUESTIONS_PAR_SERIE)),
+  );
+
+  const series: T[][] = [];
+  let courante: T[] = [];
+  let dedans = 0;
+  let restant = total;
+  let aOuvrir = combien;
+
+  for (let i = 0; i < jouables.length; i++) {
+    const notion = jouables[i];
+    courante.push(notion);
+    dedans += notion.items.length;
+    restant -= notion.items.length;
+
+    const apres = jouables.length - 1 - i;
+    // La dernière série prend tout le reste ; et il faut garder au moins une
+    // notion pour chaque série encore à ouvrir.
+    if (aOuvrir <= 1 || apres < aOuvrir - 1 || apres === 0) continue;
+
+    const cible = (dedans + restant) / aOuvrir;
+    const suivante = jouables[i + 1].items.length;
+    if (Math.abs(dedans - cible) < Math.abs(dedans + suivante - cible)) {
+      series.push(courante);
+      courante = [];
+      dedans = 0;
+      aOuvrir -= 1;
+    }
+  }
+  if (courante.length > 0) series.push(courante);
+  return series;
+}
+
+/** La série est-elle entièrement couverte par cette manche jouée ? */
+function couvre(m: MancheRow, serie: string[]): boolean {
+  const notions = m.notions ?? [];
+  // Tableau vide : une manche d-avant le découpage, qui portait toute la
+  // leçon. Elle couvre donc chaque série, ce qui est exactement vrai.
+  if (notions.length === 0) return true;
+  const dans = new Set(notions);
+  return serie.every((n) => dans.has(n));
+}
+
+/** La manche jouée portait-elle exactement cette série ? */
+function memeSerie(m: MancheRow, serie: string[]): boolean {
+  const notions = m.notions ?? [];
+  if (notions.length !== serie.length) return false;
+  const dans = new Set(notions);
+  return serie.every((n) => dans.has(n));
+}
+
+/**
+ * Le meilleur nombre de bonnes réponses déjà obtenu sur une série.
+ *
+ * Seules les manches portant exactement cette série comptent : comparer les
+ * 9 justes d-une série de dix aux 28 justes d-une leçon entière interdirait
+ * toute consolation. Les manches d-avant le découpage sont donc écartées, et
+ * la première série jouée repart d-un meilleur à zéro — une consolation de
+ * plus, une seule fois, et c-est sans conséquence.
+ */
+export function meilleurJustes(manches: MancheRow[], serie: string[]): number {
   let meilleur = 0;
-  for (const m of manches) if (m.justes > meilleur) meilleur = m.justes;
+  for (const m of manches) {
+    if (!memeSerie(m, serie)) continue;
+    if (m.justes > meilleur) meilleur = m.justes;
+  }
   return meilleur;
 }
 
@@ -121,16 +231,33 @@ export function serieParfaite(manches: MancheRow[]): number {
 export const TAILLE_REPRISE = 6;
 
 export type EtatValidation = {
-  /** La leçon est validée aujourd'hui. */
+  /** La leçon est validée aujourd'hui : toutes ses séries sont tenues. */
   validee: boolean;
-  /** Date de la manche réussie, même si la validation a été perdue depuis. */
+  /** Date où la dernière série manquante est tombée, même si perdue depuis. */
   obtenueLe: string | null;
   /** La première réponse fausse qui a fait perdre la validation. */
   perdueLe: string | null;
-  /** Les notions à redonner avant de reproposer la manche. */
+  /** Les notions à redonner avant de reproposer la série en cours. */
   aReprendre: string[];
-  /** Une manche a déjà été tentée et ratée. */
+  /** La série en cours a déjà été tentée. */
   dejaTentee: boolean;
+  /**
+   * La série en cours avait été gagnée, puis une faute l'a cassée.
+   *
+   * L'écran d'annonce ne dit pas la même chose à qui tente une série pour la
+   * première fois et à qui vient la regagner. Et ce n'est pas `perdueLe`,
+   * qui ne parle que de la leçon entière : une série peut tomber alors que
+   * les autres n'ont jamais été gagnées.
+   */
+  serieARegagner: boolean;
+  /** Le rang de la série à jouer, de 1 à seriesTotal. Zéro si tout est tenu. */
+  serieEnCours: number;
+  /** Les notions de la série à jouer. */
+  notionsDeLaSerie: string[];
+  /** Combien de séries la leçon compte. */
+  seriesTotal: number;
+  /** Combien sont tenues aujourd'hui. */
+  seriesTenues: number;
 };
 
 export type MancheRow = {
@@ -139,6 +266,8 @@ export type MancheRow = {
   justes: number;
   reussie: boolean;
   notions_ratees: string[];
+  /** Les notions de la série jouée. Vide = toute la leçon (manches d'avant). */
+  notions?: string[] | null;
   created_at: string;
 };
 
@@ -168,74 +297,135 @@ function encoreARevoir(
   return [...new Set(candidates)].filter((n) => !(derniere.get(n)?.correct ?? false));
 }
 
+/** L'état d'une série : gagnée quand, cassée par quoi. */
+type EtatSerie = {
+  notions: string[];
+  gagneeLe: string | null;
+  fauteDepuis: string | null;
+  tenue: boolean;
+};
+
 /**
  * L'état de validation, déduit des manches jouées et du journal des réponses.
+ *
+ * `series` porte les notions de chaque série, dans l'ordre de la leçon. Elle
+ * est recalculée par decouperEnSeries à chaque fois, et non stockée : le
+ * découpage doit suivre la leçon si une notion y est ajoutée.
  *
  * `reponses` porte les réponses de l'enfant sur les notions de cette leçon,
  * justes et fausses, avec leur date. L'appelant les a déjà lues pour situer
  * l'étape : on ne relit pas le journal une seconde fois.
  */
-export function lireValidation(manches: MancheRow[], reponses: Reponse[]): EtatValidation {
+export function lireValidation(
+  series: string[][],
+  manches: MancheRow[],
+  reponses: Reponse[],
+): EtatValidation {
   const fausses = reponses.filter((r) => !r.correct);
+
   // Les manches arrivent de la plus récente à la plus ancienne.
-  const derniere = manches[0] ?? null;
-  const reussie = manches.find((m) => m.reussie) ?? null;
-
-  if (!reussie) {
+  const etats: EtatSerie[] = series.map((notions) => {
+    const dedans = new Set(notions);
+    const gagnante = manches.find((m) => m.reussie && couvre(m, notions)) ?? null;
+    const gagneeLe = gagnante?.created_at ?? null;
+    // Une faute postérieure à la série gagnée l'annule. On prend la première :
+    // c'est elle qui dit quand il a cessé de savoir.
+    const faute = gagneeLe
+      ? (fausses
+          .filter((f) => dedans.has(f.notion_id) && f.created_at > gagneeLe)
+          .sort((a, b) => a.created_at.localeCompare(b.created_at))[0] ?? null)
+      : null;
     return {
-      validee: false,
-      obtenueLe: null,
-      perdueLe: null,
-      aReprendre: derniere
-        ? encoreARevoir(derniere.notions_ratees, reponses, derniere.created_at)
-        : [],
-      dejaTentee: derniere !== null,
+      notions,
+      gagneeLe,
+      fauteDepuis: faute?.created_at ?? null,
+      tenue: gagneeLe !== null && faute === null,
     };
+  });
+
+  const validee = etats.length > 0 && etats.every((e) => e.tenue);
+  const rang = etats.findIndex((e) => !e.tenue);
+  const courante = rang >= 0 ? etats[rang] : null;
+
+  // « Validée le 18, perdue le 25 » ne se dit que si elle l'a vraiment été :
+  // il faut que CHAQUE série soit tombée un jour. Une seule série gagnée puis
+  // cassée sur trois n'a jamais validé la leçon.
+  const toutesTombees = etats.length > 0 && etats.every((e) => e.gagneeLe !== null);
+  const obtenueLe = toutesTombees
+    ? etats.map((e) => e.gagneeLe!).sort((a, b) => a.localeCompare(b))[etats.length - 1]
+    : null;
+  const perdueLe =
+    toutesTombees && !validee
+      ? (etats
+          .map((e) => e.fauteDepuis)
+          .filter((d): d is string => d !== null)
+          .sort((a, b) => a.localeCompare(b))[0] ?? null)
+      : null;
+
+  let aReprendre: string[] = [];
+  let dejaTentee = false;
+
+  if (courante) {
+    const dedans = new Set(courante.notions);
+    if (courante.gagneeLe !== null) {
+      // Elle était tenue : on redonne ce qui l'a fait tomber.
+      dejaTentee = true;
+      const depuis = courante.gagneeLe;
+      // Une série retentée et ratée depuis la perte dit mieux ce qui reste à
+      // revoir que les fautes de révision : elle a reposé TOUTES les
+      // questions, donc elle a vu des notions que la révision n'a pas
+      // touchées. Sans cette préférence, l'enfant retentait la série en
+      // n'ayant revu qu'une des deux notions qu'il venait de manquer.
+      const retentee =
+        manches.find(
+          (m) => !m.reussie && couvre(m, courante.notions) && m.created_at > depuis,
+        ) ?? null;
+      aReprendre = retentee
+        ? encoreARevoir(
+            retentee.notions_ratees.filter((n) => dedans.has(n)),
+            reponses,
+            retentee.created_at,
+          )
+        : encoreARevoir(
+            fausses
+              .filter((f) => dedans.has(f.notion_id) && f.created_at > depuis)
+              .map((f) => f.notion_id),
+            reponses,
+            depuis,
+          );
+    } else {
+      const derniere = manches.find((m) => couvre(m, courante.notions)) ?? null;
+      dejaTentee = derniere !== null;
+      if (derniere && !derniere.reussie) {
+        aReprendre = encoreARevoir(
+          derniere.notions_ratees.filter((n) => dedans.has(n)),
+          reponses,
+          derniere.created_at,
+        );
+      }
+    }
   }
-
-  // Une faute postérieure à la manche réussie annule la validation. On prend
-  // la première : c'est elle qui dit quand il a cessé de savoir.
-  const depuis = fausses
-    .filter((f) => f.created_at > reussie.created_at)
-    .sort((a, b) => a.created_at.localeCompare(b.created_at));
-  const perdue = depuis[0] ?? null;
-
-  if (!perdue) {
-    return {
-      validee: true,
-      obtenueLe: reussie.created_at,
-      perdueLe: null,
-      aReprendre: [],
-      dejaTentee: true,
-    };
-  }
-
-  // Validation perdue : on redonne d'abord ce qui a été raté depuis. Une
-  // manche ratée plus récente que la perte dit mieux ce qui reste à revoir.
-  const apres = manches.find((m) => !m.reussie && m.created_at > reussie.created_at);
-  const aReprendre = apres
-    ? encoreARevoir(apres.notions_ratees, reponses, apres.created_at)
-    : encoreARevoir(
-        depuis.map((f) => f.notion_id),
-        reponses,
-        reussie.created_at,
-      );
 
   return {
-    validee: false,
-    obtenueLe: reussie.created_at,
-    perdueLe: perdue.created_at,
+    validee,
+    obtenueLe,
+    perdueLe,
     aReprendre,
-    dejaTentee: true,
+    dejaTentee,
+    serieARegagner: courante !== null && courante.gagneeLe !== null,
+    serieEnCours: rang >= 0 ? rang + 1 : 0,
+    notionsDeLaSerie: courante?.notions ?? [],
+    seriesTotal: etats.length,
+    seriesTenues: etats.filter((e) => e.tenue).length,
   };
 }
 
 /**
- * Toutes les questions de la leçon, dans l'ordre où elle s'apprend.
+ * Toutes les questions des notions données, dans l'ordre où elles s'apprennent.
  *
  * Notion par notion, et à l'intérieur d'une notion de l'étape la plus facile à
  * la plus difficile. Un ordre au hasard ferait sauter l'enfant d'une notion à
- * l'autre et d'une forme de question à l'autre vingt fois de suite, ce qui est
+ * l'autre et d'une forme de question à l'autre dix fois de suite, ce qui est
  * une épreuve de souplesse et non de savoir.
  */
 export function questionsDeLaManche(notions: NotionAvecItems[]): Question[] {
@@ -247,7 +437,7 @@ export function questionsDeLaManche(notions: NotionAvecItems[]): Question[] {
   return questions;
 }
 
-/** Enregistre la manche jouée. Le verdict est le compte, pas une appréciation. */
+/** Enregistre la série jouée. Le verdict est le compte, pas une appréciation. */
 export async function enregistrerManche(params: {
   parentId: string;
   childId: string;
@@ -255,8 +445,10 @@ export async function enregistrerManche(params: {
   questions: number;
   justes: number;
   notionsRatees: string[];
+  /** Les notions de la série : sans elles, la ligne ne se déduit plus. */
+  notions: string[];
 }): Promise<void> {
-  const { parentId, childId, lessonId, questions, justes, notionsRatees } = params;
+  const { parentId, childId, lessonId, questions, justes, notionsRatees, notions } = params;
   const { error } = await supabase.from('manches').insert({
     parent_id: parentId,
     child_id: childId,
@@ -265,6 +457,7 @@ export async function enregistrerManche(params: {
     justes,
     reussie: justes === questions,
     notions_ratees: [...new Set(notionsRatees)],
+    notions: [...new Set(notions)],
   });
   if (error) throw error;
 }

@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import {
+  decouperEnSeries,
   lireValidation,
   meilleurJustes as meilleurDesManches,
   questionsDeLaManche,
@@ -148,6 +149,16 @@ export type Seance = {
    * ailleurs.
    */
   meilleurJustes: number;
+  /**
+   * Où en est la manche, série par série.
+   *
+   * `rang` est la série à jouer, `tenues` celles déjà acquises aujourd-hui.
+   * Quand `tenues` vaut `total - 1`, la série en cours est la dernière : la
+   * gagner valide la leçon, et l-écran le dit.
+   */
+  serie: { rang: number; total: number; tenues: number };
+  /** Les notions de la série en cours : c-est ce que le journal doit porter. */
+  notionsDeLaSerie: string[];
 };
 
 /**
@@ -380,8 +391,20 @@ export async function construireSeance(childId: string, lessonId: string): Promi
     .filter((r) => r.notion_id !== '');
 
   const manches = (manchesRes.data ?? []) as MancheRow[];
-  const validation = lireValidation(manches, reponses);
-  const meilleur = meilleurDesManches(manches);
+  // Le découpage se recalcule à chaque séance, et ne se stocke pas : une
+  // notion ajoutée à la leçon doit entrer dans une série, pas rester dehors.
+  const series = decouperEnSeries(notions);
+  const validation = lireValidation(
+    series.map((s) => s.map((n) => n.id)),
+    manches,
+    reponses,
+  );
+  const meilleur = meilleurDesManches(manches, validation.notionsDeLaSerie);
+  const rangSerie = {
+    rang: validation.serieEnCours,
+    total: validation.seriesTotal,
+    tenues: validation.seriesTenues,
+  };
 
   const { niveau, termine } = etapeCourante(notions, reussiesParNiveau);
   const palier = PALIERS.find((p) => p.niveau === niveau) ?? PALIERS[0];
@@ -396,7 +419,11 @@ export async function construireSeance(childId: string, lessonId: string): Promi
     !termine || validation.validee ? 'etapes' : aReprendre.length > 0 ? 'reprise' : 'manche';
 
   if (mode === 'manche') {
-    const questions = questionsDeLaManche(notions);
+    // Une seule série : celle qui n-est pas tenue. Rejouer les trente
+    // questions de la leçon pour une faute sur les arêtes était justement ce
+    // qui rendait la validation inatteignable.
+    const aJouer = series[validation.serieEnCours - 1] ?? notions;
+    const questions = questionsDeLaManche(aJouer);
     return {
       mode,
       validation,
@@ -408,6 +435,8 @@ export async function construireSeance(childId: string, lessonId: string): Promi
       questions,
       restantAprès: 0,
       meilleurJustes: meilleur,
+      serie: rangSerie,
+      notionsDeLaSerie: aJouer.map((n) => n.id),
     };
   }
 
@@ -424,6 +453,8 @@ export async function construireSeance(childId: string, lessonId: string): Promi
       questions,
       restantAprès: 0,
       meilleurJustes: meilleur,
+      serie: rangSerie,
+      notionsDeLaSerie: validation.notionsDeLaSerie,
     };
   }
 
@@ -454,5 +485,7 @@ export async function construireSeance(childId: string, lessonId: string): Promi
     questions,
     restantAprès: Math.max(0, restantes.length - questions.length),
     meilleurJustes: meilleur,
+    serie: rangSerie,
+    notionsDeLaSerie: validation.notionsDeLaSerie,
   };
 }

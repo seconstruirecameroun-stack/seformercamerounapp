@@ -168,7 +168,7 @@ function CarteForces({ r }: { r: Rapport }) {
         {r.leconsValidees > 0 ? (
           <Phrase>
             {r.leconsValidees} leçon{r.leconsValidees > 1 ? 's sont passées' : ' est passée'} par la
-            manche sans faute.
+            manche sans faute, série par série.
           </Phrase>
         ) : null}
       </ul>
@@ -274,7 +274,7 @@ function CarteDifficultes({ r }: { r: Rapport }) {
           ) : null}
           {r.manchesRatees > 0 ? (
             <Phrase>
-              {r.manchesRatees} manche{r.manchesRatees > 1 ? 's' : ''} de validation{' '}
+              {r.manchesRatees} série{r.manchesRatees > 1 ? 's' : ''} de validation{' '}
               {r.manchesRatees > 1 ? 'ont été tentées' : 'a été tentée'} sans aller au bout du
               sans-faute.
             </Phrase>
