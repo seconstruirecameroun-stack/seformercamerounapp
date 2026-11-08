@@ -131,6 +131,25 @@ export function pointsConsolation(
  */
 export const VISEE_SERIE = 15;
 
+/**
+ * Au-delà de ce nombre de questions, une leçon ne se joue plus d-un seul tenant.
+ *
+ * Sans ce plancher, les huit leçons de QUINZE questions pile — le minimum du
+ * catalogue — restaient une manche unique, puisque quinze sur quinze donne
+ * une série. C-est le seul cas où le découpage ne découpait rien, et c-était
+ * aussi le pire : à la justesse mesurée, quinze questions d-affilée passent
+ * sans faute un peu plus d-une fois sur deux, quand deux séries de sept ou
+ * huit passent chacune près de trois fois sur quatre.
+ *
+ * Il ne s-applique qu-au compte INITIAL, jamais au recompte qui suit une
+ * fermeture : une leçon de trente questions doit faire deux séries de quinze,
+ * et non trois parce que le reste de quinze se serait recoupé en deux.
+ *
+ * Quatorze et non quinze, pour que le plancher dise exactement « quinze se
+ * coupe » sans décaler les leçons plus longues d-une série.
+ */
+export const MANCHE_SEULE_MAX = 14;
+
 /** Le strict nécessaire pour découper : un identifiant, un nombre de questions. */
 export type NotionComptable = { id: string; items: unknown[] };
 
@@ -163,7 +182,8 @@ export function decouperEnSeries<T extends NotionComptable>(notions: T[]): T[][]
   // Combien de séries il reste à ouvrir, recalculé à chaque fermeture. Fixé
   // une fois pour toutes, il laissait la dernière série déborder le plafond
   // dès que les notions tombaient mal.
-  let aOuvrir = Math.max(1, Math.ceil(total / VISEE_SERIE));
+  let aOuvrir =
+    total > MANCHE_SEULE_MAX ? Math.max(2, Math.ceil(total / VISEE_SERIE)) : 1;
 
   for (let i = 0; i < jouables.length; i++) {
     const notion = jouables[i];

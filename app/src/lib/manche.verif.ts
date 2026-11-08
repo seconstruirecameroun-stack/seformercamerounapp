@@ -167,8 +167,37 @@ export function verifierManche(): number {
     'découpage : 16 questions font deux séries',
     tailles(decouperEnSeries(Array.from({ length: 8 }, (_, i) => n('n' + i, 2)))) === '8,8',
   );
-  verifie('découpage : une leçon de quinze reste une seule manche',
-    decouperEnSeries([n('a', 5), n('b', 5), n('c', 5)]).length === 1);
+  // Quinze questions pile, le minimum du catalogue : le seul cas où le
+  // découpage ne découpait rien, parce que quinze sur quinze fait une série.
+  // C'était aussi le pire — quinze d'affilée passent sans faute un peu plus
+  // d'une fois sur deux. D'où le plancher de deux séries.
+  verifie(
+    'découpage : une leçon de quinze fait deux séries',
+    tailles(decouperEnSeries([n('a', 5), n('b', 5), n('c', 5)])) === '10,5',
+  );
+  verifie(
+    'découpage : quinze en quatre notions se coupe par le milieu',
+    tailles(decouperEnSeries([n('a', 4), n('b', 4), n('c', 4), n('d', 3)])) === '8,7',
+  );
+  // Le plancher ne s'applique qu'au compte initial : sinon le reste de quinze
+  // d'une leçon de trente se recouperait, et trente ferait trois séries.
+  verifie(
+    'découpage : trente questions font deux séries, pas trois',
+    tailles(decouperEnSeries([n('a', 15), n('b', 15)])) === '15,15',
+  );
+  // Quatorze reste d'un seul tenant : le plancher dit « quinze se coupe », pas
+  // « tout se coupe ». Une leçon courte jouée en deux moitiés de sept ne
+  // prouverait rien de plus et ferait deux annonces pour rien.
+  verifie(
+    'découpage : quatorze questions restent une seule manche',
+    tailles(decouperEnSeries([n('a', 5), n('b', 5), n('c', 4)])) === '14',
+  );
+  // Une notion ne se coupe jamais : une leçon de quinze questions portées par
+  // UNE notion ne peut pas faire deux séries, et le plancher ne la force pas.
+  verifie(
+    'découpage : quinze en une seule notion restent une manche',
+    tailles(decouperEnSeries([n('a', 15)])) === '15',
+  );
   verifie(
     'découpage : une notion ne se coupe pas, même à 40 questions',
     tailles(decouperEnSeries([n('a', 40)])) === '40',

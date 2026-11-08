@@ -246,8 +246,18 @@ dessus** de la longueur divisée par quinze, puis les notions sont réparties
 aussi également que possible. Une leçon de 22 questions fait donc deux séries
 de onze, et non une de 22 ; et une série a le droit de dépasser quinze d'une
 notion, faute de quoi deux notions de huit ne pourraient jamais aller
-ensemble. Chaque série
-se joue sans faute. **Une série gagnée reste gagnée**, et ne se reperd que par
+ensemble.
+
+Avec un plancher : **au-delà de quatorze questions, une leçon ne se joue plus
+d'un seul tenant**. Sans lui, les huit leçons de quinze questions pile — le
+minimum du catalogue — restaient une manche unique, puisque quinze sur quinze
+fait une série. C'était le seul cas où le découpage ne découpait rien, et le
+pire : 54 % de sans-faute, contre près de trois sur quatre pour chacune des
+deux séries de sept ou huit qu'elles font maintenant. Le plancher ne vaut que
+pour le compte initial — une leçon de trente questions fait deux séries de
+quinze, et non trois parce que le reste de quinze se serait recoupé.
+
+Chaque série se joue sans faute. **Une série gagnée reste gagnée**, et ne se reperd que par
 la règle d'en bas. La leçon est validée quand toutes ses séries sont tenues.
 Coût moyen : une quarantaine de questions, et il ne rejoue jamais que la série
 qu'il a manquée.
