@@ -64,9 +64,9 @@ DEJA = (
 )
 
 LECONS = [
-    # ------------------------------------------------------------------ 32
+    # ------------------------------------------------------------------ 48
     (
-        'What a set is', CHAPITRE, None, 32,
+        'What a set is', CHAPITRE, None, 48,
         'A set is a collection of objects or things that are alike. The objects of a set are '
         'called its elements. A set is written inside braces, with its elements separated by '
         'commas: A = { 2, 4, 6, 8 }. And n(A) is the number of elements in the set A.',
@@ -170,9 +170,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 33
+    # ------------------------------------------------------------------ 49
     (
-        'The types of sets', CHAPITRE, None, 33,
+        'The types of sets', CHAPITRE, None, 49,
         'Sets take their name from what they hold. A unit set has one element only. A finite set '
         'can be counted to the end. An infinite set never ends. The empty set has no element at '
         'all. And the universal set U holds every element being considered.',
@@ -295,9 +295,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 34
+    # ------------------------------------------------------------------ 50
     (
-        'The signs of sets', CHAPITRE, None, 34,
+        'The signs of sets', CHAPITRE, None, 50,
         'Four signs come back in every exercise. ∈ means is an element of, and ∉ means is not. '
         '⊂ means is a subset of. ∩ is the intersection, what is common, and ∪ is the union, all '
         'together. A’ is the complement of A: everything in U that is not in A.',
@@ -396,9 +396,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 35
+    # ------------------------------------------------------------------ 51
     (
-        'Listing the elements of a set', CHAPITRE, None, 35,
+        'Listing the elements of a set', CHAPITRE, None, 51,
         'Many questions begin by asking for a list: the even numbers less than 12, the prime '
         'numbers less than 20, the factors of 18, the multiples of 5 up to 30. Each list has its '
         'own rule, and it is the rule that has to be known.',
@@ -499,9 +499,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 36
+    # ------------------------------------------------------------------ 52
     (
-        'Counting with sets', CHAPITRE, None, 36,
+        'Counting with sets', CHAPITRE, None, 52,
         'Some questions ask how many, not which. Then n(A ∪ B) = n(A) + n(B) - n(A ∩ B), because '
         'the common elements would be counted twice. And n(A’) = n(U) - n(A). At least one means '
         'everything inside the ovals; none is what is left in U.',

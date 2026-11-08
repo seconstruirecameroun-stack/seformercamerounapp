@@ -52,9 +52,9 @@ NIVEAUX_ATTENDUS = {1, 2, 3, 4}
 TAPABLE = set('abcdefghijklmnopqrstuvwxyzéèêàçùœâîôëïü0123456789.,-’')
 
 LECONS = [
-    # ------------------------------------------------------------------ 44
+    # ------------------------------------------------------------------ 60
     (
-        'Decimal place value', CHAPITRE, None, 44,
+        'Decimal place value', CHAPITRE, None, 60,
         'The decimal point separates the whole number from the parts. The first digit after the '
         'point is the tenths, the second the hundredths, the third the thousandths. In 34.728: '
         '3 is tens, 4 is units, 7 is tenths, 2 is hundredths and 8 is thousandths.',
@@ -179,9 +179,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 45
+    # ------------------------------------------------------------------ 61
     (
-        'Comparing and ordering decimals', CHAPITRE, None, 45,
+        'Comparing and ordering decimals', CHAPITRE, None, 61,
         'To compare two decimals, look at the digits from left to right, column by column. Zeros '
         'may be added at the end without changing the number: 2.5 = 2.500. So 2.500 is bigger '
         'than 2.050, which means 2.5 is bigger than 2.05.',
@@ -287,9 +287,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 46
+    # ------------------------------------------------------------------ 62
     (
-        'Rounding decimals', CHAPITRE, None, 46,
+        'Rounding decimals', CHAPITRE, None, 62,
         'To round, look at the digit just after the place you are keeping. If it is 5 or more, '
         'add 1. If it is less than 5, keep the digit as it is. To the nearest whole number check '
         'the tenths; to the nearest tenth check the hundredths; to the nearest hundredth check '
@@ -394,9 +394,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 47
+    # ------------------------------------------------------------------ 63
     (
-        'Significant figures', CHAPITRE, None, 47,
+        'Significant figures', CHAPITRE, None, 63,
         'Counting significant figures starts at the first digit that is not a zero. Keep as many '
         'digits as you are asked for, and use the next digit to round. So 526.8 to three '
         'significant figures is 527, and 0.004025 to three significant figures is 0.00403.',
@@ -506,9 +506,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 48
+    # ------------------------------------------------------------------ 64
     (
-        'Decimals and fractions', CHAPITRE, None, 48,
+        'Decimals and fractions', CHAPITRE, None, 64,
         'A decimal can be written as a fraction and back again: 0.5 = 5/10 = 1/2, 0.25 = 1/4 and '
         '0.75 = 3/4. A fraction in tenths is read straight off: 3/10 = 0.3. Others are changed '
         'into hundredths first: 7/20 = 35/100 = 0.35.',
@@ -604,9 +604,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 49
+    # ------------------------------------------------------------------ 65
     (
-        'Adding and subtracting decimals', CHAPITRE, None, 49,
+        'Adding and subtracting decimals', CHAPITRE, None, 65,
         'Line up the decimal points one under the other, add zeros if a column is empty, and '
         'then add or subtract as usual. So 4.006 + 2.940 = 6.946, and 64.80 - 5.63 = 59.17. The '
         'point of the answer sits under the others.',
@@ -709,9 +709,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 50
+    # ------------------------------------------------------------------ 66
     (
-        'Multiplying and dividing decimals', CHAPITRE, None, 50,
+        'Multiplying and dividing decimals', CHAPITRE, None, 66,
         'To multiply, multiply as if the numbers were whole, count all the decimal places of '
         'both, and put the point there: 0.08 × 4.2 = 0.336. To divide, make the divisor a whole '
         'number by multiplying both numbers by 10 or 100: 2.4 ÷ 0.08 = 240 ÷ 8 = 30.',
@@ -814,9 +814,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 51
+    # ------------------------------------------------------------------ 67
     (
-        'Decimal word problems', CHAPITRE, None, 51,
+        'Decimal word problems', CHAPITRE, None, 67,
         'The key words give the operation: altogether means add, left means subtract, each and '
         'share mean divide, times means multiply. Write the operation down before calculating, '
         'and always give the answer its unit: 48.5 kg - 20.2 kg = 28.3 kg.',

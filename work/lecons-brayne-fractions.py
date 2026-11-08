@@ -57,9 +57,9 @@ NIVEAUX_ATTENDUS = {1, 2, 3, 4}
 TAPABLE = set('abcdefghijklmnopqrstuvwxyzéèêàçùœâîôëïü0123456789.,-’')
 
 LECONS = [
-    # ------------------------------------------------------------------ 37
+    # ------------------------------------------------------------------ 53
     (
-        'What a fraction is', CHAPITRE, None, 37,
+        'What a fraction is', CHAPITRE, None, 53,
         'A fraction shows one or more equal parts of a whole. The numerator is the top number: '
         'it tells how many parts are taken. The denominator is the bottom number: it tells how '
         'many equal parts make the whole. In 3/5, 3 is the numerator and 5 is the denominator.',
@@ -159,9 +159,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 38
+    # ------------------------------------------------------------------ 54
     (
-        'The types of fractions', CHAPITRE, None, 38,
+        'The types of fractions', CHAPITRE, None, 54,
         'A proper fraction has a numerator smaller than its denominator, like 3/5. An improper '
         'fraction has a numerator as big or bigger, like 7/4. A mixed number is a whole number '
         'and a fraction, like 2 and 1/3. A unit fraction has 1 as its numerator, like 1/7.',
@@ -258,9 +258,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 39
+    # ------------------------------------------------------------------ 55
     (
-        'Equivalent fractions and comparing', CHAPITRE, None, 39,
+        'Equivalent fractions and comparing', CHAPITRE, None, 55,
         'Equivalent fractions have the same value: 1/2 = 2/4 = 3/6. You find them by multiplying '
         'or dividing the numerator and the denominator by the same number. To compare: with the '
         'same denominator, look at the numerators; with the same numerator, the smaller '
@@ -389,9 +389,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 40
+    # ------------------------------------------------------------------ 56
     (
-        'Improper fractions and mixed numbers', CHAPITRE, None, 40,
+        'Improper fractions and mixed numbers', CHAPITRE, None, 56,
         'To change an improper fraction into a mixed number, divide the numerator by the '
         'denominator: 11/4 = 2 remainder 3 = 2 and 3/4. To go back, multiply the whole number by '
         'the denominator and add the numerator: 3 and 2/5 = 17/5. Both write the same amount.',
@@ -494,9 +494,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 41
+    # ------------------------------------------------------------------ 57
     (
-        'Adding and subtracting fractions', CHAPITRE, None, 41,
+        'Adding and subtracting fractions', CHAPITRE, None, 57,
         'With the same denominator, keep the denominator and add or subtract the numerators '
         'only: 3/8 + 2/8 = 5/8. With different denominators, find a common denominator first, '
         'change each fraction, then add: 1/2 + 1/3 = 3/6 + 2/6 = 5/6.',
@@ -601,9 +601,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 42
+    # ------------------------------------------------------------------ 58
     (
-        'Multiplying and dividing fractions', CHAPITRE, None, 42,
+        'Multiplying and dividing fractions', CHAPITRE, None, 58,
         'To multiply, multiply numerator by numerator and denominator by denominator: '
         '2/3 × 5/7 = 10/21. A whole number is written over 1. To divide: keep the first fraction, '
         'change the sign to times, and turn the second one upside down: 2/3 ÷ 4/5 = 2/3 × 5/4.',
@@ -708,9 +708,9 @@ LECONS = [
         ],
     ),
 
-    # ------------------------------------------------------------------ 43
+    # ------------------------------------------------------------------ 59
     (
-        'A fraction of a quantity', CHAPITRE, None, 43,
+        'A fraction of a quantity', CHAPITRE, None, 59,
         'To find a fraction of a quantity, divide by the denominator and multiply by the '
         'numerator: 3/5 of 40 = 40 ÷ 5 × 3 = 24. What is left is 1 whole less the fraction used. '
         'Of the remainder means: first find what is left, then take that fraction of it.',
