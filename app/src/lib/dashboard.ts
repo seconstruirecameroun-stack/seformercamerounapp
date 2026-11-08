@@ -74,7 +74,7 @@ export type LeconResume = {
   /**
    * Où en est la manche, série par série.
    *
-   * La manche se joue en séries d'une dizaine de questions, chacune sans
+   * La manche se joue en séries d'une douzaine de questions, chacune sans
    * faute. La carte de la leçon le montre, sinon l'enfant ne saurait pas
    * qu'il lui reste une série et non la leçon entière.
    */

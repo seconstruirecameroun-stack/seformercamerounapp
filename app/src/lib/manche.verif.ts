@@ -105,20 +105,48 @@ const tailles = (series: Array<{ items: unknown[] }[]>) =>
 
 export function verifierManche(): number {
   // ── Le découpage en séries ───────────────────────────────────────────────
-  // Une notion n'est jamais coupée en deux, donc les séries ne font pas
-  // exactement dix : elles font la longueur des notions qu'elles contiennent.
+  // Quinze fixe le NOMBRE de séries — arrondi au-dessus — puis les notions
+  // sont réparties aussi également que possible. Une notion n'est jamais
+  // coupée en deux, donc une série peut dépasser quinze d'une notion.
 
   const dixDeTrois = decouperEnSeries(Array.from({ length: 10 }, (_, i) => n('n' + i, 3)));
-  verifie('découpage : 30 questions font trois séries', dixDeTrois.length === 3);
-  verifie('découpage : 30 questions en 9, 12, 9', tailles(dixDeTrois) === '9,12,9');
+  verifie('découpage : 30 questions font deux séries', dixDeTrois.length === 2);
+  verifie('découpage : 30 questions en 15, 15', tailles(dixDeTrois) === '15,15');
   verifie(
     'découpage : aucune notion perdue',
     dixDeTrois.flat().map((x) => x.id).join() === 'n0,n1,n2,n3,n4,n5,n6,n7,n8,n9',
   );
 
   const septDeQuatre = decouperEnSeries(Array.from({ length: 7 }, (_, i) => n('n' + i, 4)));
-  verifie('découpage : 28 questions font trois séries', septDeQuatre.length === 3);
-  verifie('découpage : 28 questions en 8, 12, 8', tailles(septDeQuatre) === '8,12,8');
+  verifie('découpage : 28 questions en 16, 12', tailles(septDeQuatre) === '16,12');
+
+  // La leçon la plus longue du catalogue : onze notions, 85 questions. Elle
+  // était inatteignable d'une traite — trois sans-faute sur cent.
+  const grande = decouperEnSeries([
+    ...Array.from({ length: 10 }, (_, i) => n('n' + i, 8)),
+    n('derniere', 5),
+  ]);
+  verifie('découpage : 85 questions font six séries', grande.length === 6);
+  verifie(
+    'découpage : 85 questions en 16, 16, 16, 16, 8, 13',
+    tailles(grande) === '16,16,16,16,8,13',
+  );
+  // Le plafond dur, essayé puis abandonné, donnait ici DIX séries de huit :
+  // deux notions de huit font seize, donc elles ne s'appariaient jamais.
+  verifie('découpage : 85 questions ne tombent pas en dix séries', grande.length < 10);
+
+  // Le dépassement existe, mais il ne vaut jamais plus d'une notion : sans
+  // cette borne, « quinze questions » ne voudrait plus rien dire.
+  verifie(
+    'découpage : jamais plus de quinze, à une notion près',
+    [dixDeTrois, septDeQuatre, grande].every((series) =>
+      series.every((s) => {
+        const total = s.reduce((t, x) => t + x.items.length, 0);
+        const derniere = s[s.length - 1].items.length;
+        return total <= 15 || total - derniere < 15;
+      }),
+    ),
+  );
 
   // Pas de moignon : le pire défaut d'un découpage glouton est de laisser
   // trois questions à la fin, qui se gagnent sans rien prouver.
@@ -129,8 +157,18 @@ export function verifierManche(): number {
     ),
   );
 
-  verifie('découpage : une leçon courte reste une seule manche',
-    decouperEnSeries([n('a', 4), n('b', 3), n('c', 3)]).length === 1);
+  // Le tiers du catalogue tient entre 15 et 24 questions. Pris comme cible,
+  // quinze les ramènerait à une seule manche : c'est tout l'objet du plafond.
+  verifie(
+    'découpage : 22 questions font deux séries, et non une',
+    tailles(decouperEnSeries(Array.from({ length: 11 }, (_, i) => n('n' + i, 2)))) === '12,10',
+  );
+  verifie(
+    'découpage : 16 questions font deux séries',
+    tailles(decouperEnSeries(Array.from({ length: 8 }, (_, i) => n('n' + i, 2)))) === '8,8',
+  );
+  verifie('découpage : une leçon de quinze reste une seule manche',
+    decouperEnSeries([n('a', 5), n('b', 5), n('c', 5)]).length === 1);
   verifie(
     'découpage : une notion ne se coupe pas, même à 40 questions',
     tailles(decouperEnSeries([n('a', 40)])) === '40',
@@ -329,10 +367,10 @@ export function verifierManche(): number {
   verifie('gain : une série courte rapporte moins', pointsManche(10) === 50);
   verifie(
     'gain : le découpage ne change pas le prix de la leçon',
-    pointsManche(9) + pointsManche(12) + pointsManche(9) === pointsManche(30),
+    pointsManche(16) + pointsManche(12) === pointsManche(28),
   );
 
-  verifie('consolation : 9/10 au premier essai', pointsConsolation(9, 10, 0) === 18);
+  verifie('consolation : 12/13 au premier essai', pointsConsolation(12, 13, 0) === 24);
   verifie('consolation : 38/40, le vrai score de BRAYNE', pointsConsolation(38, 40, 0) === 76);
   verifie(
     'consolation : refaire le même score ne rapporte rien',

@@ -8,7 +8,7 @@ import type { NotionAvecItems, Question } from './paliers';
  * validation demande le sans-faute : chaque question doit tomber juste. C'est
  * volontairement dur — une leçon sue ne se récite pas à huit sur dix.
  *
- * Elle se joue en SÉRIES d'une dizaine de questions. La règle du sans-faute
+ * Elle se joue en SÉRIES d'une douzaine de questions. La règle du sans-faute
  * ne change pas d'un iota ; c'est la distance sur laquelle on l'exige qui
  * change, et le découpage est expliqué au-dessus de decouperEnSeries.
  *
@@ -20,7 +20,7 @@ import type { NotionAvecItems, Question } from './paliers';
  *   encore à lire, et le punirait deux fois.
  *
  *   Ce qu'il a raté est ce qu'on lui redonne. Avant de reproposer la série,
- *   on repasse sur les notions fautives seules. Rejouer dix questions
+ *   on repasse sur les notions fautives seules. Rejouer douze questions
  *   identiques pour une erreur sur les arêtes n'apprend rien sur les arêtes.
  *
  *   La validation se perd. Si une notion d'une série tenue est ratée plus
@@ -69,7 +69,7 @@ export const POINTS_PAR_QUESTION = 5;
  * Elle n-est versée que si le score BAT le meilleur déjà fait sur cette
  * série. Sans cette condition, rejouer indéfiniment la même série à 9/10
  * rapporterait à chaque fois — on paierait la répétition au lieu du progrès,
- * et l-enfant n-aurait plus de raison de chercher la dixième.
+ * et l-enfant n-aurait plus de raison de chercher la dernière.
  */
 export const POINTS_PAR_JUSTE = 2;
 export const SEUIL_CONSOLATION = 0.8;
@@ -100,16 +100,36 @@ export function pointsConsolation(
 /**
  * La longueur visée d-une série.
  *
- * Dix, parce que c-est là que le sans-faute redevient atteignable. À 96 % de
- * justesse par question — la justesse mesurée sur les quarante premières
- * manches — dix questions passent sans faute deux fois sur trois, contre
- * moins de trois fois sur dix pour une leçon entière.
+ * Quinze ne sert pas à couper, il sert à COMPTER : le nombre de séries est
+ * `arrondi au-dessus de total / 15`, puis les notions sont réparties pour que
+ * les séries soient aussi égales que possible. Une leçon de 22 questions fait
+ * donc deux séries de onze, et non une de 22.
  *
- * C-est une CIBLE et non un plafond : une notion n-est jamais coupée en deux,
- * donc une série fait la longueur des notions qu-elle contient. Une leçon de
- * 28 questions en sept notions de quatre donne 8, 12, 8 — et non 10, 10, 8.
+ * Deux écueils ont été essayés avant d-en arriver là, et tous deux mesurés :
+ *
+ *   Quinze pris comme CIBLE d-arrondi ordinaire ramenait à une seule manche
+ *   les 33 leçons de 15 à 24 questions — le tiers du catalogue, et exactement
+ *   ce que le découpage corrige. D-où l-arrondi au-dessus.
+ *
+ *   Quinze pris comme PLAFOND dur cassait l-appariement : deux notions de
+ *   huit questions font seize, donc elles ne pouvaient jamais aller ensemble,
+ *   et la leçon la plus longue du catalogue — 85 questions en onze notions —
+ *   tombait en DIX séries de huit. Une série a donc le droit de dépasser
+ *   quinze d-une notion quand s-arrêter avant l-éloignerait davantage de la
+ *   longueur visée.
+ *
+ * Ce que coûte le passage de dix à quinze, dit honnêtement : à 96 % de
+ * justesse par question — la justesse mesurée sur les manches jouées — dix
+ * questions passent sans faute deux fois sur trois, treize trois fois sur
+ * cinq, quinze un peu plus d-une fois sur deux. C-est le choix du parent,
+ * fait en connaissance du chiffre : moins de séries, chacune un peu plus
+ * dure, et toujours très loin des trois fois sur dix d-une leçon entière.
+ *
+ * Une notion n-est jamais coupée en deux : une notion qui porterait à elle
+ * seule plus de quinze questions fait donc une série plus longue, et c-est
+ * assumé — la couper rendrait la série indicible.
  */
-export const QUESTIONS_PAR_SERIE = 10;
+export const VISEE_SERIE = 15;
 
 /** Le strict nécessaire pour découper : un identifiant, un nombre de questions. */
 export type NotionComptable = { id: string; items: unknown[] };
@@ -136,17 +156,14 @@ export function decouperEnSeries<T extends NotionComptable>(notions: T[]): T[][]
   const total = jouables.reduce((n, x) => n + x.items.length, 0);
   if (total === 0) return [];
 
-  // Au plus une série par notion : une notion ne se coupe pas.
-  const combien = Math.min(
-    jouables.length,
-    Math.max(1, Math.round(total / QUESTIONS_PAR_SERIE)),
-  );
-
   const series: T[][] = [];
   let courante: T[] = [];
   let dedans = 0;
   let restant = total;
-  let aOuvrir = combien;
+  // Combien de séries il reste à ouvrir, recalculé à chaque fermeture. Fixé
+  // une fois pour toutes, il laissait la dernière série déborder le plafond
+  // dès que les notions tombaient mal.
+  let aOuvrir = Math.max(1, Math.ceil(total / VISEE_SERIE));
 
   for (let i = 0; i < jouables.length; i++) {
     const notion = jouables[i];
@@ -155,17 +172,25 @@ export function decouperEnSeries<T extends NotionComptable>(notions: T[]): T[][]
     restant -= notion.items.length;
 
     const apres = jouables.length - 1 - i;
-    // La dernière série prend tout le reste ; et il faut garder au moins une
-    // notion pour chaque série encore à ouvrir.
-    if (aOuvrir <= 1 || apres < aOuvrir - 1 || apres === 0) continue;
+    if (apres === 0) continue; // la dernière série prend le reste
+
+    const suivante = jouables[i + 1].items.length;
+    // La dernière série à ouvrir prend tout le reste — et comme aOuvrir est
+    // recalculé à chaque fermeture, elle ne vaut un que si ce reste tient
+    // sous la longueur visée. Il faut aussi garder une notion pour chaque
+    // série encore à ouvrir.
+    if (aOuvrir <= 1) continue;
+    if (apres < aOuvrir - 1) continue;
 
     const cible = (dedans + restant) / aOuvrir;
-    const suivante = jouables[i + 1].items.length;
+    // On ferme ici si s-arrêter approche la longueur visée davantage que
+    // continuer. En cas d-égalité on continue, pour ne pas laisser de
+    // moignon de trois questions à la fin.
     if (Math.abs(dedans - cible) < Math.abs(dedans + suivante - cible)) {
       series.push(courante);
       courante = [];
       dedans = 0;
-      aOuvrir -= 1;
+      aOuvrir = Math.max(1, Math.ceil(restant / VISEE_SERIE));
     }
   }
   if (courante.length > 0) series.push(courante);

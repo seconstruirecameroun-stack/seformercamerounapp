@@ -228,6 +228,8 @@ l'écrase :
 | Longueur | Chance de sans-faute à 96 % |
 |---|---|
 | 10 questions | 65 % |
+| 13 questions | 59 % |
+| 15 questions | 54 % |
 | 20 questions | 42 % |
 | 30 questions | 27 % |
 | 40 questions | 18 % |
@@ -236,9 +238,15 @@ Il échouait donc sept fois sur dix, et chaque échec lui coûtait trente
 questions avant de recommencer les trente mêmes : environ **93 questions** pour
 valider une leçon.
 
-La leçon se découpe donc en **séries d'une dizaine de questions**, sur les
+La leçon se découpe donc en **séries d'une douzaine de questions**, sur les
 frontières de notions — une notion n'est jamais coupée en deux, pour qu'une
-série se dise en une phrase : « ces trois notions, complètement ». Chaque série
+série se dise en une phrase : « ces trois notions, complètement ». Quinze ne
+sert pas à couper mais à compter : le nombre de séries est l'arrondi **au-
+dessus** de la longueur divisée par quinze, puis les notions sont réparties
+aussi également que possible. Une leçon de 22 questions fait donc deux séries
+de onze, et non une de 22 ; et une série a le droit de dépasser quinze d'une
+notion, faute de quoi deux notions de huit ne pourraient jamais aller
+ensemble. Chaque série
 se joue sans faute. **Une série gagnée reste gagnée**, et ne se reperd que par
 la règle d'en bas. La leçon est validée quand toutes ses séries sont tenues.
 Coût moyen : une quarantaine de questions, et il ne rejoue jamais que la série
@@ -256,7 +264,7 @@ tenable :
   tombe à la fin. Couper à la première erreur lui retirerait les explications
   qu'il avait encore à lire, et le punirait deux fois.
 - **Ce qu'il a raté est ce qu'on lui redonne.** Avant de reproposer la série,
-  l'app fait revenir les notions fautives seules. Rejouer dix questions
+  l'app fait revenir les notions fautives seules. Rejouer douze questions
   identiques pour une erreur sur les arêtes n'apprend rien sur les arêtes.
 
 Et la validation n'est pas définitive : voir « Une validation qui se perd »

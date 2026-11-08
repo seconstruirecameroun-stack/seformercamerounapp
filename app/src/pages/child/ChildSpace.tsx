@@ -196,7 +196,7 @@ function BarreEtape({
  * que la seule chose qui compte est de n'avoir rien raté.
  *
  * Le rang de la série y figure, parce que la distance à tenir a changé : une
- * faute coûte dix questions et non trente, et l'enfant doit le savoir pendant
+ * faute coûte une douzaine de questions et non trente, et il doit le savoir pendant
  * qu'il joue, pas seulement dans l'annonce.
  */
 function BarreManche({
@@ -425,7 +425,7 @@ function Etape({
   const estManche = s.mode === 'manche';
   const estReprise = s.mode === 'reprise';
 
-  // L'enjeu s'annonce avant la première question. Lancer dix questions sans
+  // L'enjeu s'annonce avant la première question. Lancer douze questions sans
   // prévenir qu'une seule faute les annule serait un piège : l'enfant doit
   // savoir dans quoi il entre, et pouvoir y entrer quand il se sent prêt.
   //
