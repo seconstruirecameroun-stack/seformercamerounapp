@@ -1,5 +1,10 @@
 import { supabase } from './supabase';
-import { decouperEnSeries, lireValidation, type MancheRow } from './manche';
+import {
+  decouperEnSeries,
+  lireValidation,
+  type MancheRow,
+  type Naissances,
+} from './manche';
 import type { ItemKind, Json, NotionKind } from '../types/db';
 
 /**
@@ -548,7 +553,7 @@ export async function chargerRapports(
   if (avecManche.length > 0) {
     const { data, error } = await supabase
       .from('notions')
-      .select('id, lesson_id, status, sort_order, items(id, status)')
+      .select('id, lesson_id, status, sort_order, created_at, items(id, status)')
       .in('lesson_id', avecManche)
       .eq('status', 'approved')
       .order('sort_order');
@@ -556,13 +561,18 @@ export async function chargerRapports(
 
     const parLecon = new Map<string, Array<{ id: string; items: unknown[] }>>();
     const notionDeItem = new Map<string, string>();
+    // La date d-entrée de chaque notion : une manche d-avant le découpage ne
+    // couvre pas une notion ajoutée depuis.
+    const naissances: Naissances = {};
     for (const brut of (data ?? []) as unknown as Array<{
       id: string;
       lesson_id: string;
+      created_at: string;
       items: Array<{ id: string; status: string }> | null;
     }>) {
       const items = (brut.items ?? []).filter((i) => i.status === 'approved');
       for (const i of items) notionDeItem.set(i.id, brut.id);
+      naissances[brut.id] = brut.created_at;
       const liste = parLecon.get(brut.lesson_id) ?? [];
       liste.push({ id: brut.id, items });
       parLecon.set(brut.lesson_id, liste);
@@ -581,6 +591,7 @@ export async function chargerRapports(
         decouperEnSeries(notions).map((serie) => serie.map((n) => n.id)),
         manches.filter((m) => m.lesson_id === lecon),
         reponses,
+        naissances,
       );
       if (etat.validee) leconsValidees.add(lecon);
     }

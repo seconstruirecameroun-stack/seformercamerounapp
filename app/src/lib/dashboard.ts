@@ -3,6 +3,7 @@ import { etapeCourante, etapeImage, imageGagnee, reussitesParNiveau } from './pa
 import {
   decouperEnSeries,
   lireValidation,
+  type Naissances,
   serieParfaite,
   type MancheRow,
 } from './manche';
@@ -145,7 +146,8 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .from('lessons')
       .select(
         'id, title, illustration, subject_id, chapter, taught_on, subjects(label, color), ' +
-          'notions(id, statement, illustration, status, sort_order, items(id, level, status))',
+          'notions(id, statement, illustration, status, sort_order, created_at, ' +
+          'items(id, level, status))',
       )
       .eq('status', 'approved')
       .or(classe ? `class_id.eq.${classe},class_id.is.null` : 'class_id.is.null')
@@ -214,6 +216,7 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       illustration: string | null;
       status: string;
       sort_order: number | null;
+      created_at: string;
       items: Array<{ id: string; level: number; status: string }>;
     }>;
   }>;
@@ -269,10 +272,15 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       }))
       .filter((r) => r.notion_id !== '');
     const series = decouperEnSeries(avecItems).map((s) => s.map((n) => n.id));
+    // La date d-entrée de chaque notion : une manche d-avant le découpage ne
+    // couvre pas une notion ajoutée depuis.
+    const naissances: Naissances = {};
+    for (const n of notions) naissances[n.id] = n.created_at;
     const validation = lireValidation(
       series,
       manchesParLecon.get(lecon.id) ?? [],
       reponsesDeLaLecon,
+      naissances,
     );
 
     for (const n of avecItems) {

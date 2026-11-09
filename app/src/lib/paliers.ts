@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 import {
   decouperEnSeries,
   lireValidation,
+  type Naissances,
   meilleurJustes as meilleurDesManches,
   questionsDeLaManche,
   TAILLE_REPRISE,
@@ -394,10 +395,15 @@ export async function construireSeance(childId: string, lessonId: string): Promi
   // Le découpage se recalcule à chaque séance, et ne se stocke pas : une
   // notion ajoutée à la leçon doit entrer dans une série, pas rester dehors.
   const series = decouperEnSeries(notions);
+  // La date d-entrée de chaque notion : une manche d-avant le découpage ne
+  // couvre pas une notion ajoutée depuis.
+  const naissances: Naissances = {};
+  for (const n of notions) naissances[n.id] = n.created_at;
   const validation = lireValidation(
     series.map((s) => s.map((n) => n.id)),
     manches,
     reponses,
+    naissances,
   );
   const meilleur = meilleurDesManches(manches, validation.notionsDeLaSerie);
   const rangSerie = {

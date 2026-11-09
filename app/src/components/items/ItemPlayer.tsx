@@ -6,10 +6,12 @@ import { ecartMot, Enonce, LETTRES, memeMot } from './partage';
 import Clavier, { useChampActif } from './Clavier';
 import LettresMobiles from './LettresMobiles';
 import { diagrammeJouable } from '../../lib/diagramme';
+import { annotationJouable } from '../../lib/annotation';
 import { useMelange } from '../../lib/melange';
 import { accentsComptent, modeSaisie } from '../../lib/saisie';
 import type { Props } from './partage';
 import VraiFaux from './VraiFaux';
+import Annotation from './Annotation';
 import Association from './Association';
 import Diagramme from './Diagramme';
 import Dictee from './Dictee';
@@ -453,6 +455,8 @@ export function estJouable(item: ItemRow): boolean {
       );
     case 'diagramme':
       return diagrammeJouable(p, a);
+    case 'annotation':
+      return annotationJouable(p, a);
     case 'texte_a_trous':
       return (
         typeof p.text === 'string' &&
@@ -489,6 +493,8 @@ export default function ItemPlayer(props: Props) {
       return <Chronologie {...props} />;
     case 'diagramme':
       return <Diagramme {...props} />;
+    case 'annotation':
+      return <Annotation {...props} />;
     default:
       return <TexteATrous {...props} />;
   }

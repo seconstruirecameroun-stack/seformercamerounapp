@@ -27,6 +27,7 @@ export type ItemKind =
   | 'vrai_faux'
   | 'dictee'
   | 'diagramme'
+  | 'annotation'
   | 'restitution_audio'
   | 'defi_chrono';
 

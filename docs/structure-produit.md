@@ -170,6 +170,16 @@ l'ordre, et la suivante reste fermée tant que la précédente n'est pas nette.
 | 3 | Maîtrise | produire | texte à trous, dictée, mots à remettre en ordre |
 | 4 | Défi | transférer, vite | 20 secondes par question, QCM court ou vrai/faux |
 
+Une forme de plus, qui ne tient dans aucune colonne parce qu'elle est à
+elle seule l'exercice : **annoter un schéma**. Les épreuves de sciences de
+l'école la posent sans cesse — « annote l'appareil reproducteur ci-dessous »,
+« annote le schéma de la lampe » — des numéros sur un dessin et une liste à
+remplir en face. Les numéros sont **dessinés dans la figure**, par le script
+qui dessine la figure, et la base ne porte que les noms. Des coordonnées
+stockées à part finiraient par se décaler du dessin, et l'enfant répondrait à
+une question qui ne montre plus rien ; un numéro gravé dans l'image ne peut
+pas se désaligner de l'image.
+
 La dernière marche se joue au chronomètre. Partout ailleurs, presser un
 enfant qui découvre une notion l'empêche de la comprendre ; ici la notion est
 déjà sue, et c'est la vitesse qu'on vient chercher. Le temps écoulé vaut une
@@ -294,6 +304,19 @@ reste vraie quand elle est devenue fausse ne vaut rien.
 Ce qui est perdu est la validation, pas le reste : les étapes franchies, les
 images gagnées, les étoiles et les trophées ne bougent pas. L'enfant ne
 redescend pas l'escalier, il a une série à rejouer.
+
+**Et une leçon qui grandit redevient à valider, pour la part qui a grandi.**
+Les manches jouées avant le découpage en séries ne portent pas la liste de
+leurs notions : elles portaient toute la leçon. Toute la leçon **telle
+qu'elle était ce jour-là** — et c'est la précision qui manquait. On a ajouté
+deux parties à la leçon de la lampe à pétrole, le bec et la poignée de
+transport, et la leçon continuait d'afficher « validée » alors que l'enfant
+n'avait jamais vu ces deux notions. L'affirmation faite au parent était
+devenue fausse toute seule.
+
+Une manche d'avant ne couvre donc une notion que si cette notion existait
+déjà quand elle a été jouée. Une notion dont on ignore la date n'est pas
+couverte : entre sur-affirmer et faire rejouer une série, on fait rejouer.
 
 ### L'image se gagne à la troisième marche
 

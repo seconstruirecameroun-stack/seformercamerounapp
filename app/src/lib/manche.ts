@@ -217,12 +217,38 @@ export function decouperEnSeries<T extends NotionComptable>(notions: T[]): T[][]
   return series;
 }
 
-/** La série est-elle entièrement couverte par cette manche jouée ? */
-function couvre(m: MancheRow, serie: string[]): boolean {
+/**
+ * Quand chaque notion est entrée dans la leçon : son identifiant, sa date.
+ *
+ * Sans cette table, une manche d-avant le découpage couvrirait une notion
+ * ajoutée APRÈS qu-elle a été jouée. Le cas s-est produit : deux parties
+ * manquaient à la leçon de la lampe à pétrole, on les a ajoutées, et la
+ * leçon affichait toujours « validée » alors qu-il n-avait jamais vu ces
+ * deux notions-là. L-affirmation faite au parent était devenue fausse.
+ */
+export type Naissances = Record<string, string>;
+
+/**
+ * La série est-elle entièrement couverte par cette manche jouée ?
+ *
+ * Deux cas, et le second est le délicat. Une manche qui porte la liste de
+ * ses notions se lit directement. Une manche d-AVANT le découpage, elle,
+ * n-a pas de liste : elle portait toute la leçon — toute la leçon TELLE
+ * QU-ELLE ÉTAIT CE JOUR-LÀ. Elle ne couvre donc une notion que si cette
+ * notion existait déjà quand elle a été jouée.
+ *
+ * Une notion dont on ignore la date n-est pas couverte. C-est le sens de
+ * prudence : sur-affirmer fait mentir la médaille, sous-affirmer fait
+ * seulement rejouer une série. Entre les deux, on rejoue.
+ */
+function couvre(m: MancheRow, serie: string[], naissances: Naissances): boolean {
   const notions = m.notions ?? [];
-  // Tableau vide : une manche d-avant le découpage, qui portait toute la
-  // leçon. Elle couvre donc chaque série, ce qui est exactement vrai.
-  if (notions.length === 0) return true;
+  if (notions.length === 0) {
+    return serie.every((n) => {
+      const nee = naissances[n];
+      return nee !== undefined && nee < m.created_at;
+    });
+  }
   const dans = new Set(notions);
   return serie.every((n) => dans.has(n));
 }
@@ -360,18 +386,23 @@ type EtatSerie = {
  * `reponses` porte les réponses de l'enfant sur les notions de cette leçon,
  * justes et fausses, avec leur date. L'appelant les a déjà lues pour situer
  * l'étape : on ne relit pas le journal une seconde fois.
+ *
+ * `naissances` donne la date d'entrée de chaque notion dans la leçon. Elle
+ * ne sert qu'aux manches d'avant le découpage, et elle leur est
+ * indispensable : voir couvre, plus haut.
  */
 export function lireValidation(
   series: string[][],
   manches: MancheRow[],
   reponses: Reponse[],
+  naissances: Naissances,
 ): EtatValidation {
   const fausses = reponses.filter((r) => !r.correct);
 
   // Les manches arrivent de la plus récente à la plus ancienne.
   const etats: EtatSerie[] = series.map((notions) => {
     const dedans = new Set(notions);
-    const gagnante = manches.find((m) => m.reussie && couvre(m, notions)) ?? null;
+    const gagnante = manches.find((m) => m.reussie && couvre(m, notions, naissances)) ?? null;
     const gagneeLe = gagnante?.created_at ?? null;
     // Une faute postérieure à la série gagnée l'annule. On prend la première :
     // c'est elle qui dit quand il a cessé de savoir.
@@ -423,7 +454,7 @@ export function lireValidation(
       // n'ayant revu qu'une des deux notions qu'il venait de manquer.
       const retentee =
         manches.find(
-          (m) => !m.reussie && couvre(m, courante.notions) && m.created_at > depuis,
+          (m) => !m.reussie && couvre(m, courante.notions, naissances) && m.created_at > depuis,
         ) ?? null;
       aReprendre = retentee
         ? encoreARevoir(
@@ -439,7 +470,7 @@ export function lireValidation(
             depuis,
           );
     } else {
-      const derniere = manches.find((m) => couvre(m, courante.notions)) ?? null;
+      const derniere = manches.find((m) => couvre(m, courante.notions, naissances)) ?? null;
       dejaTentee = derniere !== null;
       if (derniere && !derniere.reussie) {
         aReprendre = encoreARevoir(
