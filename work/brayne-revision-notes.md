@@ -117,3 +117,44 @@ ou la partie **par son rôle et par sa place** — « quel organe accueille
 le bébé », « quelle partie contient le pétrole ». C'est l'approximation
 la plus proche, et elle est dite ici pour que personne ne la prenne pour
 l'exercice lui-même.
+
+---
+
+# Le cahier de TIC, octobre 2026
+
+Treize pages photographiées le 9 novembre au soir : les quatre séances
+d'informatique du mois d'octobre. La matière **TIC existait dans sa classe
+et ne contenait aucune leçon** — c'est la première fois qu'il a de
+l'informatique à réviser.
+
+## Une faute du cahier, écartée
+
+**La barre d'espace n'est pas la touche Shift.** Page de la frappe,
+point 3 : « The Space bar. It is used to separate words. **It is also
+called the Shift key.** » Les deux phrases ne vont pas ensemble. Ce sont
+deux touches différentes, qu'il a sous les doigts : la barre d'espace est
+la longue touche du bas, elle sépare les mots ; la touche Shift est sur le
+côté, avec une flèche, et elle sert aux majuscules.
+
+La leçon enseigne la bonne version, et **une notion entière porte la
+différence** — c'est le seul endroit du lot qui contredit son cahier. Si
+la maîtresse demande « the space bar is also called… », la réponse
+attendue sera peut-être « the Shift key ». **C'est à signaler.**
+
+## Ce qui est gardé tel quel, même si cela se discute
+
+**« Les premiers ordinateurs étaient l'abaque et la Pascaline. »** Ce sont
+des machines à calculer plus que des ordinateurs. Mais c'est le cadrage de
+l'école, et c'est ce qu'on lui demandera.
+
+**« Une extension de trois lettres. »** Vrai des six extensions du cahier
+— doc, jpg, mp3, mp4, xls, mdb — moins vrai aujourd'hui, où docx en a
+quatre. La leçon dit trois, comme le cahier, et l'explication mentionne
+qu'il en existe de quatre.
+
+**« Computer : to call people »**, sa réponse à l'exercice, a été cochée
+juste par la maîtresse. C'est défendable avec un appel par internet. La
+leçon n'en fait pas une question.
+
+La Pascaline de 1642, elle, est **juste** : Blaise Pascal, dix-neuf ans,
+pour aider son père qui comptait des impôts.
