@@ -30,8 +30,10 @@ DEUX TROUS, et ce sont les deux leçons de sciences écrites ici :
   question 4) : la leçon 34 ne porte que le déplacement, et le tableau du
   tableau noir demande les trois colonnes.
 
-L-ANGLAIS, LUI, N-EXISTAIT PAS DU TOUT. BRAYNE n-a aucune matière
-« Anglais » : ses leçons en anglais sont des leçons de sciences. Les
+L-ANGLAIS, LUI, N-EXISTAIT PAS DU TOUT. La matière « Anglais » existe
+bien dans sa classe, mais elle était VIDE : aucune leçon n-y était rangée,
+et ses leçons écrites en anglais sont des leçons de sciences. (Elle ne
+figurait donc pas dans le relevé des matières, qui compte les leçons.) Les
 trente numéros du Review exercise - adjectifs, comparatifs, relatifs,
 possessifs, réfléchis, démonstratifs, articles, contraires, synonymes - et
 le texte sur le paludisme n-avaient donc rien. Neuf leçons les portent.
