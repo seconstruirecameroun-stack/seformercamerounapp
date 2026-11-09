@@ -330,8 +330,13 @@ AJOUTS = [
 ]
 
 # (leçon, rang de la notion, kind, phrase, image, prompt, explications, questions)
+#
+# Les rangs valent 4 et 5, et non 3 et 4 : les notions de cette leçon-là
+# sont numérotées à partir de UN, et non de zéro comme celles des lots
+# récents. L-insertion a refusé le premier essai pour cette raison, avant
+# d-avoir rien écrit.
 NOTIONS_NEUVES = [
-    (LAM, 3, 'liste',
+    (LAM, 4, 'liste',
      'La lampe a aussi un bec, qui tient la mèche, et une poignée de transport, qui permet de la '
      'porter sans se brûler.',
      'br-la-bec',
@@ -352,7 +357,7 @@ NOTIONS_NEUVES = [
       ('vrai_faux', 4, {'statement': 'Le bec sert à porter la lampe.'},
        {'value': False}, 'Non, c’est la poignée de transport.')]),
 
-    (LAM, 4, 'liste',
+    (LAM, 5, 'liste',
      'Avec une lampe à pétrole, on ne verse jamais le pétrole près de la flamme, on la tient loin '
      'des enfants et des rideaux, et on l’éteint avant de dormir.',
      'br-la-precautions',
