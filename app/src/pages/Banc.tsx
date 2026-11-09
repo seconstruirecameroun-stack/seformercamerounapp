@@ -73,12 +73,21 @@ const ASSO_3 = fabriquer(
   { order: [0, 1, 2] },
 );
 
+/**
+ * Les trois schémas à annoter, lus en base.
+ *
+ * Ils se regardent ici parce que c'est le seul type dont le DESSIN est
+ * l'exercice : une vignette ne suffit pas à juger, il faut voir si les
+ * numéros se lisent et si les noms tiennent à côté.
+ */
 const ONGLETS = [
   { cle: 'probleme', titre: 'Les problemes',
     note: 'Les enonces rediges, lus en base. Une situation, puis le resultat a ecrire.' },
   { cle: 'suite', titre: 'Deux questions de suite',
     note: 'Deux paires, puis trois. Décoche la clé pour revoir le défaut.' },
   { cle: 'diagramme', titre: 'Poser les éléments', note: 'Les 3 questions lues en base.' },
+  { cle: 'annotation', titre: 'Annoter un schéma',
+    note: 'Les schémas lus en base : les numéros doivent se lire, et chaque nom trouver sa place.' },
   { cle: 'clavier', titre: 'Clavier · Défi', note: 'Étape 4 : l’accent et l’apostrophe comptent. Réponses : s’élargit · déborde.' },
   { cle: 'clavier2', titre: 'Clavier · étape 2', note: 'Même clavier, mais « eleve » est accepté ici.' },
   { cle: 'melange', titre: 'Ordre des choix', note: 'Rejoue : la bonne réponse change de place.' },
@@ -105,6 +114,16 @@ export default function Banc() {
     },
   });
 
+  const schemas = useQuery({
+    queryKey: ['banc-annotation'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('items').select('*').eq('kind', 'annotation').order('level');
+      if (error) throw error;
+      return data as ItemRow[];
+    },
+  });
+
   const live = useQuery({
     queryKey: ['banc-diagramme'],
     queryFn: async () => {
@@ -123,6 +142,8 @@ export default function Banc() {
     item = problemes.data?.[n % Math.max(1, problemes.data.length)] ?? null;
   } else if (onglet === 'suite') item = n % 2 === 0 ? ASSO_2 : ASSO_3;
   else if (onglet === 'diagramme') item = live.data?.[n % Math.max(1, live.data.length)] ?? null;
+  else if (onglet === 'annotation')
+    item = schemas.data?.[n % Math.max(1, schemas.data.length)] ?? null;
   else if (onglet === 'clavier') item = CLAVIER;
   else if (onglet === 'clavier2') item = CLAVIER_DOUX;
   else if (onglet === 'melange') item = MELANGE;
@@ -160,7 +181,8 @@ export default function Banc() {
           onClick={rejouer}
           className="rounded-full border-2 border-clay px-3 py-1 text-kid-xs font-black text-clay-dark"
         >
-          {onglet === 'diagramme' || onglet === 'suite' || onglet === 'probleme'
+          {onglet === 'diagramme' || onglet === 'annotation' || onglet === 'suite' ||
+          onglet === 'probleme'
             ? 'Question suivante'
             : 'Rejouer'}
         </button>
