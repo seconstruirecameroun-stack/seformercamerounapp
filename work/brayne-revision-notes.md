@@ -58,3 +58,62 @@ mais la contradiction est signalée.
 l'eau « through their roots and stems ». L'absorption se fait par les
 racines ; la tige conduit. La leçon dit « roots », qui est la réponse
 attendue partout ailleurs dans le cahier.
+
+---
+
+# La révision du 9 novembre 2026
+
+Onze photos de tableau, envoyées par le père à 16 h 25. Deux épreuves
+distinctes : une révision de **sciences et technologie en français**, en
+cinq parties, et un **Review exercise d'anglais**, trente numéros plus un
+texte lacunaire sur le paludisme.
+
+## 1. Trois réserves à porter au père
+
+**« sols visqueux ».** La partie IV demande d'entourer les types de sols
+étudiés en classe, dans une liste qui contient « sols visqueux ». Ce
+n'est pas un type de sol : c'est l'intrus de l'exercice. La leçon le
+garde comme intrus, jamais comme réponse, et une question porte
+précisément dessus.
+
+**La vipère est ovovivipare.** Le tableau de la partie I demande son
+« mode de reproduction ». Elle ne pond pas d'œufs : ses petits naissent
+vivants. La leçon le dit ainsi et l'explication donne le mot exact.
+**Si la maîtresse attend « ovipare », c'est le tableau qui se trompe** —
+et il vaut mieux que le père le sache avant l'épreuve.
+
+**La fin de la puberté : rien ne la donne.** La question 1b demande
+« quand débute **et s'achève** la puberté ». Sa leçon 9 donne le début —
+12 à 15 ans chez le garçon, 11 à 14 ans chez la fille — et ne dit rien
+de la fin. Aucun âge n'a été inventé : il n'est ni dans son cahier, ni
+sur les photos. **C'est la question à poser à la maîtresse.**
+
+## 2. Ce que la relecture a trouvé, forme par forme
+
+Sept des neuf points de sciences avaient déjà leur leçon. Le contenu
+était juste ; c'est la **forme** des questions qui ne couvrait pas
+l'épreuve annoncée. Ce qui manquait, et qui a été ajouté :
+
+| Leçon | Ce qui manquait |
+|---|---|
+| 9 puberté | le **tableau fille / garçon** n'était nulle part |
+| 10 organes | aucune question « le numéro 3 désigne… » |
+| 11 cycle de l'eau | les **quatre mots** du schéma ne se posaient jamais |
+| 12 eau potable | les intrus *tamiser, blanchir, tiédir, colorer* |
+| 13 compost | les intrus *piles, plastiques, tessons, clous* |
+| 14 lampe à pétrole | **le bec et la poignée de transport** manquaient, et les précautions d'usage aussi |
+| 33 points d'eau | « cite 3 actions » n'avait pas sa question |
+
+Les leçons 32 (les roches) et 34 (le déplacement des animaux) couvraient
+déjà leur partie, et n'ont rien reçu.
+
+## 3. Ce que l'application ne sait pas faire
+
+**Annoter un schéma par numéros.** Les parties I.3 et III.1 demandent de
+poser 1, 2, 3, 4, 5 sur un dessin. Le seul type de question qui fait
+poser des éléments sur une figure est le diagramme de Venn, qui ne vaut
+que pour des ensembles. Les questions ajoutées font donc nommer l'organe
+ou la partie **par son rôle et par sa place** — « quel organe accueille
+le bébé », « quelle partie contient le pétrole ». C'est l'approximation
+la plus proche, et elle est dite ici pour que personne ne la prenne pour
+l'exercice lui-même.
