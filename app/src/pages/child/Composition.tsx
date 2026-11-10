@@ -226,21 +226,32 @@ export default function Composition() {
         <span className="shrink-0 text-kid-xs font-black tabular-nums">{score}</span>
       </div>
 
-      <div className="mt-2">
-        <PlateauJouable
-          actif={phase === 'plateau'}
-          compact={phase !== 'plateau'}
-          onCoupJoue={(g) => coupJoue(g.points)}
-        />
+      {/* Pendant la question, la consigne se range À CÔTÉ du petit plateau,
+          dans la place qu'il laisse vide, au lieu de prendre une ligne
+          dessous. Sur un écran de 375 x 667 la dernière réponse d'un QCM
+          n'avait que 2 px de marge au-dessus du pli : cette ligne-là en rend
+          une trentaine. Quand le coup est gagné, le plateau reprend toute la
+          largeur et la consigne repasse dessous, centrée. */}
+      <div className="mt-2 flex flex-wrap items-center gap-x-3">
+        <div
+          className="shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+          style={{ width: phase === 'plateau' ? '100%' : '44%' }}
+        >
+          <PlateauJouable actif={phase === 'plateau'} onCoupJoue={(g) => coupJoue(g.points)} />
+        </div>
+        <p
+          className={
+            'min-w-[40%] flex-1 text-kid-xs font-bold text-muted ' +
+            (phase === 'plateau' ? 'mt-2 text-center' : 'text-left')
+          }
+        >
+          {phase === 'plateau'
+            ? 'À toi de jouer : touche deux bonbons voisins.'
+            : dernierGain > 0
+              ? `+${dernierGain} points`
+              : 'Réponds juste, et tu gagnes un coup.'}
+        </p>
       </div>
-
-      <p className="mt-2 text-center text-kid-xs font-bold text-muted">
-        {phase === 'plateau'
-          ? 'À toi de jouer : touche deux bonbons voisins.'
-          : dernierGain > 0
-            ? `+${dernierGain} points`
-            : 'Réponds juste, et tu gagnes un coup.'}
-      </p>
 
       {erreur ? <ErrorNote error={erreur} /> : null}
 
