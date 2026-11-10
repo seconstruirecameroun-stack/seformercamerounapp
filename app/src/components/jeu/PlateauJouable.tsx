@@ -38,6 +38,16 @@ const TEMPS_ECLAT = 300;
 const TEMPS_CHUTE = 380;
 /** Après quoi on montre un coup à l'enfant qui ne joue pas. */
 const TEMPS_AVANT_AIDE = 7000;
+/**
+ * Le temps pendant lequel les points RESTENT, immobiles et lisibles.
+ *
+ * C'est la partie utile de leur animation. Un nombre qui monte et s'efface
+ * dans le même mouvement ne se lit pas : on voit qu'il s'est passé quelque
+ * chose, on ne voit pas combien. À sept ans il faut ce temps d'arrêt.
+ */
+const TEMPS_LECTURE = 800;
+/** Puis ils s'en vont. */
+const TEMPS_SORTIE = 420;
 
 /** Ce qu'on crie quand la cascade enchaîne. */
 const CRIS = ['', 'Bravo !', 'Super !', 'Énorme !', 'Incroyable !'];
@@ -160,7 +170,16 @@ export default function PlateauJouable({
   const [refuses, setRefuses] = useState<Set<string>>(new Set());
   const [aide, setAide] = useState<Coup | null>(null);
   const [secousse, setSecousse] = useState(0);
-  const [vole, setVole] = useState<{ cle: number; points: number; cri: string } | null>(null);
+  /**
+   * Les points du coup en cours.
+   *
+   * `vague` ne sert qu'à relancer le petit grossissement du nombre quand une
+   * vague s'ajoute ; `points` est le TOTAL du coup, pas celui de la vague.
+   * Dans une cascade le total monte sous les yeux de l'enfant au lieu d'être
+   * remplacé trois fois en moins d'une seconde — ce qui ne se lisait pas.
+   */
+  const [vole, setVole] = useState<{ points: number; cri: string; vague: number } | null>(null);
+  const [sort, setSort] = useState(false);
   const occupe = useRef(false);
 
   // Un plateau qui redevient inactif ne garde pas une case sélectionnée :
@@ -194,7 +213,9 @@ export default function PlateauJouable({
 
     occupe.current = true;
     setAide(null);
+    setSort(false);
     let courant = grille;
+    let total = 0;
 
     for (let i = 0; i < r.etapes.length; i++) {
       const etape = r.etapes[i];
@@ -218,12 +239,13 @@ export default function PlateauJouable({
       courant = etape.apres;
       setGrille(courant);
 
-      // Les points de la vague montent au-dessus du plateau, avec le cri qui
+      // Les points s'ajoutent à ceux des vagues précédentes, avec le cri qui
       // convient : trois vagues doivent se voir autrement que deux.
+      total += etape.points;
       setVole({
-        cle: Date.now() + i,
-        points: etape.points,
+        points: total,
         cri: CRIS[Math.min(i + 1, CRIS.length - 1)] ?? '',
+        vague: i,
       });
       if (i >= 1) setSecousse(i >= 2 ? 6 : 3);
 
@@ -240,11 +262,18 @@ export default function PlateauJouable({
       onMelange?.();
     }
 
-    // Les points s'effacent d'eux-mêmes, mais le nœud n'a plus rien à faire
-    // là : on le retire, pour qu'un coup suivant reparte d'un écran propre.
-    setVole(null);
+    // Les points restent en place, le temps d'être lus. C'est ici que
+    // l'animation précédente se trompait : elle les retirait au bout de
+    // 380 ms, en pleine lecture.
+    await attendre(TEMPS_LECTURE);
+    setSort(true);
     occupe.current = false;
     onCoupJoue({ points: r.points, bonbons: r.bonbons, vagues: r.etapes.length });
+    // La sortie se joue pendant que la question suivante arrive : elle ne
+    // fait attendre personne.
+    await attendre(TEMPS_SORTIE);
+    setVole(null);
+    setSort(false);
   }
 
   function toucher(p: Position) {
@@ -276,13 +305,19 @@ export default function PlateauJouable({
     <div className="relative">
       {vole ? (
         <p
-          key={vole.cle}
           aria-hidden="true"
-          className="score-vole pointer-events-none absolute inset-x-0 top-1/3 z-20 text-center"
+          className={
+            'pointer-events-none absolute inset-x-0 top-1/3 z-20 text-center ' +
+            (sort ? 'score-part' : 'score-pose')
+          }
         >
-          <span className="rounded-full bg-ink/85 px-3 py-1 text-kid-lg font-black text-gold">
-            +{vole.points}
-            {vole.cri ? <span className="ml-2 text-white-warm">{vole.cri}</span> : null}
+          <span className="inline-flex items-center gap-2 rounded-full bg-ink/90 px-4 py-2 shadow-lg">
+            <span key={vole.vague} className="score-grandit text-3xl font-black text-gold tabular-nums">
+              +{vole.points}
+            </span>
+            {vole.cri ? (
+              <span className="text-kid-sm font-black text-white-warm">{vole.cri}</span>
+            ) : null}
           </span>
         </p>
       ) : null}
