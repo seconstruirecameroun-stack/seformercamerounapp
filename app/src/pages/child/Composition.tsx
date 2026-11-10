@@ -143,6 +143,9 @@ export default function Composition() {
   /** Une bonne réponse ouvre le plateau ; une faute passe à la suite. */
   function apresCorrection() {
     if (phase !== 'corrige') return;
+    // L'enfant a fait défiler pour répondre : le plateau, comme la question
+    // suivante, est en haut. On l'y ramène plutôt que de le laisser chercher.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (justesDeLaDerniere.current) setPhase('plateau');
     else suivante();
   }
@@ -224,7 +227,11 @@ export default function Composition() {
       </div>
 
       <div className="mt-2">
-        <PlateauJouable actif={phase === 'plateau'} onCoupJoue={(g) => coupJoue(g.points)} />
+        <PlateauJouable
+          actif={phase === 'plateau'}
+          compact={phase !== 'plateau'}
+          onCoupJoue={(g) => coupJoue(g.points)}
+        />
       </div>
 
       <p className="mt-2 text-center text-kid-xs font-bold text-muted">
@@ -253,7 +260,7 @@ export default function Composition() {
             <button
               type="button"
               onClick={apresCorrection}
-              className="mt-4 w-full rounded-full bg-ink px-4 py-3 text-kid-sm font-black text-white-warm"
+              className="sticky bottom-3 z-10 mt-4 min-h-12 w-full rounded-full bg-ink px-4 py-3 text-kid-sm font-black text-white-warm shadow-lg"
             >
               {justesDeLaDerniere.current ? 'Jouer mon coup' : 'Question suivante'}
             </button>

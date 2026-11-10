@@ -407,7 +407,7 @@ export default function FicheEnfant() {
               type="button"
               onClick={() => setFenetre(cle)}
               className={
-                'flex-1 rounded-full px-4 py-2 text-base font-bold transition-colors ' +
+                'min-h-11 flex-1 rounded-full px-4 py-2 text-base font-bold transition-colors ' +
                 (fenetre === cle ? 'bg-ink text-white-warm' : 'text-ink-2 hover:bg-paper')
               }
             >

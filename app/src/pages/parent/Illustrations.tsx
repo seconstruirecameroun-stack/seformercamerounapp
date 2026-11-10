@@ -44,7 +44,7 @@ function Consigne({ texte }: { texte: string }) {
       <p className="text-sm leading-relaxed break-words text-muted">{texte}</p>
       <button
         type="button"
-        className="mt-1 text-sm font-bold text-clay underline"
+        className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-clay underline"
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(texte);

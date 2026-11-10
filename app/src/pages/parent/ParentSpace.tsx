@@ -446,7 +446,7 @@ export default function ParentSpace() {
 
   return (
     <main className="ciel min-h-screen pb-16">
-      <div className="mx-auto grid max-w-4xl gap-5 px-4 py-6 sm:px-6">
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-5 px-4 py-6 sm:px-6">
         {/* L'en-tête porte le lionceau en petit : c'est la même maison que
             l'espace enfant, vue depuis le bureau du parent. */}
         <header className="flex flex-wrap items-center justify-between gap-3">

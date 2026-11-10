@@ -176,7 +176,10 @@ export default function NouvelleComposition() {
 
   return (
     <main className="mx-auto max-w-md p-4 pb-28">
-      <Link to={`/parent/enfant/${childId}`} className="text-kid-xs font-bold text-clay-dark">
+      <Link
+        to={`/parent/enfant/${childId}`}
+        className="inline-flex min-h-11 items-center text-kid-xs font-bold text-clay-dark"
+      >
         ← {enfant.data?.first_name}
       </Link>
       <h1 className="mt-2 text-kid-xl font-extrabold">Préparer une composition</h1>

@@ -33,7 +33,7 @@ export default function Matiere() {
 
   return (
     <main className="enfant ciel min-h-screen pb-12">
-      <div className="mx-auto grid max-w-2xl gap-4 px-4 pt-4 sm:px-6">
+      <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 px-4 pt-4 sm:px-6">
         <header className="flex items-center justify-between gap-3">
           <Link
             to={`/enfant/${childId}`}

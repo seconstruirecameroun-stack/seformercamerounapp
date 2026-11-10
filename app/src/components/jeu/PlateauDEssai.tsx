@@ -22,6 +22,9 @@ export default function PlateauDEssai() {
   const [melanges, setMelanges] = useState(0);
   const [refus, setRefus] = useState(0);
   const [dernier, setDernier] = useState<Gain | null>(null);
+  // Dans la salle, le plateau se fait petit pendant la question : le banc
+  // permet de le voir se réduire sans poser de question à personne.
+  const [petit, setPetit] = useState(false);
 
   return (
     <section className="mt-3">
@@ -37,7 +40,8 @@ export default function PlateauDEssai() {
       <div className="mt-2">
         <PlateauJouable
           key={numero}
-          actif
+          actif={!petit}
+          compact={petit}
           onCoupJoue={(g) => {
             setScore((s) => s + g.points);
             setCoups((c) => c + 1);
@@ -53,6 +57,14 @@ export default function PlateauDEssai() {
           ? `+${dernier.points} · ${dernier.bonbons} bonbons · ${dernier.vagues} vague${dernier.vagues > 1 ? 's' : ''}`
           : 'Touche deux bonbons voisins.'}
       </p>
+
+      <button
+        type="button"
+        onClick={() => setPetit((p) => !p)}
+        className="mt-3 min-h-11 w-full rounded-full border-2 border-line px-3 py-2 text-kid-xs font-black text-ink-2"
+      >
+        {petit ? 'Agrandir : c’est à moi de jouer' : 'Réduire : comme pendant une question'}
+      </button>
 
       <button
         type="button"

@@ -152,10 +152,21 @@ export type Gain = { points: number; bonbons: number; vagues: number };
 
 export default function PlateauJouable({
   actif,
+  compact = false,
   onCoupJoue,
   onRefus,
   onMelange,
 }: {
+  /**
+   * Le plateau se fait petit pendant que l'enfant répond.
+   *
+   * Sur un téléphone, un plateau de sept cases de large occupe la moitié de
+   * l'écran : la question passait sous le pli, et l'enfant devait faire
+   * défiler pour voir ses réponses — pour regarder un plateau auquel il n'a
+   * pas encore le droit de toucher. Chacun son tour : la question a l'écran
+   * quand on répond, le plateau l'a quand on joue.
+   */
+  compact?: boolean;
   /** Le plateau n'accepte un coup que si l'enfant en a gagné un. */
   actif: boolean;
   /** Appelé une fois le coup entièrement résolu, animation comprise. */
@@ -302,7 +313,10 @@ export default function PlateauJouable({
     : new Set<string>();
 
   return (
-    <div className="relative">
+    <div
+      className="relative mx-auto transition-[max-width] duration-300 ease-out motion-reduce:transition-none"
+      style={{ maxWidth: compact ? '56%' : '100%' }}
+    >
       {vole ? (
         <p
           aria-hidden="true"
@@ -324,7 +338,11 @@ export default function PlateauJouable({
 
       <div
         className={
-          'grid gap-1 rounded-[var(--radius-card)] border border-line bg-sand/50 p-1.5 ' +
+          // Sur un petit téléphone chaque pixel d'écart est pris aux cases : à 360
+          // de large (l'Android le plus courant ici), trois pixels d'écart au
+          // lieu de quatre font passer la case de 42 à 44, le minimum pour un
+          // doigt d'enfant.
+          'grid gap-[3px] rounded-[var(--radius-card)] border border-line bg-sand/50 p-1 sm:gap-1 sm:p-1.5 ' +
           (secousse > 0 ? 'plateau-secoue' : '')
         }
         style={

@@ -225,7 +225,7 @@ function MesLecons({
             replace
             to={`/enfant/${childId}`}
             className={
-              'rounded-full px-3 py-1 text-kid-xs font-black ' +
+              'inline-flex min-h-11 items-center rounded-full px-4 text-kid-xs font-black ' +
               (parDate ? 'text-ink-2' : 'bg-white-warm shadow-[var(--shadow-tile)]')
             }
           >
@@ -235,7 +235,7 @@ function MesLecons({
             replace
             to={`/enfant/${childId}#date`}
             className={
-              'rounded-full px-3 py-1 text-kid-xs font-black ' +
+              'inline-flex min-h-11 items-center rounded-full px-4 text-kid-xs font-black ' +
               (parDate ? 'bg-white-warm shadow-[var(--shadow-tile)]' : 'text-ink-2')
             }
           >
@@ -331,18 +331,24 @@ export default function ChildHome() {
 
   return (
     <main className="enfant ciel min-h-screen pb-12">
-      <div className="mx-auto grid max-w-2xl gap-4 px-4 pt-4 sm:px-6">
+      {/* grid-cols-1 vaut minmax(0, 1fr) : sans lui la colonne prend la
+          largeur du plus large de ses enfants, et un en-tête trop garni
+          (prénom, flamme, cible, 28 710 étoiles) poussait TOUTE la page de
+          vingt pixels hors d-un écran de 375. */}
+      <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 px-4 pt-4 sm:px-6">
         <header className="flex items-center justify-between gap-2">
+          {/* Le prénom cède la place aux compteurs : c-est lui qui se
+              raccourcit, pas l-écran qui s-élargit. */}
           <Link
             to="/"
-            className="flex items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-4 pl-1.5 text-kid-sm font-bold"
+            className="flex min-w-0 items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-3 pl-1.5 text-kid-sm font-bold sm:pr-4"
           >
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-lilac text-base">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-lilac text-base">
               {enfant.data?.avatar ?? prenom.slice(0, 1).toUpperCase()}
             </span>
-            {prenom}
+            <span className="truncate">{prenom}</span>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Flamme serie={d.serie} />
             {/* Les séries sans faute enchaînées, à côté de celle des jours :
                 la flamme dit qu-il revient, la cible dit qu-il réussit. */}
@@ -355,7 +361,7 @@ export default function ChildHome() {
                 {d.serieManches}
               </span>
             ) : null}
-            <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-4 py-2 text-kid-sm font-black">
+            <span className="flex items-center gap-1.5 rounded-full bg-gold/35 px-3 py-2 text-kid-sm font-black tabular-nums sm:px-4">
               <span aria-hidden="true">★</span>
               {d.points}
             </span>
