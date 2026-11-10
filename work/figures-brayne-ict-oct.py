@@ -22,7 +22,7 @@ Quatre instruments, et les cinquante figures en sortent :
   fiche/paire  repris de figures-brayne-revision-nov.py, pour les listes
                et les appariements
 
-Usage :  python work/figures-brayne-tic-oct.py
+Usage :  python work/figures-brayne-ict-oct.py
 """
 
 import importlib.util

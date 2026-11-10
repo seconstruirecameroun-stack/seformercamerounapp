@@ -100,3 +100,21 @@ l'ordinateur** — l'école, le divertissement et le commerce, l'hôpital.
 Le cahier le range parmi les outils locaux, à côté de la flûte et du
 xylophone, et c'est juste : c'est une harpe-cithare traditionnelle du
 Cameroun. Un enfant de Yaoundé doit le reconnaître dans cette liste-là.
+
+## Deux matières distinctes : TIC et ICT
+
+Les cinq leçons anglaises ont d'abord été rangées dans la matière TIC, à
+côté des françaises. **Le père a demandé la séparation**, et elle est
+meilleure : un enfant qui révise son anglais ouvre le dossier anglais, et
+il n'y trouve que de l'anglais.
+
+| Enfant | Matière | Leçons | Langue |
+|---|---|---|---|
+| KLEIN | TIC | 7 (47–53) | français |
+| KLEIN | ICT | 5 (54–58) | anglais |
+| BRAYNE | ICT | 9 (79–87) | anglais |
+
+**La TIC de BRAYNE est redevenue vide**, et c'est juste : son cours
+d'informatique est donné en anglais, son cahier porte « I.C.T », et il n'a
+pas de cours français de cette matière. Si une leçon française arrive un
+jour pour lui, le dossier l'attend.

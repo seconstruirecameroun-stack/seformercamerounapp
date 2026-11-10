@@ -37,7 +37,7 @@ fm = _charger('figures_maths', 'figures-maths.py')
 fv = _charger('figures_venn', 'figures-venn.py')
 fr = _charger('figures_revision', 'figures-brayne-revision-nov.py')
 fs = _charger('figures_schemas', 'figures-brayne-schemas-nov.py')
-fb = _charger('figures_tic_brayne', 'figures-brayne-tic-oct.py')
+fb = _charger('figures_tic_brayne', 'figures-brayne-ict-oct.py')
 
 Toile, SORTIE, S = fm.Toile, fm.SORTIE, fm.S
 INK, INK_2 = fm.INK, fm.INK_2

@@ -3,10 +3,16 @@
 Neuf leçons d-informatique pour BRAYNE (CM1) — son cahier de TIC d-octobre
 2026, treize pages photographiées le 9 novembre au soir.
 
-LA MATIÈRE ÉTAIT VIDE. « TIC » existe dans sa classe depuis le début, avec
-sa couleur, et pas une seule leçon n-y était rangée. Les quatre séances du
-cahier - le 6, le 16, le 23 et le 30 octobre - sont donc reprises en
-entier, et c-est la première fois qu-il aura de l-informatique à réviser.
+LA MATIÈRE EST « ICT », ET C-EST VOULU. Son cours est donné en anglais, et
+son cahier porte ce titre-là. Les leçons ont d-abord été rangées sous
+« TIC », la matière française qui existait dans sa classe sans contenir
+une seule leçon ; le père a demandé que les deux soient distinctes, et il
+a raison - ce ne sont pas deux langues d-un même cours chez lui, c-est un
+cours anglais et rien d-autre. Sa « TIC » est donc redevenue vide.
+
+Les quatre séances du cahier - le 6, le 16, le 23 et le 30 octobre - sont
+reprises en entier, et c-est la première fois qu-il a de l-informatique à
+réviser.
 
 L-ANGLAIS EST CELUI DU CAHIER. Tout y est écrit en anglais, jusqu-aux mots
 qu-on lui demandera de restituer : input, output, storage, extension,
@@ -37,7 +43,7 @@ CE QUI EST GARDÉ TEL QUEL, même si cela se discute :
 
 La Pascaline de 1642, elle, est juste : Blaise Pascal, dix-neuf ans.
 
-Usage :  python work/lecons-brayne-tic-oct.py
+Usage :  python work/lecons-brayne-ict-oct.py
 """
 
 import importlib.util
@@ -46,9 +52,9 @@ import json
 import os
 
 FIGURE = ('Figure composée, non générée, dessinée par '
-          'work/figures-brayne-tic-oct.py. ')
+          'work/figures-brayne-ict-oct.py. ')
 
-MATIERE = 'TIC'
+MATIERE = 'ICT'
 CLASSE = 'CM1'
 ENFANT = 'BRAYNE'
 LANGUE = 'en'
@@ -1167,7 +1173,7 @@ def verifier():
 
     ici = os.path.dirname(os.path.abspath(__file__))
     spec = importlib.util.spec_from_file_location(
-        'fig', os.path.join(ici, 'figures-brayne-tic-oct.py'))
+        'fig', os.path.join(ici, 'figures-brayne-ict-oct.py'))
     fig = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(fig)
     dessinees = {c for c, _w, _h, _f in fig.FIGURES}
@@ -1206,7 +1212,7 @@ def paquet():
 if __name__ == '__main__':
     images, items, notions, trous = verifier()
     racine = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    chemin = os.path.join(racine, 'app', 'public', 'seed-brayne-tic-oct.json')
+    chemin = os.path.join(racine, 'app', 'public', 'seed-brayne-ict-oct.json')
     io.open(chemin, 'w', encoding='utf-8', newline='\n').write(
         json.dumps(paquet(), ensure_ascii=False))
 

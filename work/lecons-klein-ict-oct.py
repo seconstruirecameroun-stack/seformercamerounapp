@@ -11,9 +11,11 @@ recouvrement est réel sur deux points - les outils locaux et modernes, et
 le téléphone - mais ce qu-on lui demandera, ce sont les MOTS ANGLAIS :
 equipment, transmit, distances, device, to register, to schedule.
 
-Les lessons sont donc rangées dans la même matière TIC, avec des chapitres
-en anglais : elles se retrouvent à côté des françaises, et la langue de
-chaque leçon dit laquelle est laquelle.
+DEUX MATIÈRES DISTINCTES, « TIC » et « ICT ». Les cinq leçons ont d-abord
+été rangées dans la matière TIC, à côté des françaises, la langue de
+chacune disant laquelle était laquelle. Le père a demandé la séparation,
+et elle est meilleure : un enfant qui révise son anglais ouvre le dossier
+anglais, et il n-y trouve que de l-anglais.
 
 CE QUE LE CAHIER ANGLAIS AJOUTE, et que le français n-avait pas :
 
@@ -44,7 +46,7 @@ import os
 FIGURE = ('Figure composée, non générée, dessinée par '
           'work/figures-klein-ict-oct.py. ')
 
-MATIERE = 'TIC'
+MATIERE = 'ICT'
 CLASSE = 'CE1'
 ENFANT = 'KLEIN'
 LANGUE = 'en'
