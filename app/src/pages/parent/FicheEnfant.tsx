@@ -364,6 +364,14 @@ export default function FicheEnfant() {
           <div className="flex flex-wrap gap-2">
             {childId ? (
               <Link
+                to={`/parent/enfant/${childId}/composition`}
+                className="tuile rounded-full border-2 border-ink bg-ink px-4 py-2 text-base font-bold text-white-warm"
+              >
+                Composition
+              </Link>
+            ) : null}
+            {childId ? (
+              <Link
                 to={`/enfant/${childId}`}
                 className="tuile rounded-full border-2 border-line bg-white-warm px-4 py-2 text-base font-bold"
               >

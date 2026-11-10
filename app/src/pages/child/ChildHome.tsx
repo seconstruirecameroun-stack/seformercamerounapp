@@ -16,6 +16,7 @@ import { AnneauObjectif, BandeRang, Flamme } from '../../components/jeu/Compteur
 import { Quetes, Trophees } from '../../components/jeu/Quetes';
 import Duel from '../../components/jeu/Duel';
 import { chargerDuel } from '../../lib/duel';
+import { compositionsDeLEnfant, etatDeLaComposition, note } from '../../lib/composition';
 import { ErrorNote, Loading } from '../../components/ui';
 
 const JOURS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -297,6 +298,12 @@ export default function ChildHome() {
     queryFn: () => chargerDuel(childId!),
   });
 
+  const compositions = useQuery({
+    queryKey: ['compositions', childId],
+    enabled: Boolean(childId),
+    queryFn: () => compositionsDeLEnfant(childId!),
+  });
+
   if (enfant.isLoading || bord.isLoading) return <Loading />;
   if (bord.error) return <ErrorNote error={bord.error} />;
 
@@ -416,6 +423,46 @@ export default function ChildHome() {
             <p className="mt-1 text-kid-sm text-muted">Demande à un parent.</p>
           </section>
         )}
+
+        {/* La composition annoncée par le parent passe AVANT l'objectif du
+            jour et avant les leçons : c'est une épreuve datée, pas une
+            révision qu'on peut remettre à demain. */}
+        {compositions.data?.filter((c) => etatDeLaComposition(c) !== 'finie').map((c) => (
+          <Link
+            key={c.id}
+            to={`/enfant/${childId}/composition/${c.id}`}
+            className="monte relative block overflow-hidden rounded-[var(--radius-card)] border-2 border-ink bg-gold/25 px-4 py-4"
+          >
+            <p className="text-kid-xs font-black tracking-wide text-clay-dark">
+              {etatDeLaComposition(c) === 'en_cours' ? 'COMPOSITION COMMENCÉE' : 'COMPOSITION'}
+            </p>
+            <h2 className="mt-1 pr-14 text-kid-lg font-extrabold">{c.titre}</h2>
+            <p className="mt-1 text-kid-sm font-bold text-ink-2">
+              {c.questions.length} questions · {c.lessons.length} leçon
+              {c.lessons.length > 1 ? 's' : ''}
+            </p>
+            <span className="absolute right-4 bottom-4 grid h-12 w-12 place-items-center rounded-full bg-ink text-xl text-white-warm shadow-[0_3px_0_var(--color-ink-2)]">
+              ▶
+            </span>
+          </Link>
+        ))}
+
+        {/* Les compositions déjà faites gardent leur note sous les yeux : une
+            note qu'on ne revoit jamais n'apprend rien. */}
+        {compositions.data?.filter((c) => etatDeLaComposition(c) === 'finie').slice(0, 2).map((c) => (
+          <section
+            key={c.id}
+            className="flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-line bg-white-warm/80 px-4 py-3"
+          >
+            <div className="min-w-0">
+              <p className="text-kid-xs font-black tracking-wide text-muted">COMPOSITION FINIE</p>
+              <p className="truncate text-kid-sm font-extrabold">{c.titre}</p>
+            </div>
+            <span className="shrink-0 text-kid-lg font-black tabular-nums">
+              {note(c.justes ?? 0, c.questions.length)}
+            </span>
+          </section>
+        ))}
 
         {/* L'objectif et la semaine dans la même carte : ce sont deux façons de
             regarder la même habitude, aujourd'hui et sur sept jours. */}

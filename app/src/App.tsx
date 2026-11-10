@@ -11,6 +11,8 @@ import PinGate from './components/PinGate';
 import ChildSpace from './pages/child/ChildSpace';
 import ChildHome from './pages/child/ChildHome';
 import Matiere from './pages/child/Matiere';
+import Composition from './pages/child/Composition';
+import NouvelleComposition from './pages/parent/NouvelleComposition';
 
 /**
  * La racine a deux visages.
@@ -81,6 +83,28 @@ export default function App() {
           element={
             <RequireParent>
               <ChildSpace />
+            </RequireParent>
+          }
+        />
+        {/* La salle de composition est du côté de l'enfant : il y entre seul,
+            sans code, comme dans une leçon. */}
+        <Route
+          path="/enfant/:childId/composition/:compositionId"
+          element={
+            <RequireParent>
+              <Composition />
+            </RequireParent>
+          }
+        />
+        {/* La préparer, en revanche, est l'affaire du parent : c'est lui qui
+            annonce les leçons, et cela vit donc derrière le code. */}
+        <Route
+          path="/parent/enfant/:childId/composition"
+          element={
+            <RequireParent>
+              <PinGate>
+                <NouvelleComposition />
+              </PinGate>
             </RequireParent>
           }
         />
