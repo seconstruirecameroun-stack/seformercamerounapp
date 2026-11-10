@@ -25,7 +25,9 @@ export function Quetes({ quetes }: { quetes: Quete[] }) {
           {finies} sur {quetes.length}
         </span>
       </div>
-      <ul className="mt-2 grid gap-2">
+      {/* grid-cols-1 : sans colonne bornée, un défi au texte long élargit la
+          liste — et la page avec — au lieu de se couper. */}
+      <ul className="mt-2 grid grid-cols-1 gap-2">
         {quetes.map((q) => {
           const fini = q.fait >= q.cible;
           return (

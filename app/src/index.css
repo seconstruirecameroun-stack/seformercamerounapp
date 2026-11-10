@@ -125,6 +125,23 @@ body {
   box-shadow: none;
 }
 
+/* Une grille sans colonne déclarée ne déborde plus.
+ *
+ * Par défaut la colonne unique d'une grille prend la largeur du plus large
+ * de ses enfants : il suffit d'un texte qui ne se coupe pas — un défi, un
+ * titre, un en-tête trop garni — pour que la liste, puis la page entière,
+ * dépassent d'un téléphone et se mettent à défiler de côté. C'est arrivé
+ * deux fois sur l'accueil de l'enfant, à 375 puis à 320 de large.
+ *
+ * La règle vit dans la couche de base : n'importe quel grid-cols-* la
+ * remplace, et les quarante-neuf grilles simples de l'app sont protégées
+ * d'un coup, celles d'aujourd'hui comme celles qui viendront. */
+@layer base {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @keyframes monte {
   from {
     opacity: 0;

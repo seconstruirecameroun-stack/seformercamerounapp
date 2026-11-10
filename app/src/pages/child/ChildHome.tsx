@@ -336,12 +336,12 @@ export default function ChildHome() {
           (prénom, flamme, cible, 28 710 étoiles) poussait TOUTE la page de
           vingt pixels hors d-un écran de 375. */}
       <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 px-4 pt-4 sm:px-6">
-        <header className="flex items-center justify-between gap-2">
+        <header className="flex flex-wrap items-center justify-between gap-2">
           {/* Le prénom cède la place aux compteurs : c-est lui qui se
               raccourcit, pas l-écran qui s-élargit. */}
           <Link
             to="/"
-            className="flex min-w-0 items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-3 pl-1.5 text-kid-sm font-bold sm:pr-4"
+            className="flex max-w-full min-w-0 items-center gap-2 rounded-full bg-white-warm/80 py-1.5 pr-3 pl-1.5 text-kid-sm font-bold sm:pr-4"
           >
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-lilac text-base">
               {enfant.data?.avatar ?? prenom.slice(0, 1).toUpperCase()}
