@@ -315,7 +315,10 @@ export default function PlateauJouable({
   return (
     <div
       className="relative mx-auto transition-[max-width] duration-300 ease-out motion-reduce:transition-none"
-      style={{ maxWidth: compact ? '56%' : '100%' }}
+      // 44 %, et pas davantage : mesuré dans la vraie salle sur un écran de
+      // 375 x 667, un plateau à 56 % laissait la dernière réponse d'un QCM
+      // de 29 à 41 px sous le pli. À 44 % les quatre réponses tiennent.
+      style={{ maxWidth: compact ? '44%' : '100%' }}
     >
       {vole ? (
         <p
