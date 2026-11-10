@@ -40,9 +40,10 @@ export default function CarteLecon({
           </p>
         ) : null}
         <h3 className="line-clamp-2 text-kid font-extrabold">{lecon.title}</h3>
-        {/* La barre passe sous les pastilles quand il lui reste moins de 64 px :
-            à 320 de large elle n'en avait plus que 22, soit une barre de
-            progression où l'on ne lit plus aucune progression. */}
+        {/* Sur téléphone la barre est TOUJOURS sous les pastilles, sur toute la
+            largeur. La laisser choisir selon la place donnait, dans une même
+            liste, trois cartes avec la barre à côté et trois avec la barre
+            dessous. À partir de 640 px elle reprend sa place à côté. */}
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5">
           <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
             {/* L'escalier se compte depuis PALIERS, jamais à la main : le jour
@@ -67,7 +68,7 @@ export default function CarteLecon({
               </span>
             ))}
           </span>
-          <span className="h-2 min-w-16 flex-1 overflow-hidden rounded-full bg-ink/15">
+          <span className="h-2 w-full overflow-hidden rounded-full bg-ink/15 sm:w-auto sm:min-w-16 sm:flex-1">
             <span
               className="block h-full rounded-full bg-gold transition-all duration-500"
               style={{ width: `${part}%` }}
