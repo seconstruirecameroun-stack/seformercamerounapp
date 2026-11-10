@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import ItemPlayer from '../components/items/ItemPlayer';
+import PlateauDEssai from '../components/jeu/PlateauDEssai';
 import { supabase } from '../lib/supabase';
 import type { ItemRow } from '../types/db';
 
@@ -88,6 +89,8 @@ const ONGLETS = [
   { cle: 'diagramme', titre: 'Poser les éléments', note: 'Les 3 questions lues en base.' },
   { cle: 'annotation', titre: 'Annoter un schéma',
     note: 'Les schémas lus en base : les numéros doivent se lire, et chaque nom trouver sa place.' },
+  { cle: 'bonbons', titre: 'Plateau de bonbons',
+    note: 'Le plateau de la salle de composition, libre : ici chaque coup est gratuit. Dans une composition, il faut une bonne réponse pour en gagner un.' },
   { cle: 'clavier', titre: 'Clavier · Défi', note: 'Étape 4 : l’accent et l’apostrophe comptent. Réponses : s’élargit · déborde.' },
   { cle: 'clavier2', titre: 'Clavier · étape 2', note: 'Même clavier, mais « eleve » est accepté ici.' },
   { cle: 'melange', titre: 'Ordre des choix', note: 'Rejoue : la bonne réponse change de place.' },
@@ -136,6 +139,35 @@ export default function Banc() {
 
   const rejouer = () => { setN((x) => x + 1); setEtat(null); };
   const actif = ONGLETS.find((o) => o.cle === onglet)!;
+
+  if (onglet === 'bonbons') {
+    return (
+      <main className="mx-auto max-w-md p-4 pb-24">
+        <p className="rounded-xl bg-sand/70 px-3 py-2 text-kid-xs font-bold text-ink">
+          Banc d’essai — rien n’est enregistré ici. Les journaux des enfants ne bougent pas.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {ONGLETS.map((o) => (
+            <button
+              key={o.cle}
+              type="button"
+              onClick={() => { setOnglet(o.cle); setN(0); setEtat(null); }}
+              className={
+                'rounded-full border-2 px-3 py-1 text-kid-xs font-black ' +
+                (o.cle === onglet
+                  ? 'border-ink bg-ink text-white-warm'
+                  : 'border-line bg-white-warm text-ink')
+              }
+            >
+              {o.titre}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-kid-xs text-muted">{actif.note}</p>
+        <PlateauDEssai />
+      </main>
+    );
+  }
 
   let item: ItemRow | null = null;
   if (onglet === 'probleme') {
