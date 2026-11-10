@@ -9,7 +9,7 @@ import { jouerSon } from '../../lib/sons';
 import { ErrorNote, Loading } from '../../components/ui';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
-import Plateau from '../../components/jeu/Plateau';
+import PlateauJouable from '../../components/jeu/PlateauJouable';
 import {
   commencerComposition,
   finirComposition,
@@ -17,17 +17,7 @@ import {
   note,
   questionsDeLaComposition,
 } from '../../lib/composition';
-import {
-  coupsPossibles,
-  jouer,
-  melangerPlateau,
-  nouveauPlateau,
-  objectifDuPlateau,
-  suggestion as coupSuggere,
-  type Coup,
-  type Plateau as Grille,
-  type Position,
-} from '../../lib/bonbons';
+import { objectifDuPlateau } from '../../lib/bonbons';
 
 /**
  * La salle de composition.
@@ -47,13 +37,6 @@ import {
  * pas, ce qui suffit : ajouter une pénalité ferait d'une erreur une double
  * punition, et l'app a déjà tranché cela pour la manche.
  */
-
-const LIGNES = 7;
-const COLONNES = 7;
-/** Le temps d'une explosion, puis de la chute : assez pour la voir. */
-const TEMPS_EXPLOSION = 260;
-/** Après quoi on montre un coup à l'enfant qui ne joue pas. */
-const TEMPS_AVANT_AIDE = 7000;
 
 type Phase = 'question' | 'corrige' | 'plateau' | 'bilan';
 
@@ -102,21 +85,13 @@ export default function Composition() {
   /** Vrai si la dernière réponse était juste : le plateau en dépend. */
   const justesDeLaDerniere = useRef(false);
   const [phase, setPhase] = useState<Phase>('question');
-  const [grille, setGrille] = useState<Grille | null>(null);
-  const [explosions, setExplosions] = useState<Position[]>([]);
   const [score, setScore] = useState(0);
-  const [aide, setAide] = useState<Coup | null>(null);
   const [erreur, setErreur] = useState<unknown>(null);
   const [dernierGain, setDernierGain] = useState(0);
   const commence = useRef(false);
 
   const total = compo.data?.questions.length ?? 0;
   const objectif = objectifDuPlateau(total);
-
-  // Le plateau de départ est tiré une fois, à l'ouverture.
-  useEffect(() => {
-    if (!grille && compo.data) setGrille(nouveauPlateau(LIGNES, COLONNES, Math.random));
-  }, [compo.data, grille]);
 
   // La composition est marquée commencée au premier affichage, et une seule
   // fois : la requête ne touche la ligne que si la date est encore vide.
@@ -128,15 +103,6 @@ export default function Composition() {
       }
     }
   }, [compo.data]);
-
-  // Le coup suggéré ne paraît qu'après une longue hésitation, et seulement
-  // quand c'est à l'enfant de jouer.
-  useEffect(() => {
-    setAide(null);
-    if (phase !== 'plateau' || !grille) return;
-    const t = setTimeout(() => setAide(coupSuggere(grille)), TEMPS_AVANT_AIDE);
-    return () => clearTimeout(t);
-  }, [phase, grille]);
 
   const suivante = useCallback(() => {
     if (index + 1 >= total) {
@@ -181,37 +147,16 @@ export default function Composition() {
     else suivante();
   }
 
-  async function jouerCoup(coup: Coup) {
-    if (phase !== 'plateau' || !grille) return;
-    const r = jouer(grille, coup, Math.random);
-    if (!r) {
-      // Un échange qui n'aligne rien ne coûte pas le coup : l'enfant
-      // réessaie. Le plateau refuse, il ne punit pas.
-      jouerSon('faux');
-      return;
-    }
-    setPhase('corrige');
-    setAide(null);
-    jouerSon('juste');
-    let courant = grille;
-    for (const etape of r.etapes) {
-      setExplosions(etape.explosions);
-      // eslint-disable-next-line no-await-in-loop
-      await new Promise((f) => setTimeout(f, TEMPS_EXPLOSION));
-      setExplosions([]);
-      courant = etape.apres;
-      setGrille(courant);
-      // eslint-disable-next-line no-await-in-loop
-      await new Promise((f) => setTimeout(f, 90));
-    }
-    // Plus aucun coup possible : on remue les bonbons présents, sans en
-    // créer ni en retirer un seul.
-    if (coupsPossibles(courant).length === 0) {
-      courant = melangerPlateau(courant, Math.random);
-      setGrille(courant);
-    }
-    setScore((s) => s + r.points);
-    setDernierGain(r.points);
+  /**
+   * Le coup est fini, animation comprise : on encaisse et on enchaîne.
+   *
+   * Le plateau porte son jeu et ses animations tout seul (PlateauJouable) ;
+   * la salle ne sait de lui que ce qu'il rapporte. Le score du plateau
+   * n'entre pas dans la note : il paie l'effort, il ne le mesure pas.
+   */
+  function coupJoue(points: number) {
+    setScore((s) => s + points);
+    setDernierGain(points);
     suivante();
   }
 
@@ -278,17 +223,9 @@ export default function Composition() {
         <span className="shrink-0 text-kid-xs font-black tabular-nums">{score}</span>
       </div>
 
-      {grille ? (
-        <div className="mt-2">
-          <Plateau
-            grille={grille}
-            actif={phase === 'plateau'}
-            explosions={explosions}
-            suggestion={aide}
-            onCoup={jouerCoup}
-          />
-        </div>
-      ) : null}
+      <div className="mt-2">
+        <PlateauJouable actif={phase === 'plateau'} onCoupJoue={(g) => coupJoue(g.points)} />
+      </div>
 
       <p className="mt-2 text-center text-kid-xs font-bold text-muted">
         {phase === 'plateau'

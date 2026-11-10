@@ -400,6 +400,178 @@ body {
   background: var(--color-ink);
 }
 
+
+/* ───────────────────────── Le plateau de bonbons ─────────────────────────
+ *
+ * Un enfant de sept ans ne joue pas pour les points : il joue pour ce qui
+ * se passe à l'écran quand il réussit. Chaque geste du plateau a donc son
+ * animation, et chacune dure moins d'une demi-seconde — une animation qu-on
+ * attend devient une corvée au dixième coup.
+ */
+
+/* Le bonbon gonfle avant d'éclater : sans ce temps de gonflement, il
+ * disparaît sans qu'on ait vu lequel partait. */
+@keyframes bonbonEclate {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  35% {
+    transform: scale(1.35) rotate(8deg);
+    filter: brightness(1.7);
+  }
+  100% {
+    transform: scale(0) rotate(-20deg);
+    filter: brightness(2.2);
+    opacity: 0;
+  }
+}
+
+.bonbon-eclate {
+  animation: bonbonEclate 280ms var(--ease-out-quint) both;
+}
+
+/* L'anneau blanc qui s'ouvre sous le bonbon qui part : c'est lui qui donne
+ * le « splash », bien plus que le bonbon lui-même. */
+@keyframes splash {
+  from {
+    opacity: 0.85;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+.splash {
+  animation: splash 320ms var(--ease-out-quint) both;
+}
+
+/* Les étoiles projetées. Chacune part dans sa direction, portée par --dx et
+ * --dy, et tourne sur elle-même. */
+@keyframes etincelle {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.2) rotate(var(--tour, 180deg));
+  }
+}
+
+.etincelle {
+  animation: etincelle 460ms var(--ease-out-quint) both;
+  animation-delay: var(--retard, 0ms);
+}
+
+/* Les bonbons qui tombent arrivent d'en haut avec un petit rebond. Le retard
+ * se règle par ligne : le haut de la colonne tombe après le bas, comme une
+ * vraie chute. */
+@keyframes bonbonTombe {
+  0% {
+    transform: translateY(-140%);
+  }
+  70% {
+    transform: translateY(6%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bonbon-tombe {
+  animation: bonbonTombe 320ms var(--ease-out-quint) both;
+  animation-delay: var(--retard, 0ms);
+}
+
+/* Les points gagnés montent et s'effacent, au-dessus du plateau. */
+@keyframes scoreVole {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-18px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-46px) scale(0.9);
+  }
+}
+
+.score-vole {
+  animation: scoreVole 1100ms var(--ease-out-quint) both;
+}
+
+/* Une grosse cascade secoue le plateau. Deux degrés d'amplitude, pour que
+ * trois vagues se distinguent de deux. */
+@keyframes plateauSecoue {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(calc(var(--force, 3px) * -1), 1px);
+  }
+  40% {
+    transform: translate(var(--force, 3px), -1px);
+  }
+  60% {
+    transform: translate(calc(var(--force, 3px) * -0.6), 1px);
+  }
+  80% {
+    transform: translate(calc(var(--force, 3px) * 0.4), 0);
+  }
+}
+
+.plateau-secoue {
+  animation: plateauSecoue 380ms ease-in-out both;
+}
+
+/* Le bonbon choisi respire : l'enfant doit voir lequel il tient. */
+@keyframes bonbonChoisi {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+  }
+}
+
+.bonbon-choisi {
+  animation: bonbonChoisi 620ms ease-in-out infinite;
+}
+
+/* Un échange qui n'aligne rien : les deux bonbons se repoussent et
+ * reviennent. Le coup n'est pas perdu, et le plateau le dit sans mot. */
+@keyframes bonbonRefuse {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+}
+
+.bonbon-refuse {
+  animation: bonbonRefuse 300ms ease-in-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .defile,
   .flamme,
@@ -411,6 +583,14 @@ body {
   .grimpe,
   .pulse-or,
   .carte-entre,
+  .bonbon-eclate,
+  .splash,
+  .etincelle,
+  .bonbon-tombe,
+  .score-vole,
+  .plateau-secoue,
+  .bonbon-choisi,
+  .bonbon-refuse,
   .monte,
   .gain,
   .revele,
