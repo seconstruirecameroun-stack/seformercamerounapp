@@ -142,6 +142,42 @@ body {
   }
 }
 
+/* Sous 360 px de large, le plateau qu'on joue va d'un bord à l'autre.
+ *
+ * Sept cases de 44 px font 308 px ; un écran de 320 n'a donc pas de quoi
+ * payer en plus les marges de la page, la bordure du plateau et des écarts
+ * de trois pixels. Le plateau sort des marges (100vw, recentré), perd ses
+ * coins ronds et ses bords latéraux, et ses écarts tombent à un pixel : la
+ * case passe de 37 à 44 px. Au-dessus de 360 rien ne change. */
+@media (max-width: 359px) {
+  .plateau-bord-a-bord {
+    width: 100vw;
+    max-width: none !important;
+    margin-left: calc(50% - 50vw);
+    margin-right: 0;
+    /* La fleur violette est un carré tourné de 45° : ses pointes dépassent
+     * sa case de près de trois pixels. Tant que le plateau avait des marges
+     * cela ne se voyait pas ; collé au bord, la dernière colonne poussait
+     * la page de 3 px et la faisait défiler de côté. On coupe au bord de
+     * l'écran, et seulement en largeur : les points qui montent restent. */
+    overflow-x: clip;
+  }
+
+  @supports not (overflow-x: clip) {
+    .plateau-bord-a-bord {
+      overflow: hidden;
+    }
+  }
+
+  .plateau-bord-a-bord > .plateau-grille {
+    gap: 1px;
+    padding: 2px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+}
+
 @keyframes monte {
   from {
     opacity: 0;

@@ -42,6 +42,7 @@ export default function PlateauDEssai() {
           key={numero}
           actif={!petit}
           compact={petit}
+          bordABord
           onCoupJoue={(g) => {
             setScore((s) => s + g.points);
             setCoups((c) => c + 1);

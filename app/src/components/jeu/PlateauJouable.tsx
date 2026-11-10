@@ -153,6 +153,7 @@ export type Gain = { points: number; bonbons: number; vagues: number };
 export default function PlateauJouable({
   actif,
   compact = false,
+  bordABord = false,
   onCoupJoue,
   onRefus,
   onMelange,
@@ -167,6 +168,17 @@ export default function PlateauJouable({
    * quand on répond, le plateau l'a quand on joue.
    */
   compact?: boolean;
+  /**
+   * Sur un très petit téléphone, le plateau qu'on joue va d'un bord de
+   * l'écran à l'autre.
+   *
+   * Sept cases de 44 px font 308 px : à 320 de large il ne reste rien pour
+   * les marges de la page. Tant que le plateau les respectait, la case
+   * tombait à 37 px — trop peu pour un doigt d'enfant qui vise un bonbon
+   * précis parmi quarante-neuf. La règle elle-même vit dans index.css et ne
+   * s'applique que sous 360 px de large.
+   */
+  bordABord?: boolean;
   /** Le plateau n'accepte un coup que si l'enfant en a gagné un. */
   actif: boolean;
   /** Appelé une fois le coup entièrement résolu, animation comprise. */
@@ -314,7 +326,10 @@ export default function PlateauJouable({
 
   return (
     <div
-      className="relative mx-auto transition-[max-width] duration-300 ease-out motion-reduce:transition-none"
+      className={
+        'relative mx-auto transition-[max-width] duration-300 ease-out motion-reduce:transition-none ' +
+        (bordABord && !compact ? 'plateau-bord-a-bord' : '')
+      }
       // 44 %, et pas davantage : mesuré dans la vraie salle sur un écran de
       // 375 x 667, un plateau à 56 % laissait la dernière réponse d'un QCM
       // de 29 à 41 px sous le pli. À 44 % les quatre réponses tiennent.
@@ -345,7 +360,7 @@ export default function PlateauJouable({
           // de large (l'Android le plus courant ici), trois pixels d'écart au
           // lieu de quatre font passer la case de 42 à 44, le minimum pour un
           // doigt d'enfant.
-          'grid gap-[3px] rounded-[var(--radius-card)] border border-line bg-sand/50 p-1 sm:gap-1 sm:p-1.5 ' +
+          'plateau-grille grid gap-[3px] rounded-[var(--radius-card)] border border-line bg-sand/50 p-1 sm:gap-1 sm:p-1.5 ' +
           (secousse > 0 ? 'plateau-secoue' : '')
         }
         style={

@@ -237,7 +237,11 @@ export default function Composition() {
           className="shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none"
           style={{ width: phase === 'plateau' ? '100%' : '44%' }}
         >
-          <PlateauJouable actif={phase === 'plateau'} onCoupJoue={(g) => coupJoue(g.points)} />
+          <PlateauJouable
+            actif={phase === 'plateau'}
+            bordABord={phase === 'plateau'}
+            onCoupJoue={(g) => coupJoue(g.points)}
+          />
         </div>
         <p
           className={

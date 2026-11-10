@@ -49,7 +49,10 @@ export default function CarteLecon({
               <span
                 key={n}
                 className={
-                  'grid h-5 w-5 place-items-center rounded-full text-[0.7rem] font-black ' +
+                  // 14 px dans une pastille de 24 : à 11 px le numéro de l'étape
+                  // se devinait plus qu'il ne se lisait, sur une carte dont
+                  // c'est pourtant l'information principale.
+                  'grid h-6 w-6 place-items-center rounded-full text-sm leading-none font-black ' +
                   (lecon.etapeTerminee || n < lecon.etape
                     ? 'bg-leaf text-white-warm'
                     : n === lecon.etape
