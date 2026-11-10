@@ -40,7 +40,10 @@ export default function CarteLecon({
           </p>
         ) : null}
         <h3 className="line-clamp-2 text-kid font-extrabold">{lecon.title}</h3>
-        <div className="mt-1.5 flex items-center gap-2">
+        {/* La barre passe sous les pastilles quand il lui reste moins de 64 px :
+            à 320 de large elle n'en avait plus que 22, soit une barre de
+            progression où l'on ne lit plus aucune progression. */}
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5">
           <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
             {/* L'escalier se compte depuis PALIERS, jamais à la main : le jour
                 où une marche est ajoutée — le Défi l'a été — une liste écrite
@@ -64,7 +67,7 @@ export default function CarteLecon({
               </span>
             ))}
           </span>
-          <span className="h-2 flex-1 overflow-hidden rounded-full bg-ink/15">
+          <span className="h-2 min-w-16 flex-1 overflow-hidden rounded-full bg-ink/15">
             <span
               className="block h-full rounded-full bg-gold transition-all duration-500"
               style={{ width: `${part}%` }}
