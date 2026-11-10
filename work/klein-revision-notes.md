@@ -61,3 +61,42 @@ Le lot en contenait deux qui ne sont pas reprises :
   de mariage, de purification, de naissance, d'introduction.
 
 Elles feront leur propre lot si le père les veut.
+
+---
+
+# Son cahier d'ICT — le même programme, en anglais
+
+Cinq pages du 8 septembre au 20 octobre 2026, envoyées une heure après
+celles de la TIC française.
+
+**Ce n'est pas un doublon, et cela en a l'air.** Son école enseigne la
+même matière dans **les deux langues**, avec deux cahiers et deux
+épreuves. Les sept leçons françaises (47 à 53) sont son cours de TIC ; les
+cinq leçons anglaises (54 à 58) sont son cours d'ICT. Le recouvrement est
+réel sur deux points — les outils locaux et modernes, et le téléphone —
+mais **ce qu'on lui demandera, ce sont les mots anglais** : *equipment,
+transmit, distances, device, to register, to schedule*.
+
+Les deux lots sont rangés dans la même matière TIC. La langue de chaque
+leçon dit laquelle est laquelle, et les chapitres anglais portent des
+titres anglais.
+
+## Ce que le cahier anglais ajoute, et que le français n'avait pas
+
+**Les trois différences entre outils locaux et modernes** — la distance
+(courte ou longue), le lieu (village ou ville), l'électricité (non
+électronique ou électronique). Le cahier français opposait les deux sortes
+sans jamais dire en quoi elles diffèrent.
+
+**Les usages des outils locaux, un par un** : la cloche donne l'heure, le
+sifflet sert aux sports et à régler la circulation, le tambour parleur et
+le gong font les annonces.
+
+**Les six usages du téléphone** et **les trois familles d'usages de
+l'ordinateur** — l'école, le divertissement et le commerce, l'hôpital.
+
+## Le mvet est gardé
+
+Le cahier le range parmi les outils locaux, à côté de la flûte et du
+xylophone, et c'est juste : c'est une harpe-cithare traditionnelle du
+Cameroun. Un enfant de Yaoundé doit le reconnaître dans cette liste-là.
