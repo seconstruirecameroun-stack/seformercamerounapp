@@ -53,6 +53,31 @@ export type LeconPourTirage = { id: string; notions: NotionPourTirage[] };
  */
 export const TAILLES = BAREMES;
 
+/**
+ * Depuis quand une composition a la forme d'une épreuve, avec son oral.
+ *
+ * Trois compositions ont été passées AVANT : vingt ou trente questions à la
+ * file, sans situation problème. Leur note est un compte sur vingt ou sur
+ * trente, et elle doit le rester — les afficher sur 24 ou sur 34, comme si
+ * elles avaient eu un oral que l'enfant n'a jamais passé, changerait une
+ * note déjà rendue. C'est arrivé le soir même du changement, et c'est le
+ * père qui aurait vu un 18 sur 20 devenir un 18 sur 24.
+ *
+ * La forme d'une composition se lit donc sur sa date de création, comme son
+ * état se lit sur ses deux autres dates : rien n'est stocké en plus.
+ */
+export const EPREUVE_DEPUIS = '2026-11-11T19:00:00Z';
+
+/** Les points d'oral de cette composition : quatre, ou aucun pour les anciennes. */
+export function pointsOralDe(c: Pick<CompositionRow, 'created_at'>): number {
+  return Date.parse(c.created_at) >= Date.parse(EPREUVE_DEPUIS) ? POINTS_ORAL : 0;
+}
+
+/** Sur combien cette composition est notée. */
+export function totalDe(c: Pick<CompositionRow, 'created_at' | 'questions'>): number {
+  return c.questions.length + pointsOralDe(c);
+}
+
 /** Combien de questions écrites tirer pour une épreuve sur `bareme` points. */
 export function questionsEcritesPour(bareme: number): number {
   return Math.max(0, bareme - POINTS_ORAL);

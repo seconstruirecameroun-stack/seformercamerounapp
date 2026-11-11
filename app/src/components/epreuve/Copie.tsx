@@ -86,13 +86,17 @@ export function Bulletin(props: {
       </section>
 
       <section className="mt-4 rounded-[var(--radius-card)] border border-line bg-white-warm/80 p-4">
+        {/* Une composition d'avant la forme d'épreuve n'a pas d'oral : on ne
+            lui invente pas une ligne « 0 / 0 ». */}
+        {props.surOral > 0 ? (
+          <div className="mb-3 flex items-baseline justify-between gap-3 border-b border-line pb-3">
+            <h2 className="text-kid-sm font-black">Oral</h2>
+            <span className="text-kid-sm font-black tabular-nums">
+              {note(props.oral, props.surOral)}
+            </span>
+          </div>
+        ) : null}
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-kid-sm font-black">Oral</h2>
-          <span className="text-kid-sm font-black tabular-nums">
-            {note(props.oral, props.surOral)}
-          </span>
-        </div>
-        <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-line pt-3">
           <h2 className="text-kid-sm font-black">Écrit</h2>
           <span className="text-kid-sm font-black tabular-nums">
             {note(props.ecrit, props.surEcrit)}

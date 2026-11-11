@@ -16,9 +16,13 @@
  */
 
 import {
+  EPREUVE_DEPUIS,
   etatDeLaComposition,
   note,
+  pointsOralDe,
+  questionsEcritesPour,
   tirerQuestions,
+  totalDe,
   type CompositionRow,
   type LeconPourTirage,
 } from './composition';
@@ -136,6 +140,28 @@ export function verifierComposition(): number {
     etatDeLaComposition({
       ...base, commencee_le: '2026-11-11T09:00:00Z', finie_le: '2026-11-11T09:20:00Z',
     }) === 'finie');
+
+  // ── Les anciennes compositions gardent leur note ─────────────────────────
+  // Trois ont été passées avant la forme d'épreuve : 18 sur 20, 19 sur 30,
+  // 22 sur 30. Elles n'ont jamais eu d'oral, et leur total ne doit pas
+  // grossir de quatre points.
+  const vingtQuestions = Array.from({ length: 20 }, (_, i) => 'q' + i);
+  const ancienne = { created_at: '2026-11-10T22:24:00+00:00', questions: vingtQuestions };
+  const derniereAncienne = { created_at: '2026-11-11T18:31:00+00:00', questions: vingtQuestions };
+  const nouvelle = { created_at: '2026-11-11T19:22:00+00:00', questions: vingtQuestions.slice(0, 16) };
+  verifie('ancienne : une composition du 10 novembre n’a pas d’oral', pointsOralDe(ancienne) === 0);
+  verifie('ancienne : elle reste notée sur ses vingt questions', totalDe(ancienne) === 20);
+  verifie('ancienne : la dernière d’avant le changement aussi', totalDe(derniereAncienne) === 20);
+  verifie('nouvelle : une composition d’après a ses quatre points d’oral',
+    pointsOralDe(nouvelle) === 4);
+  verifie('nouvelle : seize questions écrites font une épreuve sur 20', totalDe(nouvelle) === 20);
+  verifie('nouvelle : la date pivot elle-même est du nouveau format',
+    pointsOralDe({ created_at: EPREUVE_DEPUIS }) === 4);
+  verifie('nouvelle : le fuseau de la date ne change rien',
+    pointsOralDe({ created_at: '2026-11-11T20:30:00+01:00' }) === 4 &&
+      pointsOralDe({ created_at: '2026-11-11T19:30:00+01:00' }) === 0);
+  verifie('barème : une épreuve sur 30 tire 26 questions écrites', questionsEcritesPour(30) === 26);
+  verifie('barème : une épreuve sur 20 en tire 16', questionsEcritesPour(20) === 16);
 
   console.log(echecs === 0 ? '\nTout passe.' : '\n' + echecs + ' échec(s).');
   return echecs;

@@ -13,6 +13,7 @@ import {
   questionsEcritesPour,
   supprimerComposition,
   tirerQuestions,
+  totalDe,
   type LeconPourTirage,
 } from '../../lib/composition';
 import { POINTS_ORAL, mention, totalDeLEpreuve } from '../../lib/epreuve';
@@ -204,10 +205,10 @@ export default function NouvelleComposition() {
                 <p className="truncate text-kid-sm font-bold">{c.titre}</p>
                 <p className="text-kid-xs text-muted">
                   {etatDeLaComposition(c) === 'finie'
-                    ? `Finie · ${note(c.justes ?? 0, totalDeLEpreuve(c.questions.length))} · ${mention(c.justes ?? 0, totalDeLEpreuve(c.questions.length))}`
+                    ? `Finie · ${note(c.justes ?? 0, totalDe(c))} · ${mention(c.justes ?? 0, totalDe(c))}`
                     : etatDeLaComposition(c) === 'en_cours'
                       ? 'Commencée'
-                      : `À faire · sur ${totalDeLEpreuve(c.questions.length)} points`}
+                      : `À faire · sur ${totalDe(c)} points`}
                 </p>
               </div>
               {etatDeLaComposition(c) === 'a_faire' ? (

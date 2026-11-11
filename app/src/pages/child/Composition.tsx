@@ -16,6 +16,7 @@ import {
   epreuveDeLaComposition,
   finirComposition,
   lireComposition,
+  pointsOralDe,
 } from '../../lib/composition';
 import { matiereDeLEpreuve, situationProbleme, type Exercice } from '../../lib/epreuve';
 import { objectifDuPlateau } from '../../lib/bonbons';
@@ -114,7 +115,11 @@ export default function Composition() {
   // exercice de l'écrit.
   const etapes = useMemo<Etape[]>(() => {
     if (!compo.data || !situation) return [];
-    const sortie: Etape[] = situation.oral.map((q, i) => ({
+    // Une composition d'avant la forme d'épreuve n'a pas d'oral : elle se
+    // rejoue comme elle a été créée, et sa note reste sur ses seules
+    // questions.
+    const oral = situation.oral.slice(0, pointsOralDe(compo.data.composition));
+    const sortie: Etape[] = oral.map((q, i) => ({
       genre: 'oral' as const,
       item: itemOral(i, q.question, q.options),
       rang: i + 1,
@@ -245,7 +250,8 @@ export default function Composition() {
   const { composition, epreuve } = compo.data;
   const rang = rangDeLaClasse(enfant.data?.classes);
   const matiere = matiereDeLEpreuve(epreuve.lecons);
-  const nbEcrit = total - situation.oral.length;
+  const nbOral = pointsOralDe(composition);
+  const nbEcrit = total - nbOral;
   const quand = new Date().toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'long',
@@ -273,7 +279,7 @@ export default function Composition() {
         <div className="mt-4">{enTete}</div>
 
         <div className="mt-4">
-          <SituationProbleme texte={situation.texte} oral={situation.oral.length} ecrit={nbEcrit} />
+          <SituationProbleme texte={situation.texte} oral={nbOral} ecrit={nbEcrit} />
         </div>
 
         <div className="fixed inset-x-0 bottom-0 border-t border-line bg-paper/95 p-3 backdrop-blur">
@@ -307,7 +313,7 @@ export default function Composition() {
         <div className="mt-4">
           <Bulletin
             oral={points.current.oral}
-            surOral={situation.oral.length}
+            surOral={nbOral}
             ecrit={points.current.ecrit}
             surEcrit={nbEcrit}
             exercices={epreuve.exercices.map((ex) => ({
@@ -338,7 +344,7 @@ export default function Composition() {
   const etape = etapes[index];
   const partie =
     etape.genre === 'oral'
-      ? `Oral · ${etape.rang} / ${situation.oral.length}`
+      ? `Oral · ${etape.rang} / ${nbOral}`
       : `Exercice ${etape.exercice.numero} · ${etape.rang} / ${etape.exercice.questions.length}`;
 
   return (
