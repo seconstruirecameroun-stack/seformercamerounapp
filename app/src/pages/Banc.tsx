@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import ItemPlayer from '../components/items/ItemPlayer';
 import PlateauDEssai from '../components/jeu/PlateauDEssai';
+import CopieDEssai from '../components/epreuve/CopieDEssai';
 import { supabase } from '../lib/supabase';
 import type { ItemRow } from '../types/db';
 
@@ -91,6 +92,8 @@ const ONGLETS = [
     note: 'Les schémas lus en base : les numéros doivent se lire, et chaque nom trouver sa place.' },
   { cle: 'bonbons', titre: 'Plateau de bonbons',
     note: 'Le plateau de la salle de composition, libre : ici chaque coup est gratuit. Dans une composition, il faut une bonne réponse pour en gagner un.' },
+  { cle: 'copie', titre: 'Copie de composition',
+    note: 'L’en-tête, la situation problème et le bulletin d’une épreuve sur 30, avec des points inventés.' },
   { cle: 'clavier', titre: 'Clavier · Défi', note: 'Étape 4 : l’accent et l’apostrophe comptent. Réponses : s’élargit · déborde.' },
   { cle: 'clavier2', titre: 'Clavier · étape 2', note: 'Même clavier, mais « eleve » est accepté ici.' },
   { cle: 'melange', titre: 'Ordre des choix', note: 'Rejoue : la bonne réponse change de place.' },
@@ -140,7 +143,7 @@ export default function Banc() {
   const rejouer = () => { setN((x) => x + 1); setEtat(null); };
   const actif = ONGLETS.find((o) => o.cle === onglet)!;
 
-  if (onglet === 'bonbons') {
+  if (onglet === 'bonbons' || onglet === 'copie') {
     return (
       <main className="mx-auto max-w-md p-4 pb-24">
         <p className="rounded-xl bg-sand/70 px-3 py-2 text-kid-xs font-bold text-ink">
@@ -164,7 +167,7 @@ export default function Banc() {
           ))}
         </div>
         <p className="mt-2 text-kid-xs text-muted">{actif.note}</p>
-        <PlateauDEssai />
+        {actif.cle === 'copie' ? <CopieDEssai /> : <PlateauDEssai />}
       </main>
     );
   }

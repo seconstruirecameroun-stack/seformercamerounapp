@@ -10,10 +10,12 @@ import {
   creerComposition,
   etatDeLaComposition,
   note,
+  questionsEcritesPour,
   supprimerComposition,
   tirerQuestions,
   type LeconPourTirage,
 } from '../../lib/composition';
+import { POINTS_ORAL, mention, totalDeLEpreuve } from '../../lib/epreuve';
 
 /**
  * Préparer une composition.
@@ -45,7 +47,7 @@ export default function NouvelleComposition() {
   const parentId = session?.user.id ?? null;
 
   const [cochees, setCochees] = useState<Set<string>>(new Set());
-  const [taille, setTaille] = useState<number>(20);
+  const [taille, setTaille] = useState<number>(30);
   const [titre, setTitre] = useState('');
   const [erreur, setErreur] = useState<unknown>(null);
   const [envoi, setEnvoi] = useState(false);
@@ -132,9 +134,12 @@ export default function NouvelleComposition() {
 
   const choisies = (lecons.data ?? []).filter((l) => cochees.has(l.id));
   const disponibles = choisies.reduce((t, l) => t + l.questions, 0);
-  // Ce que l'app tirera vraiment : inutile d'annoncer trente questions
-  // quand les leçons cochées n'en portent que dix-huit.
-  const vraiment = Math.min(taille, disponibles);
+  // Le barème compte l'oral : une épreuve sur 30, ce sont 26 questions
+  // écrites et les 4 de la situation problème.
+  const ecrites = Math.min(questionsEcritesPour(taille), disponibles);
+  // Ce que l'épreuve vaudra vraiment : inutile d'annoncer trente points quand
+  // les leçons cochées n'en portent que dix-huit.
+  const vraiment = totalDeLEpreuve(ecrites);
 
   function basculer(id: string) {
     const suite = new Set(cochees);
@@ -150,7 +155,7 @@ export default function NouvelleComposition() {
     try {
       const questions = tirerQuestions(
         choisies.map((l) => l.pourTirage),
-        taille,
+        questionsEcritesPour(taille),
       );
       if (questions.length === 0) throw new Error('Ces leçons ne portent aucune question.');
       const quand = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
@@ -184,8 +189,8 @@ export default function NouvelleComposition() {
       </Link>
       <h1 className="mt-2 text-kid-xl font-extrabold">Préparer une composition</h1>
       <p className="mt-1 text-kid-sm text-muted">
-        Cochez les leçons annoncées. L’app tire les questions, réparties entre les leçons et
-        sur les quatre étapes.
+        Cochez les leçons annoncées. L’app compose l’épreuve comme à l’école : une situation
+        problème, un oral de {POINTS_ORAL} points, puis un exercice par leçon.
       </p>
 
       {faites.data && faites.data.length > 0 ? (
@@ -199,10 +204,10 @@ export default function NouvelleComposition() {
                 <p className="truncate text-kid-sm font-bold">{c.titre}</p>
                 <p className="text-kid-xs text-muted">
                   {etatDeLaComposition(c) === 'finie'
-                    ? `Finie · ${note(c.justes ?? 0, c.questions.length)}`
+                    ? `Finie · ${note(c.justes ?? 0, totalDeLEpreuve(c.questions.length))} · ${mention(c.justes ?? 0, totalDeLEpreuve(c.questions.length))}`
                     : etatDeLaComposition(c) === 'en_cours'
                       ? 'Commencée'
-                      : `À faire · ${c.questions.length} questions`}
+                      : `À faire · sur ${totalDeLEpreuve(c.questions.length)} points`}
                 </p>
               </div>
               {etatDeLaComposition(c) === 'a_faire' ? (
@@ -223,7 +228,7 @@ export default function NouvelleComposition() {
       ) : null}
 
       <section className="mt-5">
-        <h2 className="text-kid-sm font-extrabold">Combien de questions</h2>
+        <h2 className="text-kid-sm font-extrabold">L’épreuve est notée sur</h2>
         <div className="mt-2 flex gap-2">
           {TAILLES.map((n) => (
             <button
@@ -304,10 +309,10 @@ export default function NouvelleComposition() {
           <p className="min-w-0 flex-1 text-kid-xs font-bold text-ink-2">
             {choisies.length === 0
               ? 'Cochez au moins une leçon.'
-              : `${choisies.length} leçon${choisies.length > 1 ? 's' : ''} · ${vraiment} question${vraiment > 1 ? 's' : ''}`}
+              : `${choisies.length} leçon${choisies.length > 1 ? 's' : ''} · sur ${vraiment} points`}
             {choisies.length > 0 && vraiment < taille ? (
               <span className="block text-muted">
-                Ces leçons n’en portent pas {taille}.
+                Ces leçons ne portent pas {taille} points.
               </span>
             ) : null}
           </p>

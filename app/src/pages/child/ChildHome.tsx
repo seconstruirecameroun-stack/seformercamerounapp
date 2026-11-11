@@ -17,6 +17,7 @@ import { Quetes, Trophees } from '../../components/jeu/Quetes';
 import Duel from '../../components/jeu/Duel';
 import { chargerDuel } from '../../lib/duel';
 import { compositionsDeLEnfant, etatDeLaComposition, note } from '../../lib/composition';
+import { mention, totalDeLEpreuve } from '../../lib/epreuve';
 import { ErrorNote, Loading } from '../../components/ui';
 
 const JOURS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -444,7 +445,7 @@ export default function ChildHome() {
             </p>
             <h2 className="mt-1 pr-14 text-kid-lg font-extrabold">{c.titre}</h2>
             <p className="mt-1 text-kid-sm font-bold text-ink-2">
-              {c.questions.length} questions · {c.lessons.length} leçon
+              Sur {totalDeLEpreuve(c.questions.length)} points · {c.lessons.length} leçon
               {c.lessons.length > 1 ? 's' : ''}
             </p>
             <span className="absolute right-4 bottom-4 grid h-12 w-12 place-items-center rounded-full bg-ink text-xl text-white-warm shadow-[0_3px_0_var(--color-ink-2)]">
@@ -464,8 +465,11 @@ export default function ChildHome() {
               <p className="text-kid-xs font-black tracking-wide text-muted">COMPOSITION FINIE</p>
               <p className="truncate text-kid-sm font-extrabold">{c.titre}</p>
             </div>
-            <span className="shrink-0 text-kid-lg font-black tabular-nums">
-              {note(c.justes ?? 0, c.questions.length)}
+            <span className="shrink-0 text-right text-kid-lg font-black tabular-nums">
+              {note(c.justes ?? 0, totalDeLEpreuve(c.questions.length))}
+              <span className="ml-2 text-kid-sm text-clay-dark">
+                {mention(c.justes ?? 0, totalDeLEpreuve(c.questions.length))}
+              </span>
             </span>
           </section>
         ))}

@@ -1,5 +1,12 @@
 import { supabase } from './supabase';
 import type { ItemRow } from '../types/db';
+import {
+  BAREMES,
+  POINTS_ORAL,
+  exercices,
+  type Exercice,
+  type LeconDEpreuve,
+} from './epreuve';
 
 /**
  * La composition : l'épreuve que le parent annonce.
@@ -38,8 +45,18 @@ export type CompositionRow = {
 export type NotionPourTirage = { id: string; items: Array<{ id: string; level: number }> };
 export type LeconPourTirage = { id: string; notions: NotionPourTirage[] };
 
-/** Les tailles que le parent peut demander. */
-export const TAILLES = [10, 20, 30] as const;
+/**
+ * Les barèmes que le parent peut demander : l'épreuve est sur 20, 30 ou 40.
+ *
+ * Ce sont ceux des copies de l'école. Le barème compte l'oral : une épreuve
+ * sur 30 pose donc 26 questions écrites, plus les 4 de la situation problème.
+ */
+export const TAILLES = BAREMES;
+
+/** Combien de questions écrites tirer pour une épreuve sur `bareme` points. */
+export function questionsEcritesPour(bareme: number): number {
+  return Math.max(0, bareme - POINTS_ORAL);
+}
 
 /**
  * Les notions de toutes les leçons, entrelacées.
@@ -176,6 +193,64 @@ export async function questionsDeLaComposition(c: CompositionRow): Promise<ItemR
   // `in`, et une composition dont les questions changeraient d'ordre entre
   // deux ouvertures ne serait plus la même épreuve.
   return c.questions.map((id) => par.get(id)).filter((i): i is ItemRow => Boolean(i));
+}
+
+export type EpreuveChargee = {
+  /** Les leçons annoncées, dans l'ordre où le parent les a cochées. */
+  lecons: LeconDEpreuve[];
+  exercices: Exercice[];
+  /** Les questions écrites, par identifiant. */
+  items: Map<string, ItemRow>;
+};
+
+/**
+ * L'écrit d'une composition, rangé en exercices.
+ *
+ * Il faut savoir à quelle leçon appartient chaque question, et comment
+ * s'appellent les leçons et leur matière : c'est ce que l'en-tête de la copie
+ * et le titre de chaque exercice affichent.
+ */
+export async function epreuveDeLaComposition(c: CompositionRow): Promise<EpreuveChargee> {
+  if (c.questions.length === 0) return { lecons: [], exercices: [], items: new Map() };
+
+  const [q, l] = await Promise.all([
+    supabase.from('items').select('*, notions(lesson_id)').in('id', c.questions),
+    supabase.from('lessons').select('id, title, subjects(label)').in('id', c.lessons),
+  ]);
+  if (q.error) throw q.error;
+  if (l.error) throw l.error;
+
+  type ItemJoint = ItemRow & {
+    notions: { lesson_id: string } | Array<{ lesson_id: string }> | null;
+  };
+  type LeconJointe = {
+    id: string;
+    title: string;
+    subjects: { label: string } | Array<{ label: string }> | null;
+  };
+
+  const items = new Map<string, ItemRow>();
+  const leconDe = new Map<string, string>();
+  for (const brut of (q.data ?? []) as unknown as ItemJoint[]) {
+    const { notions, ...item } = brut;
+    const notion = Array.isArray(notions) ? notions[0] : notions;
+    items.set(item.id, item as ItemRow);
+    if (notion) leconDe.set(item.id, notion.lesson_id);
+  }
+
+  const parId = new Map(
+    ((l.data ?? []) as unknown as LeconJointe[]).map((x) => {
+      const sujet = Array.isArray(x.subjects) ? x.subjects[0] : x.subjects;
+      return [x.id, { id: x.id, title: x.title, matiere: sujet?.label ?? '' }] as const;
+    }),
+  );
+  // L'ordre de l'annonce fait foi, pas celui que la base renvoie.
+  const lecons = c.lessons
+    .map((id) => parId.get(id))
+    .filter((x): x is LeconDEpreuve => Boolean(x));
+
+  const presentes = c.questions.filter((id) => items.has(id));
+  return { lecons, exercices: exercices(presentes, leconDe, lecons), items };
 }
 
 export async function creerComposition(params: {
