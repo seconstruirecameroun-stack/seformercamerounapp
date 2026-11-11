@@ -64,3 +64,7 @@ work/*.mjs
 # bundle refabricable. Sans cette ligne il disparaissait du dépôt sans bruit,
 # et la tâche planifiée n'aurait rien trouvé à appeler.
 !work/cours.mjs
+
+# Notes de lecture des cahiers : elles contiennent les copies des enfants et
+# leurs notes. Le depot est public ; elles restent sur la machine du parent.
+work/cahier-nov11-notes.md
