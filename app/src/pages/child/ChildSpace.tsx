@@ -338,6 +338,16 @@ function Etape({
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [verrouille, setVerrouille] = useState(false);
+  /**
+   * Le même verrou, fermé tout de suite.
+   *
+   * `verrouille` est un état : il n'est appliqué qu'au rendu suivant. Deux
+   * doigts posés au même instant sur deux choix envoyaient donc deux
+   * réponses, et deux tentatives partaient au journal pour une seule
+   * question. Le défaut a été trouvé dans la salle de composition, qui
+   * avait la même forme ; la référence se ferme dans l'instant.
+   */
+  const verrou = useRef(false);
   const [file, setFile] = useState<Fenetre[]>([]);
   /** La réponse en cours vient de franchir l'étape : la dernière fenêtre
       rendra la main au bilan, et non à la question suivante. */
@@ -395,6 +405,7 @@ function Etape({
   function continuer() {
     setIndex(0);
     setVerrouille(false);
+    verrou.current = false;
     setGagnes(0);
     setJustes(0);
     setValidees(new Set());
@@ -690,7 +701,8 @@ function Etape({
   const question = s.questions[index];
 
   async function repondre(reponse: Reponse) {
-    if (verrouille || !s) return;
+    if (verrou.current || verrouille || !s) return;
+    verrou.current = true;
     setVerrouille(true);
     setErreur(null);
     try {
@@ -882,6 +894,7 @@ function Etape({
       setErreur(err);
       setFile([]);
       setVerrouille(false);
+      verrou.current = false;
     }
   }
 
@@ -903,6 +916,7 @@ function Etape({
     // directement sur l'étape suivante priverait l'enfant de sa récompense.
     setIndex(franchieMaintenant ? (seance.data?.questions.length ?? 0) : index + 1);
     setVerrouille(false);
+    verrou.current = false;
   }
 
   const derniere = index + 1 === s.questions.length;

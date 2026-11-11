@@ -150,6 +150,17 @@ export default function Composition() {
   /** Vrai si la dernière réponse était juste : le plateau en dépend. */
   const justeALaDerniere = useRef(false);
   const commence = useRef(false);
+  /**
+   * Une question ne reçoit qu'UNE réponse.
+   *
+   * La phase passe à « corrigé » par un état React, qui n'est appliqué
+   * qu'au rendu suivant. Deux doigts posés au même instant sur deux choix
+   * envoyaient donc deux réponses, et si la seconde était la bonne, le
+   * point était compté — et, à l'écrit, deux tentatives partaient au
+   * journal. Trouvé en rejouant l'oral : un bulletin à 2 sur 4 pour une
+   * seule bonne réponse. La référence, elle, se ferme tout de suite.
+   */
+  const dejaRepondu = useRef(false);
 
   const total = etapes.length;
   const objectif = objectifDuPlateau(total);
@@ -176,6 +187,7 @@ export default function Composition() {
       }
       return;
     }
+    dejaRepondu.current = false;
     setIndex((i) => i + 1);
     setPhase('question');
   }
@@ -183,6 +195,9 @@ export default function Composition() {
   async function repondre(reponse: Reponse) {
     const etape = etapes[index];
     if (phase !== 'question' || !etape || !parentId || !childId) return;
+    if (dejaRepondu.current) return;
+    dejaRepondu.current = true;
+    justeALaDerniere.current = reponse.correct;
     setPhase('corrige');
     setErreur(null);
     if (etape.genre === 'ecrit') {
@@ -424,10 +439,7 @@ export default function Composition() {
             item={etape.item}
             rang={rang}
             verrouille={phase === 'corrige'}
-            onRepondre={(r) => {
-              justeALaDerniere.current = r.correct;
-              void repondre(r);
-            }}
+            onRepondre={(r) => void repondre(r)}
           />
           {phase === 'corrige' ? (
             <button
