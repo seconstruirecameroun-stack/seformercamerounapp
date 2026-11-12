@@ -228,6 +228,27 @@ export function questionsDeReprise(
   return questions;
 }
 
+/**
+ * Une bonne réponse fait-elle avancer l'étape en cours ?
+ *
+ * Pas celle d'une question d'appui. L'appui est servi une marche plus bas,
+ * pour que l'enfant reprenne pied ; il ne valide pas la marche du dessus.
+ * Le journal le savait déjà — `reussitesParNiveau` range chaque bonne réponse
+ * à SON niveau —, mais l'écran de la leçon, lui, comptait toute bonne réponse
+ * comme une notion validée.
+ *
+ * Ce que l'enfant vivait : trois fautes sur une notion d'étape 2, la question
+ * plus facile réussie, et l'écran annonçait « Étape réussie ! Tu passes en
+ * Maîtrise », avec le coffre et cinquante étoiles. Puis « Étape suivante »
+ * relisait le journal… et le remettait à l'étape 2, sur la même question. Le
+ * père l'a décrit d'une phrase : ça ne traverse plus l'étape 2. KLEIN a fait
+ * ce tour trois fois de suite sur la souris de l'ordinateur, BRAYNE cinq fois
+ * sur les lampes.
+ */
+export function avanceLEtape(question: Pick<Question, 'appui'>, correct: boolean): boolean {
+  return correct && !question.appui;
+}
+
 /** Au bout de trois échecs de suite sur une notion, on redescend d'une marche. */
 export const ECHECS_AVANT_APPUI = 3;
 

@@ -18,6 +18,7 @@
 
 import {
   ECHECS_AVANT_APPUI,
+  avanceLEtape,
   echecsDAffilee,
   etapeCourante,
   niveauDAppui,
@@ -125,6 +126,26 @@ ok('l-étape finit par passer', fini.passee);
 // revenir : sans cela, l-appui est un cul-de-sac.
 const jamais = simuler(false, false, 40);
 ok('aucun cul-de-sac même en échec total', jamais.servisEnHaut >= 3);
+
+// Une question d-appui réussie ne fait pas avancer l-étape à l-écran. C-était
+// le défaut du 12 novembre : « Étape réussie ! », le coffre, cinquante
+// étoiles, puis retour à l-étape 2 sur la même question.
+ok('appui juste : l’étape n’avance pas', !avanceLEtape({ appui: true }, true));
+ok('appui faux : l’étape n’avance pas', !avanceLEtape({ appui: true }, false));
+ok('question de l’étape juste : l’étape avance', avanceLEtape({ appui: false }, true));
+ok('question sans indication d’appui, juste : l’étape avance', avanceLEtape({}, true));
+ok('question de l’étape fausse : rien n’avance', !avanceLEtape({ appui: false }, false));
+
+// Et le journal dit la même chose que l-écran : la bonne réponse d-appui est
+// rangée à son niveau, pas à celui de l-étape.
+{
+  const n = { id: 'n', items: [{ id: 'bas', level: 1 }, { id: 'haut', level: 2 }] };
+  const r = reussitesParNiveau([n], [{ item_id: 'bas' }]);
+  ok('journal : l’appui réussi valide le niveau 1', r.get(1)?.has('n') === true);
+  ok('journal : et pas le niveau 2', !(r.get(2)?.has('n') ?? false));
+  ok('journal : l’étape reste donc la 2',
+    etapeCourante([n], r).niveau === 2 && !etapeCourante([n], r).termine);
+}
 
 if (ko > 0) throw new Error(ko + ' echec(s)');
 console.log('paliers : escalier verifie, aucun cul-de-sac');

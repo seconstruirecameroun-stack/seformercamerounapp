@@ -121,9 +121,23 @@ export function ecartMot(ecrit: string, attendu: string, accentsComptent = false
  * c'est la même apostrophe. Ce n'est pas ce qu'on enseigne, et l'enfant n'a
  * aucun moyen de savoir laquelle des deux la base attend.
  */
+/**
+ * Les lettres liées s'écrivent aussi déliées : « œ » vaut « oe », « æ » vaut
+ * « ae ».
+ *
+ * Ce n'est pas un accent, et aucun clavier de téléphone ne propose « œ » sans
+ * le chercher. KLEIN a écrit deux fois « les ovipares pondent des oeufs » —
+ * juste, mot pour mot — et la dictée l'a refusé deux fois, jusqu'à bloquer
+ * la notion. La règle vaut partout, Défi compris : l'accent y compte, la
+ * ligature n'en est pas un.
+ */
+function delier(s: string): string {
+  return s.replace(/œ/g, 'oe').replace(/æ/g, 'ae');
+}
+
 export function memeMot(a: string, b: string, accentsComptent = false) {
   const net = (s: string) => {
-    const brut = s.trim().toLowerCase().replace(/['‘’ʼ]/g, '’').replace(/\s+/g, ' ');
+    const brut = delier(s.trim().toLowerCase()).replace(/['‘’ʼ]/g, '’').replace(/\s+/g, ' ');
     return accentsComptent
       ? brut.normalize('NFC')
       : brut.normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -140,9 +154,7 @@ export function memeMot(a: string, b: string, accentsComptent = false) {
  */
 export function memePhrase(a: string, b: string) {
   const net = (s: string) =>
-    s
-      .trim()
-      .toLowerCase()
+    delier(s.trim().toLowerCase())
       .replace(/\s+/g, ' ')
       // L'espace avant le point d'exclamation est la règle en français : on
       // la retire avec la ponctuation, sinon « rouge ! » serait refusé.

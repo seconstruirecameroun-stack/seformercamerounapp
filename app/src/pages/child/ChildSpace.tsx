@@ -11,6 +11,7 @@ import {
   recordAttempt,
 } from '../../lib/progress';
 import {
+  avanceLEtape,
   construireSeance,
   estChronometre,
   etapeImage,
@@ -707,7 +708,8 @@ function Etape({
     setErreur(null);
     try {
       // La notion tombe pour cette étape : c'est ce qui fait avancer la barre.
-      const valide = reponse.correct && !validees.has(question.notion.id);
+      // Une question d'appui réussie ne valide pas l'étape : voir avanceLEtape.
+      const valide = avanceLEtape(question, reponse.correct) && !validees.has(question.notion.id);
       const suite = valide ? new Set(validees).add(question.notion.id) : validees;
       if (valide) setValidees(suite);
 
@@ -775,9 +777,13 @@ function Etape({
             : (reponse.donnee as { expire?: boolean })?.expire
               ? 'Trop tard !'
               : 'Presque…',
+          // Après une question d'appui réussie, on lui dit ce qui vient : la
+          // question de l'étape revient. Sans cela, il croit l'étape finie.
           texte:
-            question.item.explain ??
-            (reponse.correct ? 'Bien joué.' : 'On la repose tout à l’heure.'),
+            question.appui && reponse.correct
+              ? 'Tu as repris pied. La question de l’étape va revenir : tu es prêt.'
+              : (question.item.explain ??
+                (reponse.correct ? 'Bien joué.' : 'On la repose tout à l’heure.')),
           // Les étoiles de la réponse elle-même : le reste arrive avec les
           // fenêtres qui l'ont mérité.
           points: (reponse.correct ? POINTS_PAR_ETAPE * question.item.level : 0) +

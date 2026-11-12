@@ -11,7 +11,7 @@
  *     --outfile=../../tmp-verif.cjs --format=cjs --external:react && node ../../tmp-verif.cjs
  */
 
-import { ecartMot, memeMot } from './partage';
+import { ecartMot, memeMot, memePhrase } from './partage';
 import { accentsComptent, ETAPE_DEFI, ETAPE_PRODUCTION } from '../../lib/saisie';
 
 const APOS = '’';
@@ -42,6 +42,17 @@ ok('accent juste accepté au défi', memeMot('élève', 'élève', true));
 ok('casse encore pardonnée au défi', memeMot('Élève', 'élève', true));
 // Le clavier compose en NFC ; une réponse en base décomposée doit passer.
 ok('NFD en base = NFC au clavier', memeMot('élève', 'e\u0301le\u0300ve', true));
+
+// La ligature n'est pas un accent : « oe » vaut « œ », partout.
+ok('ligature : « oeuf » vaut « œuf »', memeMot('oeuf', 'œuf'));
+ok('ligature : et dans l’autre sens', memeMot('œuf', 'oeuf'));
+ok('ligature : aussi au Défi, où l’accent compte', memeMot('soeur', 'sœur', true));
+ok('ligature : « ae » vaut « æ »', memeMot('ex aequo', 'ex æquo'));
+ok('ligature : l’accent compte encore au Défi', !memeMot('coeur', 'cœür', true));
+ok('dictée : la phrase de KLEIN est acceptée',
+  memePhrase('les ovipares pondent des oeufs', 'Les ovipares pondent des œufs.'));
+ok('dictée : les accents comptent toujours', !memePhrase('la benoue arrose garoua', 'La Bénoué arrose Garoua.'));
+ok('dictée : une vraie faute reste une faute', !memePhrase('les ovipare pondent des oeufs', 'Les ovipares pondent des œufs.'));
 // Le trait d’union et les chiffres, qui vivent sur la seconde page.
 ok('trait d’union', memeMot('fifty-one', 'fifty-one', true));
 ok('chiffres', memeMot('200', '200', true));

@@ -739,8 +739,13 @@ LECONS = [
               ('vrai_faux', 1, {'statement': 'Souligner est une fonction de la souris.'},
                {'value': False}, 'Non. Elle clique et double-clique.'),
               ('texte_a_trous', 2,
-               {'text': 'Les deux fonctions de la souris sont cliquer et {{1}}.', 'blanks': 1},
-               {'values': ['double-cliquer']}, 'Double-cliquer.'),
+               # Le trait d-union reste dans la phrase : à l-étape 2, KLEIN tape
+               # sur un clavier sans touche espace, et un enfant de CE1 n-y
+               # cherche pas le tiret. Il a écrit « double » quatre fois — il
+               # savait — et la question l-a bloqué trois tours de suite.
+               {'text': 'Les deux fonctions de la souris sont cliquer et {{1}}-cliquer.',
+                'blanks': 1},
+               {'values': ['double']}, 'Double-cliquer.'),
               ('qcm', 3, {'question': 'Laquelle est une fonction de la souris ?',
                           'options': ['Double-cliquer', 'Tourner', 'Souligner']},
                {'index': 0}, 'Double-cliquer.'),
