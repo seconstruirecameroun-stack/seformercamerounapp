@@ -6,9 +6,10 @@
 # This lesson adds the three types of meal and meal planning.
 #
 # WHAT IS NOT ASKED, because it cannot be read surely on the photo:
-#   - the exact hours of breakfast and supper, and whether supper is heavy;
-#   - the first meaning given to red on the flag (only « power and
-#     authority » is clear), and the sentence after the motto;
+#   - the exact hours of breakfast and supper, and whether supper is heavy
+#     (the order of the three meals is asked instead);
+#   - the exact first meaning of red (« independence » is asked, from the
+#     theme) and the sentence after the motto (the coat of arms is asked);
 #   - the name of the president of the Senate, and the end of the last note
 #     on the Speaker of the National Assembly.
 #
@@ -102,7 +103,22 @@ LECONS = [
         Q('Why consider the availability in the market?', 'Some foods are not always sold',
           'The market is always closed', 'Food has no price', n=3),
         V('The health of the family does not matter in meal planning.', False, n=4,
-          e='No. The health is the first principle given in the notebook.'))),
+          e='No. The health is the first principle given in the notebook.')),
+
+      # The hours of breakfast and supper are not readable: the order of the
+      # three meals is, and it is what matters.
+      N('relation',
+        'Breakfast is the first meal of the day, lunch the second, and supper the last. Meals '
+        'are taken at regular times.',
+        'bc-meal-order', F('The order of meals', '1. breakfast', '2. lunch', '3. supper'),
+        ('simple', 'Morning, afternoon, evening: always in this order.'),
+        ('analogie', 'Like the lessons of the day: each one at its time.'),
+        Q('Which is the first meal of the day?', 'breakfast', 'supper', 'lunch'),
+        V('Supper is the last meal of the day.', True),
+        T('The first meal of the day is {{1}}.', 'breakfast'),
+        C('Put the meals in order.', 'breakfast', 'lunch', 'supper', n=3),
+        V('Lunch is taken before breakfast.', False, n=4,
+          e='No. Breakfast first, then lunch, then supper.'))),
 
     # -------------------------------------------------------------- 19 October
     L(ECM, 'The flag and the motto of Cameroon', 'National symbols', '2026-10-19',
@@ -182,7 +198,25 @@ LECONS = [
         T('The motto of Cameroon is Peace, {{1}}, Fatherland.', 'work'),
         C('Put the motto in order.', 'Peace', 'Work', 'Fatherland', n=3),
         V('The motto of Cameroon is Unity, Work, Progress.', False, n=4,
-          e='No. It is Peace, Work, Fatherland.'))),
+          e='No. It is Peace, Work, Fatherland.')),
+
+      # The first meaning of red is hard to read; the notebook speaks of the
+      # independence of the country. The motto is on the coat of arms.
+      N('relation',
+        'Red also recalls the struggle for the independence of the country. The motto, Peace, '
+        'Work, Fatherland, is written on the coat of arms of Cameroon.',
+        'bc-flag-red', F('More to know', 'red: independence', 'the motto is written',
+                         'on the coat of arms'),
+        ('simple', 'Red reminds us that Cameroon became free and independent.'),
+        ('visuel', 'The coat of arms of Cameroon carries the three words of the motto.'),
+        Q('What does red also recall?', 'the independence of the country', 'the rain of the south',
+          'the forest of the south'),
+        V('The motto is written on the coat of arms of Cameroon.', True),
+        T('Red recalls the struggle for the {{1}} of the country.', 'independence'),
+        Q('Where is the motto written?', 'on the coat of arms', 'on the banknotes only',
+          'on the roads', n=3),
+        V('Red stands for the vegetation of the south.', False, n=4,
+          e='No. Green stands for the vegetation; red for power, authority and independence.'))),
 
     # -------------------------------------------------------------- 20 October
     L(ECM, 'The legislative arm of government', 'The government', '2026-10-20',
@@ -270,5 +304,23 @@ LECONS = [
         Q('« Successor » means the person who…', 'comes after and takes the place',
           'votes the budget', 'judges in court', n=3),
         V('The Speaker of the National Assembly is the successor of the Head of State.', False,
-          n=4, e='No. It is the president of the Senate.'))),
+          n=4, e='No. It is the president of the Senate.')),
+
+      # The name of the president of the Senate is not readable, and it
+      # changes: how each leader is chosen is asked instead.
+      N('definition',
+        'The president of the Senate is elected by the senators. The Speaker of the National '
+        'Assembly is elected by the members of parliament.',
+        'bc-legis-presidents', P('Who chooses them', ('Senate president', 'the senators'),
+                                 ('the Speaker', 'the MPs')),
+        ('simple', 'Each house chooses its own leader.'),
+        ('analogie', 'Like a class choosing its own prefect.'),
+        Q('Who elects the president of the Senate?', 'the senators', 'the pupils',
+          'the mayors'),
+        V('The Speaker is elected by the members of parliament.', True),
+        T('The president of the Senate is elected by the {{1}}.', 'senators'),
+        A('Match each leader with those who elect him.', ('the Senate president', 'the senators'),
+          ('the Speaker', 'the members of parliament'), n=3),
+        V('The president of the Senate is chosen by the pupils of Cameroon.', False, n=4,
+          e='No. He is elected by the senators.'))),
 ]

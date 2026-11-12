@@ -3,9 +3,10 @@
 # Chargé par lecons-klein-cahier-nov12.py.
 #
 # CE QUI N-EST PAS POSÉ, FAUTE DE SE LIRE SUR LA PHOTO :
-#   - l-histoire de Yaoundé : le tout premier nom de la ville et ce qu-il
-#     signifie ;
-#   - l-hydrographie : la longueur de la Sanaga.
+#   - le mot exact du cahier pour le tout premier nom de Yaoundé. À la
+#     demande du père, le thème complète ce qui ne se lisait pas : le nom
+#     ewondo Ongola et la longueur de la Sanaga, 918 km, que donnent les
+#     manuels.
 #
 # « Les saisons et les végétaux » ne porte pas de date : elle suit le
 # 28 octobre. Le paquet la range au 29 pour l-ordre ; la date n-est pas
@@ -55,7 +56,23 @@ LECONS = [
         C('Remets dans l’ordre.', 'les Ewondo donnent un nom', 'les Allemands le changent',
           'il devient Yaoundé', n=3),
         V('Les Ewondo ont changé le nom donné par les Allemands.', False, n=4,
-          e='Non. C’est l’inverse : les Allemands ont changé le nom des Ewondo.'))),
+          e='Non. C’est l’inverse : les Allemands ont changé le nom des Ewondo.')),
+
+      # Le tout premier nom est illisible sur la photo : Ongola est le nom
+      # ewondo de la ville que donnent tous les manuels.
+      N('definition',
+        'En ewondo, la langue des premiers habitants, Yaoundé s’appelle aussi Ongola, ce qui '
+        'veut dire « la clôture ».',
+        'kz-yde-ongola', F('Ongola', 'le nom ewondo', 'de Yaoundé', '« la clôture »'),
+        ('simple', 'Ongola, c’est l’autre nom de Yaoundé, dans la langue des Ewondo.'),
+        ('visuel', 'Une grande clôture de bois autour d’un poste : Ongola.'),
+        Q('Quel est l’autre nom de Yaoundé en ewondo ?', 'Ongola', 'Douala', 'Wouri'),
+        V('Ongola veut dire « la clôture ».', True),
+        T('Ongola veut dire « la {{1}} ».', 'clôture'),
+        Q('Dans quelle langue Yaoundé s’appelle-t-elle Ongola ?', 'en ewondo', 'en anglais',
+          'en allemand', n=3),
+        V('Ongola est le nom d’un fleuve du Cameroun.', False, n=4,
+          e='Non. Ongola est le nom ewondo de Yaoundé.'))),
 
     # -------------------------------------------------------------- 19 octobre
     L(HIST, 'Les grandes figures historiques du Cameroun', 'Histoire', '2026-10-19',
@@ -226,7 +243,20 @@ LECONS = [
         Q('Lequel ne fait pas partie de l’hydrographie ?', 'la forêt', 'la mer', 'la rivière',
           n=3),
         V('La mer ne fait pas partie de l’hydrographie du Cameroun.', False, n=4,
-          e='Non. Le cahier cite aussi la mer.'))),
+          e='Non. Le cahier cite aussi la mer.')),
+
+      N('relation',
+        'La Sanaga mesure 918 km : c’est le plus long fleuve du Cameroun. Elle se jette dans '
+        'l’océan Atlantique.',
+        'kz-hydro-sanaga', F('La Sanaga', '918 km', 'le plus long fleuve',
+                             'elle va à l’océan'),
+        ('simple', 'Aucun fleuve du Cameroun n’est plus long que la Sanaga.'),
+        ('pas_a_pas', '918, c’est presque 1 000 kilomètres.'),
+        Q('Combien mesure la Sanaga ?', '918 km', '18 km', '9 km'),
+        V('La Sanaga se jette dans l’océan Atlantique.', True),
+        T('La Sanaga mesure {{1}} km.', '918'),
+        Q('Quel est le plus long fleuve du Cameroun ?', 'la Sanaga', 'le Mbam', 'le Nyong', n=3),
+        V('La Sanaga mesure moins de 100 km.', False, n=4, e='Non. Elle mesure 918 km.'))),
 
     # -------------------------------------------------------------- 28 octobre
     L(CIV, 'La sécurité au champ', 'Éducation à la sécurité', '2026-10-28',

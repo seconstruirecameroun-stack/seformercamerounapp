@@ -4,15 +4,82 @@
 # « La modestie » n-a pas d-en-tête de date : elle suit les Pygmées du
 # 22 octobre sur la même page, et en prend la date.
 #
-# La révision corrigée d-ECM (devise, drapeau, démocratie) n-est pas reprise
-# ici : sur la photo, les réponses de la maîtresse ne se lisent pas toutes, et
-# une question ne s-écrit pas sur une réponse devinée.
+# « La démocratie » vient de la révision corrigée d-ECM. La définition s-y lit
+# en entier ; les principes, que la copie demande sans qu-on lise la réponse,
+# sont ceux que la révision de KLEIN entoure et que tous les manuels donnent.
+# Cette révision n-est pas datée : elle précède le 12 octobre, et l-app
+# n-affiche pas de date.
 
 ECM = 'ECM'
 MORALE = 'Éducation morale'
 CITOYEN = 'Éducation à la citoyenneté'
 
 LECONS = [
+    # ---------------------------------------------------------- sans date
+    L(ECM, 'La démocratie', CITOYEN, '2026-10-01',
+      'La démocratie est le gouvernement du peuple, par le peuple et pour le peuple. Ses '
+      'principes : le vote, le multipartisme, l’alternance au pouvoir, la séparation des '
+      'pouvoirs et la liberté d’expression. Le bon citoyen règle les conflits par la paix et '
+      'respecte les droits de tous.',
+      'bn-demo-couv', ['le peuple', 'le vote', 'la liberté'],
+
+      N('definition',
+        'La démocratie est le gouvernement du peuple, par le peuple et pour le peuple.',
+        'bn-demo-def', F('La démocratie', 'le gouvernement', 'du peuple, par le peuple',
+                         'et pour le peuple'),
+        ('simple', 'En démocratie, c’est le peuple qui choisit ceux qui le dirigent.'),
+        ('analogie', 'Comme l’élection du chef de classe : les élèves votent, et le chef '
+                     'travaille pour eux.'),
+        Q('Qu’est-ce que la démocratie ?', 'Le gouvernement du peuple, par le peuple, pour le peuple',
+          'Le pouvoir d’un seul chef pour toujours', 'Le pouvoir des plus forts seulement'),
+        V('En démocratie, le pouvoir vient du peuple.', True),
+        T('La démocratie est le gouvernement du {{1}}, par le peuple et pour le peuple.',
+          'peuple'),
+        Q('En démocratie, qui choisit les dirigeants ?', 'le peuple', 'l’armée',
+          'un seul homme', n=3),
+        V('En démocratie, un seul homme décide de tout, sans élection.', False, n=4,
+          e='Non. Ça, c’est la dictature. En démocratie, le peuple choisit.')),
+
+      N('liste',
+        'Les principes de la démocratie sont le vote, le multipartisme, l’alternance au pouvoir, '
+        'la séparation des pouvoirs et la liberté d’expression.',
+        'bn-demo-principes', F('Ses principes', 'le vote', 'le multipartisme',
+                               'l’alternance au pouvoir', 'la liberté d’expression'),
+        ('simple', 'On vote, plusieurs partis existent, les dirigeants changent, et chacun peut '
+                   'dire ce qu’il pense.'),
+        ('pas_a_pas', 'Multipartisme : plusieurs partis. Alternance : le pouvoir peut changer de '
+                      'mains. Séparation des pouvoirs : celui qui fait la loi n’est pas celui '
+                      'qui juge.'),
+        Q('Lequel est un principe de la démocratie ?', 'le vote', 'la dictature',
+          'le libertinage'),
+        V('La liberté d’expression est un principe de la démocratie.', True),
+        T('Le fait d’avoir plusieurs partis politiques s’appelle le {{1}}.', 'multipartisme'),
+        Q('Lequel n’est PAS un principe de la démocratie ?', 'la dictature',
+          'l’alternance au pouvoir', 'la séparation des pouvoirs', n=3),
+        A('Relie chaque principe à ce qu’il veut dire.', ('le vote', 'choisir ses dirigeants'),
+          ('le multipartisme', 'plusieurs partis'),
+          ('l’alternance', 'le pouvoir change de mains'), n=3),
+        V('Le libertinage est un principe de la démocratie.', False, n=4,
+          e='Non. La liberté d’expression, oui ; le libertinage, c’est faire n’importe quoi.')),
+
+      N('liste',
+        'Le bon citoyen ne fait pas la guerre pour avoir la paix, obéit tout de suite, '
+        'n’impose pas son avis par la force et respecte les droits des personnes handicapées.',
+        'bn-demo-citoyen', F('Le bon citoyen', 'cherche la paix', 'obéit tout de suite',
+                             'n’impose pas par la force', 'respecte les handicapés'),
+        ('simple', 'Un citoyen règle les problèmes par la parole, jamais par la force.'),
+        ('histoire', 'Deux camarades ne sont pas d’accord : ils discutent, et chacun écoute '
+                     'l’autre.'),
+        V('Pour avoir la paix, il faut faire la guerre.', False,
+          e='Non. La paix se construit par le dialogue, pas par la guerre.'),
+        V('Les personnes handicapées ont des droits, comme tout le monde.', True),
+        T('Obéir lentement, ce n’est pas {{1}}.', 'obéir'),
+        V('Je ne dois jamais ouvrir la porte à un inconnu.', True, n=3),
+        V('Je peux imposer mon point de vue par la force.', False, n=4,
+          e='Non. On donne son avis par la parole, et on écoute celui des autres.'),
+        Q('Que fait un bon citoyen en cas de désaccord ?', 'Il discute dans le calme',
+          'Il frappe l’autre', 'Il crie plus fort', n=4))),
+
     # -------------------------------------------------------------- 12 octobre
     L(ECM, 'La notion du bien et du mal', MORALE, '2026-10-12',
       'Le bien est tout ce qui est conforme, juste et agréable, honnête et louable : il apporte '

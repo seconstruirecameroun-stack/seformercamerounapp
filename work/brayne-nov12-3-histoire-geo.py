@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # Histoire-Géographie — six leçons. Chargé par lecons-brayne-cahier-nov12.py.
 #
-# CE QUI N-EST PAS POSÉ, FAUTE DE SE LIRE SUR LA PHOTO :
-#   - la traite négrière : la première page est floue, et les dates de
-#     l-abolition (Angleterre, reste du monde, Cameroun) ne se lisent pas
-#     sûrement. Aucune question ne porte sur ces dates ;
-#   - les Pygmées : le nom de leur dieu ;
+# CE QUI NE SE LISAIT PAS SUR LA PHOTO a été complété le 12 novembre, à la
+# demande du père, depuis le thème de la leçon — et seulement par ce qui est
+# sûr : l'ordre de l'abolition sans ses dates, le dieu Komba, les conséquences
+# de la surpopulation que donnent tous les manuels. Reste non posé :
 #   - les Européens sur la côte : le siècle où Anglais, Français et Allemands
 #     rejoignent les Portugais (XIIe ou XVIIe sur la photo) ;
-#   - les villes : la fin de la liste des conséquences de la surpopulation.
+#   - les dates exactes de l'abolition.
 
 HG = 'Histoire-Géographie'
 HIST = 'Histoire'
@@ -87,7 +86,28 @@ LECONS = [
         A('Relie chaque continent à ce que la traite lui a fait.',
           ('l’Afrique', 'le dépeuplement'), ('l’Europe', 'l’enrichissement'), n=3),
         V('L’Europe s’est appauvrie à cause de la traite.', False, n=4,
-          e='Non. L’Europe s’est enrichie ; c’est l’Afrique qui s’est appauvrie.'))),
+          e='Non. L’Europe s’est enrichie ; c’est l’Afrique qui s’est appauvrie.')),
+
+      # Les dates de la photo sont floues : on garde ce qui s'y lit sûrement,
+      # l'ordre — l'Angleterre d'abord, le reste du monde, le Cameroun en
+      # dernier — et le nom de Lord Mansfield, sans poser de date.
+      N('relation',
+        'Cet odieux commerce a été aboli : d’abord en Angleterre, par Lord Mansfield, puis dans '
+        'le reste du monde, et enfin au Cameroun.',
+        'bn-traite-abolition', F('L’abolition', '1. en Angleterre', '2. dans le reste du monde',
+                                 '3. au Cameroun'),
+        ('simple', 'Abolir, c’est interdire pour toujours. La traite négrière est interdite.'),
+        ('pas_a_pas', 'D’abord l’Angleterre, ensuite le reste du monde, enfin le Cameroun.'),
+        Q('Que veut dire « abolir » la traite ?', 'L’interdire pour toujours',
+          'La rendre plus rapide', 'La payer plus cher'),
+        V('La traite négrière a été abolie.', True),
+        T('La traite a d’abord été {{1}} en Angleterre.', 'abolie'),
+        C('Remets dans l’ordre l’abolition de la traite.', 'en Angleterre',
+          'dans le reste du monde', 'au Cameroun', n=3),
+        Q('Qui a aboli la traite en Angleterre ?', 'Lord Mansfield', 'Fernando Poo',
+          'Christophe Colomb', n=4),
+        V('Le Cameroun a été le premier pays à abolir la traite.', False, n=4,
+          e='Non. L’Angleterre d’abord ; le Cameroun vient en dernier.'))),
 
     # -------------------------------------------------------------- 21 octobre
     L(HG, 'Présentation générale du Cameroun', GEO, '2026-10-21',
@@ -233,7 +253,24 @@ LECONS = [
         Q('Ramasser des fruits dans la forêt, c’est…', 'la cueillette', 'la chasse',
           'la pêche', n=3),
         V('Les Pygmées vivent surtout de l’élevage.', False, n=4,
-          e='Non. Ils vivent de la chasse, de la pêche et de la cueillette.'))),
+          e='Non. Ils vivent de la chasse, de la pêche et de la cueillette.')),
+
+      # Le nom du dieu est illisible sur la photo. Komba est le dieu créateur
+      # que les manuels du Cameroun donnent aux Pygmées.
+      N('definition',
+        'Les Pygmées croient en un dieu créateur appelé Komba. Ils respectent la forêt, qui les '
+        'nourrit et les protège.',
+        'bn-pygmees-komba', F('La croyance', 'un dieu créateur', 'appelé Komba',
+                              'le respect de la forêt'),
+        ('simple', 'Pour les Pygmées, la forêt est leur maison et leur garde-manger.'),
+        ('visuel', 'Des chants et des danses au cœur de la forêt, pour remercier Komba.'),
+        Q('Comment s’appelle le dieu des Pygmées ?', 'Komba', 'Ongola', 'Wouri'),
+        V('Les Pygmées respectent la forêt.', True),
+        T('Les Pygmées croient en un dieu {{1}} appelé Komba.', 'créateur'),
+        Q('Pourquoi les Pygmées respectent-ils la forêt ?', 'Elle les nourrit et les protège',
+          'Elle leur fait peur', 'Ils veulent la couper', n=3),
+        V('Les Pygmées ne croient en aucun dieu.', False, n=4,
+          e='Non. Ils croient en un dieu créateur, Komba.'))),
 
     # -------------------------------------------------------------- 27 octobre
     L(HG, 'Les grandes zones pastorales du Cameroun', GEO, '2026-10-27',
@@ -396,7 +433,27 @@ LECONS = [
         Q('Quelle est une conséquence de la surpopulation ?', 'le manque de logements',
           'trop de maisons vides', 'la fin du commerce', n=3),
         V('La surpopulation des villes vient seulement des naissances.', False, n=4,
-          e='Non. Elle vient de l’exode rural et de l’immigration.'))),
+          e='Non. Elle vient de l’exode rural et de l’immigration.')),
+
+      # La fin de la liste est floue sur la photo : ce sont les conséquences
+      # que donnent toutes les leçons sur la ville au Cameroun.
+      N('liste',
+        'La surpopulation entraîne aussi le chômage, les embouteillages, les quartiers '
+        'insalubres et le manque d’eau, d’électricité, d’écoles et d’hôpitaux.',
+        'bn-villes-consequences', F('Et aussi', 'le chômage', 'les embouteillages',
+                                    'les quartiers insalubres', 'pas assez d’écoles'),
+        ('simple', 'Trop de monde dans une ville, et tout devient difficile : le travail, la '
+                   'route, l’eau.'),
+        ('visuel', 'Des voitures bloquées au carrefour, des maisons serrées sans eau courante.'),
+        Q('Laquelle est une conséquence de la surpopulation ?', 'le chômage',
+          'des routes toujours vides', 'trop d’emplois pour tous'),
+        V('La surpopulation provoque des embouteillages.', True),
+        T('Quand il n’y a pas assez de travail pour tous, c’est le {{1}}.', 'chômage'),
+        A('Relie chaque problème à ce qu’il veut dire.', ('le chômage', 'pas de travail'),
+          ('les embouteillages', 'des routes bloquées'), ('l’insalubrité', 'un quartier sale'),
+          n=3),
+        V('La surpopulation donne assez d’écoles et d’hôpitaux pour tous.', False, n=4,
+          e='Non. Elle en fait manquer.'))),
 
     # -------------------------------------------------------------- 29 octobre
     L(HG, 'Les Européens sur la côte du Cameroun', HIST, '2026-10-29',
@@ -488,5 +545,25 @@ LECONS = [
         A('Relie chaque groupe à ce qu’il donnait.', ('les Européens', 'des armes'),
           ('les chefs locaux', 'de l’ivoire'), n=3),
         V('Les chefs locaux donnaient de l’alcool aux Européens.', False, n=4,
-          e='Non. C’est l’inverse : les Européens apportaient l’alcool.'))),
+          e='Non. C’est l’inverse : les Européens apportaient l’alcool.')),
+
+      # Le siècle où les autres Européens arrivent est illisible ; celui des
+      # Portugais se déduit de la date que le cahier donne.
+      N('date',
+        'Les Portugais sont arrivés en 1472, c’est-à-dire au XVe siècle. Les Anglais, les '
+        'Français et les Allemands sont venus après eux.',
+        'bn-europeens-siecle', F('Les siècles', '1472 : le XVe siècle', 'les Portugais d’abord',
+                                 'les autres ensuite'),
+        ('pas_a_pas', '1472 commence par 14 : on est au XVe siècle, comme 1400 à 1499.'),
+        ('simple', 'Les Portugais ouvrent la route ; les autres Européens suivent.'),
+        Q('En quel siècle les Portugais sont-ils arrivés ?', 'au XVe siècle', 'au XXe siècle',
+          'au Xe siècle'),
+        V('Les Anglais sont arrivés après les Portugais.', True),
+        T('L’année 1472 est au XVe {{1}}.', 'siècle'),
+        C('Remets dans l’ordre.', 'les Portugais arrivent en 1472',
+          'les Anglais, Français et Allemands les rejoignent', 'leurs comptoirs s’installent',
+          n=3),
+        V('L’année 1472 est au XIVe siècle.', False, n=4,
+          e='Non. 1472 est au XVe siècle, comme toutes les années de 1401 à 1500.'))),
+
 ]

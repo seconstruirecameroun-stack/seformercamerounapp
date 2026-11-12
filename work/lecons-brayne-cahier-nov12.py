@@ -47,7 +47,7 @@ PARTIES = [
 
 # Le cahier ne date pas ces leçons : la date du paquet ne sert qu-à l-ordre,
 # et n-est pas écrite en base.
-SANS_DATE = {'La germination'}
+SANS_DATE = {'La germination', 'La démocratie'}
 
 LECONS = outils.charger(_ICI, PARTIES)
 
