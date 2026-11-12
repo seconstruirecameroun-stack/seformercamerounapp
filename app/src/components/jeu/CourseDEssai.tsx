@@ -16,12 +16,15 @@ export default function CourseDEssai() {
   const [turbos, setTurbos] = useState(0);
   const [boucliers, setBoucliers] = useState(0);
   const [erreurs, setErreurs] = useState(0);
+  // La petite route est celle des révisions et des compositions.
+  const [petite, setPetite] = useState(false);
   const [resume, setResume] = useState<Resume | null>(null);
 
   return (
     <section className="mt-3">
       <CourseJouable
-        key={numero}
+        key={numero + (petite ? '-petite' : '')}
+        compact={petite}
         turbos={turbos}
         erreurs={erreurs}
         boucliers={boucliers}
@@ -56,6 +59,14 @@ export default function CourseDEssai() {
         className="mt-2 min-h-12 w-full rounded-full bg-sky px-3 py-2 text-kid-sm font-black text-ink shadow-[inset_0_-3px_0_rgb(0_0_0/0.12)]"
       >
         Série sans faute → bouclier
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setPetite((p) => !p)}
+        className="mt-3 min-h-11 w-full rounded-full border-2 border-line px-3 py-2 text-kid-xs font-black text-ink-2"
+      >
+        {petite ? 'Grande route' : 'Petite route, comme en révision'}
       </button>
 
       <button

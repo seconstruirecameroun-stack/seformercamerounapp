@@ -169,7 +169,7 @@ export default function CourseJouable(props: {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       L = conteneur.clientWidth;
       H = compactRef.current
-        ? Math.round(Math.min(230, Math.max(170, L * 0.5)))
+        ? Math.round(Math.min(160, Math.max(124, L * 0.4)))
         : Math.round(Math.min(560, Math.max(380, L * 1.3)));
       canvas.width = Math.round(L * dpr);
       canvas.height = Math.round(H * dpr);
@@ -295,13 +295,23 @@ export default function CourseJouable(props: {
         {banniere ? (
           <div
             key={banniere.cle}
-            className="banniere-course pointer-events-none absolute inset-x-0 top-[18%] flex flex-col items-center"
+            className={
+              'banniere-course pointer-events-none absolute inset-x-0 flex flex-col items-center ' +
+              (compact ? 'top-2' : 'top-[18%]')
+            }
             onAnimationEnd={() => setBanniere(null)}
           >
-            <p className="rounded-full border-2 border-ink bg-white-warm px-4 py-1.5 text-center text-kid-lg font-black text-clay-dark shadow-[0_6px_0_oklch(0.3_0.045_205_/_0.25)]">
+            {/* Sur la petite route, la bannière reste en haut et petite : la
+                voiture doit rester visible pendant son turbo. */}
+            <p
+              className={
+                'rounded-full border-2 border-ink bg-white-warm text-center font-black text-clay-dark shadow-[0_4px_0_oklch(0.3_0.045_205_/_0.25)] ' +
+                (compact ? 'px-3 py-0.5 text-kid-sm' : 'px-4 py-1.5 text-kid-lg')
+              }
+            >
               {banniere.texte}
             </p>
-            {banniere.sous ? (
+            {banniere.sous && !compact ? (
               <p className="mt-1 rounded-full bg-ink/80 px-3 py-0.5 text-kid-xs font-bold text-white-warm">
                 {banniere.sous}
               </p>
@@ -375,6 +385,9 @@ function dessiner(
   const ecran = (d: number) => yVoiture - (d - e.distance) * ppm;
   const ici = paysage(e.distance);
   const decor = DECOR[ici];
+  // La taille des objets suit la voie, sauf sur une route basse : la voiture
+  // y prendrait la moitié de la hauteur.
+  const taille = Math.min(g.voie, H * 0.4);
 
   // Les bas-côtés.
   ctx.fillStyle = decor.herbe;
@@ -446,13 +459,13 @@ function dessiner(
     const y = ecran(o.d);
     if (y < -40 || y > H + 40) continue;
     const x = g.gauche + g.voie * (o.voie + 0.5);
-    if (o.type === 'piece') piece(ctx, x, y, g.voie * 0.2, t);
-    else obstacle(ctx, o, x, y, g.voie * 0.62, o.pris === true);
+    if (o.type === 'piece') piece(ctx, x, y, taille * 0.2, t);
+    else obstacle(ctx, o, x, y, taille * 0.62, o.pris === true);
   }
 
   // La voiture.
   const xV = g.gauche + g.voie * (e.x + 0.5);
-  voiture(ctx, xV, yVoiture, g.voie * 0.56, e, t);
+  voiture(ctx, xV, yVoiture, taille * 0.56, e, t);
 
   // Les étincelles et les mots.
   for (const p of particules) {

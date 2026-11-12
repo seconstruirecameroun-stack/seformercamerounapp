@@ -358,6 +358,14 @@ function Etape({
    */
   const jeu = jeuDeLaClasse(rang);
   const [course, setCourse] = useState(COMPTEURS_VIDES);
+  /**
+   * La réponse attend que la fenêtre « Bravo ! » se ferme.
+   *
+   * Appliquée tout de suite, le turbo partait derrière le voile de la
+   * fenêtre, et l'enfant ne le voyait pas. Il part maintenant au moment où
+   * il revient à la route.
+   */
+  const reponseEnAttente = useRef<boolean | null>(null);
   /** La réponse en cours vient de franchir l'étape : la dernière fenêtre
       rendra la main au bilan, et non à la question suivante. */
   const [franchieMaintenant, setFranchieMaintenant] = useState(false);
@@ -714,7 +722,7 @@ function Etape({
     verrou.current = true;
     setVerrouille(true);
     setErreur(null);
-    if (jeu === 'course') setCourse((c) => apresReponse(c, reponse.correct));
+    if (jeu === 'course') reponseEnAttente.current = reponse.correct;
     try {
       // La notion tombe pour cette étape : c'est ce qui fait avancer la barre.
       // Une question d'appui réussie ne valide pas l'étape : voir avanceLEtape.
@@ -925,6 +933,11 @@ function Etape({
       return;
     }
     setFile([]);
+    if (reponseEnAttente.current !== null) {
+      const juste = reponseEnAttente.current;
+      reponseEnAttente.current = null;
+      setCourse((c) => apresReponse(c, juste));
+    }
     // Une étape franchie arrête la série : la suite se joue au niveau du
     // dessus. On passe d'abord par le bilan — c'est là qu'est le coffre, et
     // c'est le moment de la séance où il a le plus de valeur. Enchaîner

@@ -211,7 +211,7 @@ export default function Composition() {
     dejaRepondu.current = true;
     justeALaDerniere.current = reponse.correct;
     setPhase('corrige');
-    if (jeu === 'course') setCourse((c) => apresReponse(c, reponse.correct));
+
     setErreur(null);
     if (etape.genre === 'ecrit') {
       try {
@@ -252,6 +252,9 @@ export default function Composition() {
     // L'enfant a fait défiler pour répondre : le plateau, comme la question
     // suivante, est en haut. On l'y ramène plutôt que de le laisser chercher.
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // La course reçoit la réponse maintenant, quand l'écran remonte vers elle :
+    // au moment du corrigé, l'enfant est en bas, et il ne verrait rien.
+    if (jeu === 'course') setCourse((c) => apresReponse(c, justeALaDerniere.current));
     if (justeALaDerniere.current && jeu === 'bonbons') setPhase('plateau');
     else suivante();
   }
