@@ -43,6 +43,9 @@ import type { Butin } from '../../components/jeu/Coffre';
 import Mascotte from '../../components/jeu/Mascotte';
 import type { Humeur } from '../../components/jeu/Mascotte';
 import { jouerSon } from '../../lib/sons';
+import PlateauJouable from '../../components/jeu/PlateauJouable';
+import DialogueJeu, { momentFort, type Dialogue } from '../../components/jeu/DialogueJeu';
+import { multiplicateur, palierAtteint, prochainPalier } from '../../lib/recompenses';
 import { etatRang } from '../../lib/jeu';
 import { ErrorNote, Loading } from '../../components/ui';
 import type { ExplanationRow, NotionRow, VideoRow } from '../../types/db';
@@ -366,6 +369,46 @@ function Etape({
    * il revient à la route.
    */
   const reponseEnAttente = useRef<boolean | null>(null);
+  /**
+   * Le plateau des grands, en révision.
+   *
+   * Une bonne réponse gagne un coup ; une série de bonnes réponses fait
+   * compter double, triple, quadruple les points de ce coup. La série ne
+   * compte que les vraies questions : une question d'appui, plus facile, ne
+   * la fait pas monter. Et rien ne récompense la vitesse — seulement la
+   * justesse. Une faute remet la série à zéro sans rien retirer.
+   */
+  const serie = useRef(0);
+  const multiplicateurDuCoup = useRef(1);
+  const coupEnAttente = useRef(false);
+  const indexApresCoup = useRef<number | null>(null);
+  const [plateauActif, setPlateauActif] = useState(false);
+  const [scorePlateau, setScorePlateau] = useState(0);
+  const [dernierGain, setDernierGain] = useState(0);
+  const momentEnAttente = useRef<Dialogue | null>(null);
+  const [moment, setMoment] = useState<Dialogue | null>(null);
+  /**
+   * Une limite douce.
+   *
+   * Après une demi-heure, Niba propose de s'arrêter — une fois, sans rien
+   * bloquer. Un enfant qui s'arrête content revient le lendemain ; un enfant
+   * qu'on épuise finit par ne plus ouvrir l'app. Le début de la séance se
+   * garde le temps de l'onglet, pour que changer de leçon ne remette pas le
+   * compteur à zéro.
+   */
+  const debutDeSeance = useRef<number>(Date.now());
+  const pauseProposee = useRef(false);
+  useEffect(() => {
+    try {
+      const cle = 'seance-debut-' + childId;
+      const lu = Number(sessionStorage.getItem(cle));
+      if (lu && Date.now() - lu < 6 * 3600 * 1000) debutDeSeance.current = lu;
+      else sessionStorage.setItem(cle, String(debutDeSeance.current));
+      pauseProposee.current = sessionStorage.getItem(cle + '-pause') === '1';
+    } catch {
+      // Navigation privée : la demi-heure se compte depuis cette leçon.
+    }
+  }, [childId]);
   /** La réponse en cours vient de franchir l'étape : la dernière fenêtre
       rendra la main au bilan, et non à la question suivante. */
   const [franchieMaintenant, setFranchieMaintenant] = useState(false);
@@ -723,6 +766,17 @@ function Etape({
     setVerrouille(true);
     setErreur(null);
     if (jeu === 'course') reponseEnAttente.current = reponse.correct;
+    if (jeu === 'bonbons') {
+      serie.current = reponse.correct ? (question.appui ? serie.current : serie.current + 1) : 0;
+      multiplicateurDuCoup.current = multiplicateur(serie.current);
+      coupEnAttente.current = reponse.correct;
+      const FOIS = ['', '', 'double', 'triple', 'quadruple'];
+      momentEnAttente.current =
+        reponse.correct && !question.appui && palierAtteint(serie.current)
+          ? momentFort('serie', `SÉRIE DE ${serie.current} !`,
+            `Ton prochain coup compte ${FOIS[multiplicateurDuCoup.current] ?? 'quatre fois'} !`)
+          : null;
+    }
     try {
       // La notion tombe pour cette étape : c'est ce qui fait avancer la barre.
       // Une question d'appui réussie ne valide pas l'étape : voir avanceLEtape.
@@ -942,7 +996,44 @@ function Etape({
     // dessus. On passe d'abord par le bilan — c'est là qu'est le coffre, et
     // c'est le moment de la séance où il a le plus de valeur. Enchaîner
     // directement sur l'étape suivante priverait l'enfant de sa récompense.
-    setIndex(franchieMaintenant ? (seance.data?.questions.length ?? 0) : index + 1);
+    const suivant = franchieMaintenant ? (seance.data?.questions.length ?? 0) : index + 1;
+    if (jeu === 'bonbons') {
+      if (momentEnAttente.current) {
+        setMoment(momentEnAttente.current);
+      } else if (!pauseProposee.current && Date.now() - debutDeSeance.current > 30 * 60 * 1000) {
+        pauseProposee.current = true;
+        try {
+          sessionStorage.setItem('seance-debut-' + childId + '-pause', '1');
+        } catch {
+          // rien : la proposition ne reviendra simplement pas dans cette leçon
+        }
+        setMoment(momentFort('fin', 'BELLE SÉANCE !', 'Une demi-heure de travail. On reprend demain ?'));
+      }
+      momentEnAttente.current = null;
+      // Le coup gagné se joue maintenant, avant la question suivante. Pas
+      // quand l'étape vient d'être franchie : le coffre passe avant.
+      if (coupEnAttente.current && !franchieMaintenant) {
+        coupEnAttente.current = false;
+        indexApresCoup.current = suivant;
+        setPlateauActif(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      coupEnAttente.current = false;
+    }
+    setIndex(suivant);
+    setVerrouille(false);
+    verrou.current = false;
+  }
+
+  /** Le coup est joué : on encaisse, multiplié par la série, et on enchaîne. */
+  function coupJoue(gain: number) {
+    const vrai = gain * multiplicateurDuCoup.current;
+    setScorePlateau((x) => x + vrai);
+    setDernierGain(vrai);
+    setPlateauActif(false);
+    setIndex(indexApresCoup.current ?? index + 1);
+    indexApresCoup.current = null;
     setVerrouille(false);
     verrou.current = false;
   }
@@ -982,7 +1073,85 @@ function Etape({
         />
       ) : null}
 
-      <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
+      <DialogueJeu dernier={moment} />
+
+      {jeu === 'bonbons' ? (
+        <div className="grid gap-2">
+          {(() => {
+            const palier = prochainPalier(serie.current);
+            const m = multiplicateur(serie.current);
+            const manque = Math.max(0, s.total - reussies);
+            return (
+              <div className="grid grid-cols-2 gap-2">
+                <div
+                  key={'serie-' + serie.current}
+                  className={
+                    'recompense-palpite rounded-2xl border-2 px-3 py-1.5 ' +
+                    (m > 1 ? 'border-clay bg-clay/10' : 'border-line bg-white-warm')
+                  }
+                >
+                  <p className="text-kid-xs font-black">
+                    🔥 Série {serie.current}
+                    {m > 1 ? <span className="text-clay-dark"> · ×{m}</span> : null}
+                  </p>
+                  <p className="text-[0.72rem] font-bold leading-tight text-ink-2">
+                    {palier ? `Encore ${palier.dans} → coup ×${palier.multiplicateur}` : 'Série maximale !'}
+                  </p>
+                </div>
+                <div
+                  key={'etape-' + manque}
+                  className="recompense-palpite rounded-2xl border-2 border-lilac bg-white-warm px-3 py-1.5"
+                >
+                  <p className="text-kid-xs font-black">⭐ {scorePlateau} points</p>
+                  <p className="text-[0.72rem] font-bold leading-tight text-ink-2">
+                    {estManche
+                      ? `Sans faute : encore ${s.questions.length - index}`
+                      : s.termine || manque === 0
+                        ? 'Étape en poche !'
+                        : `Encore ${manque} notion${manque > 1 ? 's' : ''} → étape suivante`}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Comme en composition : petit pendant la question, la consigne à
+              côté ; il prend toute la largeur quand le coup est gagné. */}
+          <div className="flex flex-wrap items-center gap-x-3">
+            <div
+              className="shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+              style={{ width: plateauActif ? '100%' : '44%' }}
+            >
+              <PlateauJouable
+                actif={plateauActif}
+                bordABord={plateauActif}
+                onCoupJoue={(g) => coupJoue(g.points)}
+              />
+            </div>
+            <p
+              className={
+                'min-w-[40%] flex-1 text-kid-xs font-bold text-muted ' +
+                (plateauActif ? 'mt-2 text-center' : 'text-left')
+              }
+            >
+              {plateauActif
+                ? multiplicateurDuCoup.current > 1
+                  ? `À toi de jouer : ce coup compte ×${multiplicateurDuCoup.current} !`
+                  : 'À toi de jouer : touche deux bonbons voisins.'
+                : dernierGain > 0
+                  ? `+${dernierGain} points`
+                  : 'Réponds juste, et tu gagnes un coup.'}
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      <section
+        className={
+          'rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6 ' +
+          (plateauActif ? 'hidden' : '')
+        }
+      >
         <div className="flex items-center justify-between gap-3">
           <Galets total={s.questions.length} faits={index} />
           <span className="rounded-full bg-sand px-3 py-1 text-kid-xs font-black tracking-wide uppercase">
