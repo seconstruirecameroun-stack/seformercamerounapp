@@ -1,3 +1,4 @@
+import { toutLire } from './toutLire';
 import { supabase } from './supabase';
 
 /**
@@ -84,11 +85,16 @@ export function lundi(decalageSemaines = 0): string {
 export async function chargerDuel(childId: string): Promise<Duel | null> {
   const [enfants, justes, gagnees] = await Promise.all([
     supabase.from('children').select('id, first_name, avatar'),
-    supabase
-      .from('attempts')
-      .select('child_id, created_at')
-      .eq('correct', true)
-      .gte('created_at', lundi(-1)),
+    toutLire<{ child_id: string; created_at: string }>((de, a) =>
+      supabase
+        .from('attempts')
+        .select('child_id, created_at')
+        .eq('correct', true)
+        .gte('created_at', lundi(-1))
+        .order('created_at')
+        .order('id')
+        .range(de, a),
+    ).then((data) => ({ data, error: null })),
     supabase
       .from('manches')
       .select('child_id, created_at')

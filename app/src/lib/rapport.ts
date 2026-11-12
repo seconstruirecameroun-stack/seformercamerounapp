@@ -1,3 +1,4 @@
+import { toutLire } from './toutLire';
 import { supabase } from './supabase';
 import {
   decouperEnSeries,
@@ -406,12 +407,18 @@ export function construireRapport(
   const types = parts(essais, (e) => reperes.get(e.item_id)?.kind ?? null, ASSEZ_POUR_UN_TYPE);
 
   // ── Ce qu'il doit beaucoup travailler ───────────────────────────────────
-  const parNotion = new Map<string, { fautes: number; essais: number; mauvaises: string[] }>();
-  for (const e of essais) {
+  // Les réponses sont parcourues dans l'ordre du temps : `dernieres` garde les
+  // deux plus récentes de chaque notion.
+  const parNotion = new Map<
+    string,
+    { fautes: number; essais: number; mauvaises: string[]; dernieres: boolean[] }
+  >();
+  for (const e of tries) {
     const r = reperes.get(e.item_id);
     if (!r) continue;
-    const c = parNotion.get(r.notionId) ?? { fautes: 0, essais: 0, mauvaises: [] };
+    const c = parNotion.get(r.notionId) ?? { fautes: 0, essais: 0, mauvaises: [], dernieres: [] };
     c.essais += 1;
+    c.dernieres = [...c.dernieres, e.correct].slice(-2);
     if (!e.correct) {
       c.fautes += 1;
       const dite = direLaReponse(r.kind, r.payload, e.answer);
@@ -420,8 +427,13 @@ export function construireRapport(
     parNotion.set(r.notionId, c);
   }
 
+  // Une notion RATTRAPÉE n'est plus à travailler : ratée trois fois au début,
+  // réussie les deux dernières, l'enfant l'a apprise — c'est même ce que ses
+  // étapes affichent. La garder ici faisait dire au rapport le contraire de
+  // ce que montre l'espace de l'enfant.
   const aTravailler: Priorite[] = [...parNotion.entries()]
     .filter(([, c]) => c.fautes >= FAUTES_POUR_UNE_PRIORITE)
+    .filter(([, c]) => !(c.dernieres.length === 2 && c.dernieres.every(Boolean)))
     .sort((a, b) => b[1].fautes - a[1].fautes || b[1].essais - a[1].essais)
     .slice(0, PRIORITES_MAX)
     .map(([notionId, c]) => {
@@ -480,13 +492,18 @@ export async function chargerRapports(
   if (erreurEnfant) throw erreurEnfant;
   const prenom = (enfant as { first_name: string }).first_name;
 
-  const { data: essaisBruts, error: erreurEssais } = await supabase
-    .from('attempts')
-    .select('item_id, correct, duration_ms, created_at, answer')
-    .eq('child_id', childId)
-    .order('created_at');
-  if (erreurEssais) throw erreurEssais;
-  const essais = (essaisBruts ?? []) as Essai[];
+  // Toutes les réponses, page après page. Lues d'un coup, elles s'arrêtaient
+  // aux mille plus ANCIENNES : passé ce seuil, le rapport ne voyait plus rien
+  // de la semaine en cours.
+  const essais = await toutLire<Essai>((de, a) =>
+    supabase
+      .from('attempts')
+      .select('item_id, correct, duration_ms, created_at, answer')
+      .eq('child_id', childId)
+      .order('created_at')
+      .order('id')
+      .range(de, a),
+  );
 
   const { data: manchesBrutes, error: erreurManches } = await supabase
     .from('manches')

@@ -1,3 +1,4 @@
+import { toutLire } from './toutLire';
 import { supabase } from './supabase';
 import {
   decouperEnSeries,
@@ -380,11 +381,16 @@ export async function construireSeance(childId: string, lessonId: string): Promi
   if (idsItems.length === 0) return null;
 
   const [essaisRes, manchesRes] = await Promise.all([
-    supabase
-      .from('attempts')
-      .select('item_id, correct, created_at')
-      .eq('child_id', childId)
-      .in('item_id', idsItems),
+    toutLire<{ item_id: string; correct: boolean; created_at: string }>((de, a) =>
+      supabase
+        .from('attempts')
+        .select('item_id, correct, created_at')
+        .eq('child_id', childId)
+        .in('item_id', idsItems)
+        .order('created_at')
+        .order('id')
+        .range(de, a),
+    ).then((data) => ({ data, error: null })),
     supabase
       .from('manches')
       .select('lesson_id, questions, justes, reussie, notions_ratees, created_at')

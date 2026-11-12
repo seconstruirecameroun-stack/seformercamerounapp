@@ -1,3 +1,4 @@
+import { toutLire } from './toutLire';
 import { supabase } from './supabase';
 import { etapeCourante, etapeImage, imageGagnee, reussitesParNiveau } from './paliers';
 import {
@@ -152,28 +153,46 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
       .eq('status', 'approved')
       .or(classe ? `class_id.eq.${classe},class_id.is.null` : 'class_id.is.null')
       .order('sort_order'),
-    supabase.from('mastery').select('notion_id, level, next_review').eq('child_id', childId),
-    supabase.from('rewards').select('value, created_at').eq('child_id', childId),
+    // Ces trois lectures-là grandissent avec chaque réponse : elles se lisent
+    // en entier, page après page (voir toutLire).
+    toutLire<{ notion_id: string; level: number; next_review: string | null }>((de, a) =>
+      supabase.from('mastery').select('notion_id, level, next_review').eq('child_id', childId)
+        .order('notion_id').range(de, a),
+    ).then((data) => ({ data, error: null })),
+    toutLire<{ value: number | null; created_at: string }>((de, a) =>
+      supabase.from('rewards').select('value, created_at').eq('child_id', childId)
+        .order('created_at').order('id').range(de, a),
+    ).then((data) => ({ data, error: null })),
     supabase
       .from('attempts')
       .select('item_id, correct, created_at')
       .eq('child_id', childId)
       .order('created_at', { ascending: false })
       .limit(400),
-    // Seules les bonnes réponses situent l'étape : la liste reste courte,
-    // et elle ne peut pas être tronquée par une limite comme au-dessus.
-    supabase
-      .from('attempts')
-      .select('item_id, created_at')
-      .eq('child_id', childId)
-      .eq('correct', true),
+    // Seules les bonnes réponses situent l'étape. Elles sont lues en ENTIER :
+    // tronquée à mille lignes, la liste faisait reculer des étapes franchies.
+    toutLire<{ item_id: string; created_at: string }>((de, a) =>
+      supabase
+        .from('attempts')
+        .select('item_id, created_at')
+        .eq('child_id', childId)
+        .eq('correct', true)
+        .order('created_at')
+        .order('id')
+        .range(de, a),
+    ).then((data) => ({ data, error: null })),
     // Les fautes datées, sans limite elles non plus : ce sont elles qui font
     // perdre une validation, et en manquer une la laisserait affichée à tort.
-    supabase
-      .from('attempts')
-      .select('item_id, created_at')
-      .eq('child_id', childId)
-      .eq('correct', false),
+    toutLire<{ item_id: string; created_at: string }>((de, a) =>
+      supabase
+        .from('attempts')
+        .select('item_id, created_at')
+        .eq('child_id', childId)
+        .eq('correct', false)
+        .order('created_at')
+        .order('id')
+        .range(de, a),
+    ).then((data) => ({ data, error: null })),
     supabase
       .from('manches')
       .select('lesson_id, questions, justes, reussie, notions_ratees, notions, created_at')
@@ -353,7 +372,15 @@ export async function chargerTableauDeBord(childId: string): Promise<TableauDeBo
     enCours.sort((a, b) => a.etape - b.etape || b.etapeTotal - b.etapeFaites - (a.etapeTotal - a.etapeFaites))[0] ??
     [...resumes].sort((a, b) => b.dues - a.dues)[0];
 
-  const jours = [...new Set((tentatives.data ?? []).map((t) => String(t.created_at).slice(0, 10)))];
+  // Les jours joués se lisent sur TOUT le journal (bonnes et mauvaises
+  // réponses, lues en entier), et non sur les 400 dernières réponses : un
+  // enfant qui en donne six cents dans la semaine voyait ses premiers jours
+  // disparaître de « Ta semaine », et sa série de jours se casser à tort.
+  const jours = [
+    ...new Set(
+      [...(justes.data ?? []), ...(fausses.data ?? [])].map((t) => String(t.created_at).slice(0, 10)),
+    ),
+  ];
 
   // Les dossiers, dans l'ordre d'apparition des leçons : l'enfant retrouve
   // ses matières à la même place d'une fois sur l'autre.

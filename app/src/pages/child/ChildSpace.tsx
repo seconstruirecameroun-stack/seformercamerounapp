@@ -1,3 +1,4 @@
+import { toutLire } from '../../lib/toutLire';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -1332,14 +1333,18 @@ export default function ChildSpace() {
         items: Array<{ id: string; level: number; status: string }>;
       }>).map((n) => ({ id: n.id, items: (n.items ?? []).filter((i) => i.status === 'approved') }));
 
-      const justes = await supabase
-        .from('attempts')
-        .select('item_id')
-        .eq('child_id', childId!)
-        .eq('correct', true);
-      if (justes.error) throw justes.error;
+      const justes = await toutLire<{ item_id: string }>((de, a) =>
+        supabase
+          .from('attempts')
+          .select('item_id')
+          .eq('child_id', childId!)
+          .eq('correct', true)
+          .order('created_at')
+          .order('id')
+          .range(de, a),
+      );
 
-      const reussies = reussitesParNiveau(notions, justes.data ?? []);
+      const reussies = reussitesParNiveau(notions, justes);
       return new Set(notions.filter((n) => imageGagnee(n, reussies)).map((n) => n.id));
     },
   });
@@ -1371,12 +1376,18 @@ export default function ChildSpace() {
     queryKey: ['points', childId],
     enabled: Boolean(childId),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('rewards')
-        .select('value')
-        .eq('child_id', childId!);
-      if (error) throw error;
-      return (data ?? []).reduce((somme, r) => somme + (r.value ?? 0), 0);
+      // Le total est la somme de TOUTES les récompenses : lues d'un coup, elles
+      // s'arrêtaient à mille lignes et le compteur d'étoiles plafonnait.
+      const lignes = await toutLire<{ value: number | null }>((de, a) =>
+        supabase
+          .from('rewards')
+          .select('value')
+          .eq('child_id', childId!)
+          .order('created_at')
+          .order('id')
+          .range(de, a),
+      );
+      return lignes.reduce((somme, r) => somme + (r.value ?? 0), 0);
     },
   });
 
