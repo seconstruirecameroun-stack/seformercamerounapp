@@ -15,6 +15,7 @@ import {
   type Paysage,
 } from '../../lib/course';
 import { jouerSon } from '../../lib/sons';
+import DialogueJeu, { dialogue, type Dialogue } from './DialogueJeu';
 
 /**
  * La course, jouable : la route, la voiture, et tout ce qui bouge.
@@ -122,6 +123,8 @@ export default function CourseJouable(props: {
     bouclier: false, turbo: false,
   }));
   const [banniere, setBanniere] = useState<{ cle: number; texte: string; sous?: string } | null>(null);
+  /** Pango parle : le dernier dialogue demandé, que DialogueJeu met en file. */
+  const [parole, setParole] = useState<Dialogue | null>(null);
 
   // Les bonnes réponses arrivent par ces deux compteurs.
   const turbosVus = useRef(props.turbos ?? 0);
@@ -130,7 +133,7 @@ export default function CourseJouable(props: {
     if (n > turbosVus.current) {
       etat.current = donnerTurbo(etat.current);
       jouerSon('turbo');
-      setBanniere({ cle: Date.now(), texte: 'TURBO !', sous: 'Bonne réponse' });
+      setParole(dialogue('turbo'));
     }
     turbosVus.current = n;
   }, [props.turbos]);
@@ -140,7 +143,7 @@ export default function CourseJouable(props: {
     if (n > boucliersVus.current) {
       etat.current = donnerBouclier(etat.current);
       jouerSon('bouclier');
-      setBanniere({ cle: Date.now(), texte: 'BOUCLIER !', sous: 'Série sans faute' });
+      setParole(dialogue('bouclier'));
     }
     boucliersVus.current = n;
   }, [props.boucliers]);
@@ -219,7 +222,6 @@ export default function CourseJouable(props: {
     };
 
     const reagir = (evenements: Evenement[]) => {
-      const e = etat.current;
       const voieX = (v: number) => xDeVoie(L, v);
       const yVoiture = H * 0.78;
       for (const ev of evenements) {
@@ -236,13 +238,14 @@ export default function CourseJouable(props: {
             texte: ev.sorte === 'chevre' ? 'Bêêê !' : ev.sorte === 'flaque' ? 'Splash !' : 'Ouille !',
             couleur: '#c0392b',
           });
+          setParole(dialogue('choc', ev.sorte));
         } else if (ev.type === 'bouclier') {
           jouerSon('bouclier');
           gerbe(particules.current, voieX(ev.voie), yVoiture - 10, '#7fd3f7', 18);
           textes.current.push({ x: voieX(ev.voie), y: yVoiture - 60, texte: 'Protégé !', vie: 1, couleur: '#1f7aa8' });
         } else if (ev.type === 'ville') {
           jouerSon('fete');
-          setBanniere({ cle: Date.now(), texte: 'Bienvenue à ' + ev.nom + ' !', sous: Math.round(e.distance) + ' m parcourus' });
+          setParole(dialogue('ville', ev.nom));
           for (let i = 0; i < 4; i++) gerbe(particules.current, L * (0.2 + i * 0.2), H * 0.3, ['#e74c3c', '#f1c40f', '#2ecc71', '#3498db'][i], 12);
         }
       }
@@ -285,6 +288,8 @@ export default function CourseJouable(props: {
           {voyage.vers ? `${voyage.restant} m` : ''}
         </span>
       </div>
+
+      <DialogueJeu dernier={parole} />
 
       <div
         ref={boite}
