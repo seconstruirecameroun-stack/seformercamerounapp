@@ -54,7 +54,8 @@ export default function NouvelleComposition() {
   const [envoi, setEnvoi] = useState(false);
 
   const enfant = useQuery({
-    queryKey: ['child', childId],
+    // Pas ['child', id] : la page de l'enfant y range une version sans classe.
+    queryKey: ['child-classe', childId],
     enabled: Boolean(childId),
     queryFn: async () => {
       const { data, error } = await supabase

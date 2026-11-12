@@ -1106,7 +1106,11 @@ export default function ChildSpace() {
   const parentId = session?.user.id ?? null;
 
   const child = useQuery({
-    queryKey: ['child', childId],
+    // Une clé à elle : la page d'accueil charge l'enfant SANS sa classe sous
+    // ['child', id], et la leçon reprenait cette version en cache — sans
+    // rang. KLEIN avait alors le clavier au lieu des lettres mobiles, et pas
+    // sa course. Deux requêtes aux champs différents ne partagent pas une clé.
+    queryKey: ['child-rang', childId],
     enabled: Boolean(childId),
     queryFn: async () => {
       const { data, error } = await supabase
