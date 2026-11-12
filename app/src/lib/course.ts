@@ -1,19 +1,24 @@
 /**
  * La course : la voiture de KLEIN, sans dessin.
  *
- * Un enfant de sept ans ne doit pas réfléchir pour jouer ici — il réfléchit
- * déjà sur la question. La voiture roule donc toute seule, sur trois voies ;
- * l'enfant n'a qu'un geste, changer de voie, pour esquiver les obstacles et
- * ramasser les pièces. S'il ne touche à rien, un pilote tranquille conduit à
- * sa place : le jeu continue pendant qu'il lit sa question.
+ * L'ENFANT NE CONDUIT PAS. Son attention va aux questions ; la voiture roule
+ * seule, sur trois voies, conduite par un pilote qui ramasse les pièces et
+ * évite les obstacles. Ce sont les RÉPONSES qui décident de la course :
  *
- * TOUCHER UN OBSTACLE NE FAIT JAMAIS PERDRE. La voiture fait un tête-à-queue,
- * ralentit, et repart. Il n'y a ni vie, ni fin de partie : un enfant qui a
- * peur de perdre arrête de jouer.
+ *   une bonne réponse donne un TURBO — la voiture file, et c'est là que se
+ *   gagne l'essentiel de la route ;
  *
- * Ce que les leçons y apportent : une bonne réponse donne un TURBO (la
- * voiture file quelques secondes), une série sans faute donne un BOUCLIER (le
- * prochain obstacle est traversé sans s'arrêter).
+ *   une mauvaise réponse rend le pilote MALADROIT — il va heurter le prochain
+ *   obstacle, fait un tête-à-queue, ralentit, et perd du terrain ;
+ *
+ *   une série sans faute donne un BOUCLIER — la prochaine maladresse est
+ *   encaissée par la bulle, sans choc.
+ *
+ * La vitesse de croisière est lente exprès : sans bonnes réponses, la voiture
+ * avance peu. Le chemin parcouru dit donc comment la séance s'est passée.
+ *
+ * UN CHOC NE FAIT JAMAIS PERDRE. Ni vie, ni fin de partie : la voiture repart
+ * toujours. On signale une réponse à revoir, on ne punit pas.
  *
  * Tout ce fichier est pur : le temps et le hasard lui sont donnés. Il se
  * vérifie donc sans écran (course.verif.ts), et l'écran ne fait que dessiner.
@@ -22,14 +27,14 @@
 export const VOIES = 3;
 
 /** En mètres par seconde. */
-export const VITESSE_NORMALE = 14;
-export const VITESSE_TURBO = 27;
-export const VITESSE_CHOC = 4;
+export const VITESSE_NORMALE = 8;
+export const VITESSE_TURBO = 28;
+export const VITESSE_CHOC = 3;
 /** La vitesse revient à la normale à ce rythme, en m/s chaque seconde. */
 const REPRISE = 9;
 
-export const DUREE_TURBO = 3.2;
-export const DUREE_CHOC = 0.8;
+export const DUREE_TURBO = 3.5;
+export const DUREE_CHOC = 1;
 /** Après un choc, la voiture ne peut pas être touchée de nouveau tout de suite. */
 const DUREE_INVULNERABLE = 1.4;
 
@@ -70,8 +75,8 @@ export type Etat = {
   choc: number;
   invulnerable: number;
   bouclier: boolean;
-  /** Le temps écoulé depuis le dernier geste de l'enfant. */
-  sansGeste: number;
+  /** Après une mauvaise réponse : le pilote va heurter le prochain obstacle. */
+  maladroit: boolean;
   chocs: number;
   esquives: number;
 };
@@ -118,18 +123,18 @@ export function nouvelEtat(): Etat {
   return {
     voie: 1, x: 1, distance: 0, vitesse: VITESSE_NORMALE, pieces: 0, objets: [],
     prochaineRangee: 30, prochainId: 1, turbo: 0, choc: 0, invulnerable: 0,
-    bouclier: false, sansGeste: 0, chocs: 0, esquives: 0,
+    bouclier: false, maladroit: false, chocs: 0, esquives: 0,
   };
 }
 
-/** L'enfant change de voie. Hors de la route, le geste est ignoré. */
-export function changerDeVoie(e: Etat, sens: -1 | 1): Etat {
-  const voie = Math.max(0, Math.min(VOIES - 1, e.voie + sens));
-  return { ...e, voie, sansGeste: 0 };
+/** Une bonne réponse. Elle efface aussi une maladresse en attente. */
+export function donnerTurbo(e: Etat): Etat {
+  return { ...e, turbo: DUREE_TURBO, maladroit: false, vitesse: Math.max(e.vitesse, VITESSE_TURBO) };
 }
 
-export function donnerTurbo(e: Etat): Etat {
-  return { ...e, turbo: DUREE_TURBO, vitesse: Math.max(e.vitesse, VITESSE_TURBO) };
+/** Une mauvaise réponse : le turbo s'arrête, et le prochain obstacle sera touché. */
+export function donnerErreur(e: Etat): Etat {
+  return { ...e, turbo: 0, maladroit: true };
 }
 
 export function donnerBouclier(e: Etat): Etat {
@@ -161,15 +166,23 @@ export function rangee(d: number, distance: number, alea: () => number, id: numb
 }
 
 /**
- * Le pilote : ce que fait la voiture quand l'enfant ne touche à rien.
+ * Le pilote.
  *
- * Il évite les obstacles proches, sinon va chercher les pièces. Il ne change
- * de voie que d'une case à la fois, comme un enfant.
+ * D'ordinaire il évite les obstacles et va chercher les pièces. Maladroit,
+ * il va droit sur le prochain obstacle qu'il a le temps d'atteindre. Il ne
+ * change de voie que d'une case à la fois.
  */
 export function choixDuPilote(e: Etat): number {
   const devant = e.objets.filter(
     (o) => !o.pris && o.d > e.distance - 1 && o.d - e.distance < REGARD_PILOTE,
   );
+  if (e.maladroit) {
+    const vise = devant
+      .filter((o) => o.type === 'obstacle' && o.d - e.distance > 4)
+      .sort((a, b) => a.d - b.d)[0];
+    if (vise) return e.voie + Math.sign(vise.voie - e.voie);
+    return e.voie;
+  }
   const danger = (v: number) => devant.some((o) => o.type === 'obstacle' && o.voie === v);
   const gain = (v: number) => devant.filter((o) => o.type === 'piece' && o.voie === v).length;
   // Le pilote choisit la meilleure voie de toute la route, puis s'y rend une
@@ -187,24 +200,17 @@ export function choixDuPilote(e: Etat): number {
   return e.voie + Math.sign(cible - e.voie);
 }
 
-/**
- * Le pas du jeu : `dt` secondes passent.
- *
- * `pilote` dit si la voiture conduit seule (l'enfant n'a pas touché depuis un
- * moment, ou il est occupé par une question).
- */
+/** Le pas du jeu : `dt` secondes passent. */
 export function avancer(
   e0: Etat,
   dt: number,
   alea: () => number,
-  pilote: boolean,
 ): { etat: Etat; evenements: Evenement[] } {
   const evenements: Evenement[] = [];
   const e: Etat = { ...e0, objets: e0.objets };
   const pas = Math.min(dt, 0.05);
 
-  if (pilote) e.voie = choixDuPilote(e);
-  e.sansGeste += pas;
+  e.voie = choixDuPilote(e);
 
   // La voiture glisse vers sa voie, sans sauter.
   const ecart = e.voie - e.x;
@@ -247,8 +253,11 @@ export function avancer(
       evenements.push({ type: 'piece', voie: o.voie });
       return { ...o, pris: true };
     }
-    if (e.invulnerable > 0 || e.turbo > 0) return o;
+    // Le pilote adroit n'est jamais puni d'un obstacle qu'il n'a pas pu
+    // éviter : seule une mauvaise réponse fait toucher.
+    if (!e.maladroit || e.invulnerable > 0 || e.turbo > 0) return o;
     const sorte = o.sorte ?? 'trou';
+    e.maladroit = false;
     if (e.bouclier) {
       e.bouclier = false;
       e.invulnerable = DUREE_INVULNERABLE;

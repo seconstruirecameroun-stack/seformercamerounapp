@@ -92,7 +92,7 @@ const ONGLETS = [
   { cle: 'annotation', titre: 'Annoter un schéma',
     note: 'Les schémas lus en base : les numéros doivent se lire, et chaque nom trouver sa place.' },
   { cle: 'course', titre: 'La voiture de KLEIN',
-    note: 'Touche à gauche ou à droite de la route. Sans toucher, la voiture roule seule. Les deux boutons font ce que feront les bonnes réponses.' },
+    note: 'La voiture roule seule : l’enfant ne touche à rien. Ses réponses décident — turbo, choc ou bouclier. Les trois boutons les jouent ici.' },
   { cle: 'bonbons', titre: 'Plateau de bonbons',
     note: 'Le plateau de la salle de composition, libre : ici chaque coup est gratuit. Dans une composition, il faut une bonne réponse pour en gagner un.' },
   { cle: 'copie', titre: 'Copie de composition',

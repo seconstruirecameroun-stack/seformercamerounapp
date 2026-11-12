@@ -3,8 +3,8 @@ import {
   DUREE_CHOC,
   VOIES,
   avancer,
-  changerDeVoie,
   donnerBouclier,
+  donnerErreur,
   donnerTurbo,
   etape,
   nouvelEtat,
@@ -27,13 +27,10 @@ import { jouerSon } from '../../lib/sons';
  * Rien n'est chargé : la voiture, la chèvre, les palmiers sont des formes
  * tracées. Zéro image, zéro crédit, et la course démarre hors connexion.
  *
- * L'enfant touche la moitié gauche ou droite de la route pour changer de
- * voie. S'il ne touche plus rien pendant quelques secondes — ou si `actif`
- * est faux, parce qu'il lit sa question — la voiture conduit seule.
+ * L'enfant ne touche à rien : la voiture se conduit seule, et ce sont ses
+ * réponses qui la font aller vite (turbo), heurter un obstacle (erreur) ou
+ * traverser sans mal (bouclier). Son attention reste sur la question.
  */
-
-/** Après ce silence du doigt, le pilote reprend le volant. */
-const PILOTE_APRES = 4;
 
 type Particule = {
   x: number; y: number; vx: number; vy: number; vie: number; duree: number;
@@ -46,7 +43,6 @@ export type Resume = {
   distance: number;
   chocs: number;
   esquives: number;
-  pilote: boolean;
   bouclier: boolean;
   turbo: boolean;
 };
@@ -61,27 +57,24 @@ const DECOR: Record<Paysage, { herbe: string; herbe2: string; nom: string }> = {
 const FONTE = "800 %spx Fredoka, system-ui, sans-serif";
 
 export default function CourseJouable(props: {
-  /** Faux pendant une question : la voiture roule seule. */
-  actif?: boolean;
-  /** Chaque fois que ce nombre monte, un turbo est donné. */
+  /** Chaque fois que ce nombre monte — une bonne réponse —, un turbo est donné. */
   turbos?: number;
+  /** Chaque fois que ce nombre monte — une mauvaise réponse —, le prochain obstacle est heurté. */
+  erreurs?: number;
   /** Chaque fois que ce nombre monte, un bouclier est donné. */
   boucliers?: number;
   onResume?: (r: Resume) => void;
 }) {
-  const actif = props.actif ?? true;
   const toile = useRef<HTMLCanvasElement | null>(null);
   const boite = useRef<HTMLDivElement | null>(null);
   const etat = useRef<Etat>(nouvelEtat());
   const particules = useRef<Particule[]>([]);
   const textes = useRef<Texte[]>([]);
-  const actifRef = useRef(actif);
-  actifRef.current = actif;
   const onResume = useRef(props.onResume);
   onResume.current = props.onResume;
 
   const [hud, setHud] = useState(() => ({
-    pieces: 0, distance: 0, pilote: false, bouclier: false, turbo: false,
+    pieces: 0, distance: 0, bouclier: false, turbo: false,
   }));
   const [banniere, setBanniere] = useState<{ cle: number; texte: string; sous?: string } | null>(null);
 
@@ -107,19 +100,15 @@ export default function CourseJouable(props: {
     boucliersVus.current = n;
   }, [props.boucliers]);
 
-  // Le doigt et les flèches.
-  const geste = (sens: -1 | 1) => {
-    if (!actifRef.current) return;
-    etat.current = changerDeVoie(etat.current, sens);
-  };
+  const erreursVues = useRef(props.erreurs ?? 0);
   useEffect(() => {
-    const touche = (ev: KeyboardEvent) => {
-      if (ev.key === 'ArrowLeft') geste(-1);
-      if (ev.key === 'ArrowRight') geste(1);
-    };
-    window.addEventListener('keydown', touche);
-    return () => window.removeEventListener('keydown', touche);
-  }, []);
+    const n = props.erreurs ?? 0;
+    if (n > erreursVues.current) {
+      etat.current = donnerErreur(etat.current);
+      setBanniere({ cle: Date.now(), texte: 'Oups…', sous: 'Attention à la route !' });
+    }
+    erreursVues.current = n;
+  }, [props.erreurs]);
 
   // La boucle.
   useEffect(() => {
@@ -153,10 +142,9 @@ export default function CourseJouable(props: {
       const dt = Math.min(0.05, (maintenant - avant) / 1000);
       avant = maintenant;
       temps += dt;
-      const pilote = !actifRef.current || etat.current.sansGeste > PILOTE_APRES;
-      const r = avancer(etat.current, dt, Math.random, pilote);
+      const r = avancer(etat.current, dt, Math.random);
       etat.current = r.etat;
-      reagir(r.evenements, pilote);
+      reagir(r.evenements);
       dessiner(ctx, L, H, etat.current, temps, particules.current, textes.current, dt);
 
       if (maintenant - dernierHud > 120) {
@@ -164,21 +152,21 @@ export default function CourseJouable(props: {
         const e = etat.current;
         setHud((h) => {
           const n = {
-            pieces: e.pieces, distance: Math.floor(e.distance), pilote,
+            pieces: e.pieces, distance: Math.floor(e.distance),
             bouclier: e.bouclier, turbo: e.turbo > 0,
           };
-          return h.pieces === n.pieces && h.distance === n.distance && h.pilote === n.pilote &&
+          return h.pieces === n.pieces && h.distance === n.distance &&
             h.bouclier === n.bouclier && h.turbo === n.turbo ? h : n;
         });
         onResume.current?.({
           pieces: e.pieces, distance: e.distance, chocs: e.chocs, esquives: e.esquives,
-          pilote, bouclier: e.bouclier, turbo: e.turbo > 0,
+          bouclier: e.bouclier, turbo: e.turbo > 0,
         });
       }
       id = requestAnimationFrame(boucle);
     };
 
-    const reagir = (evenements: Evenement[], pilote: boolean) => {
+    const reagir = (evenements: Evenement[]) => {
       const e = etat.current;
       const voieX = (v: number) => xDeVoie(L, v);
       const yVoiture = H * 0.78;
@@ -196,8 +184,6 @@ export default function CourseJouable(props: {
             texte: ev.sorte === 'chevre' ? 'Bêêê !' : ev.sorte === 'flaque' ? 'Splash !' : 'Ouille !',
             couleur: '#c0392b',
           });
-          // On ne secoue le téléphone que si c'est l'enfant qui conduit.
-          if (!pilote && navigator.vibrate) navigator.vibrate(40);
         } else if (ev.type === 'bouclier') {
           jouerSon('bouclier');
           gerbe(particules.current, voieX(ev.voie), yVoiture - 10, '#7fd3f7', 18);
@@ -249,11 +235,7 @@ export default function CourseJouable(props: {
 
       <div
         ref={boite}
-        className="relative w-full touch-none overflow-hidden rounded-[var(--radius-card)] border-2 border-ink"
-        onPointerDown={(ev) => {
-          const r = (ev.currentTarget as HTMLDivElement).getBoundingClientRect();
-          geste(ev.clientX - r.left < r.width / 2 ? -1 : 1);
-        }}
+        className="relative w-full overflow-hidden rounded-[var(--radius-card)] border-2 border-ink"
       >
         <canvas ref={toile} className="block w-full" />
 
@@ -282,11 +264,6 @@ export default function CourseJouable(props: {
             <span className="rounded-full bg-sky px-2 py-0.5 text-kid-xs font-black text-ink">🛡 Bouclier</span>
           ) : null}
         </div>
-        {hud.pilote && actif ? (
-          <span className="pointer-events-none absolute inset-x-0 bottom-2 mx-auto w-fit rounded-full bg-white-warm/85 px-2.5 py-0.5 text-kid-xs font-bold text-ink-2">
-            Pilote auto · touche pour conduire
-          </span>
-        ) : null}
       </div>
     </div>
   );
