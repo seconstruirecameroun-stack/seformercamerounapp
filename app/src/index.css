@@ -697,3 +697,16 @@ body {
     display: none;
   }
 }
+
+/* La course : la bannière d'une ville ou d'un turbo arrive d'en haut, tient,
+   et repart. Elle ne doit pas cacher la route plus d'une seconde et demie. */
+@keyframes banniereCourse {
+  0% { opacity: 0; transform: translateY(-18px) scale(0.9); }
+  14% { opacity: 1; transform: translateY(0) scale(1.06); }
+  22% { transform: translateY(0) scale(1); }
+  80% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-10px) scale(0.98); }
+}
+.banniere-course {
+  animation: banniereCourse 1700ms var(--ease-out-quint) both;
+}

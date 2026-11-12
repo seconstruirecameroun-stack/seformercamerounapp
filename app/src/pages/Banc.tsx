@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import ItemPlayer from '../components/items/ItemPlayer';
 import PlateauDEssai from '../components/jeu/PlateauDEssai';
+import CourseDEssai from '../components/jeu/CourseDEssai';
 import CopieDEssai from '../components/epreuve/CopieDEssai';
 import { supabase } from '../lib/supabase';
 import type { ItemRow } from '../types/db';
@@ -90,6 +91,8 @@ const ONGLETS = [
   { cle: 'diagramme', titre: 'Poser les éléments', note: 'Les 3 questions lues en base.' },
   { cle: 'annotation', titre: 'Annoter un schéma',
     note: 'Les schémas lus en base : les numéros doivent se lire, et chaque nom trouver sa place.' },
+  { cle: 'course', titre: 'La voiture de KLEIN',
+    note: 'Touche à gauche ou à droite de la route. Sans toucher, la voiture roule seule. Les deux boutons font ce que feront les bonnes réponses.' },
   { cle: 'bonbons', titre: 'Plateau de bonbons',
     note: 'Le plateau de la salle de composition, libre : ici chaque coup est gratuit. Dans une composition, il faut une bonne réponse pour en gagner un.' },
   { cle: 'copie', titre: 'Copie de composition',
@@ -101,7 +104,8 @@ const ONGLETS = [
 ];
 
 export default function Banc() {
-  const [onglet, setOnglet] = useState('probleme');
+  const [onglet, setOnglet] = useState(() =>
+    typeof window !== 'undefined' && window.location.hash === '#course' ? 'course' : 'probleme');
   const [avecCle, setAvecCle] = useState(true);
   const [n, setN] = useState(0);
   const [etat, setEtat] = useState<{ correct: boolean } | null>(null);
@@ -143,7 +147,7 @@ export default function Banc() {
   const rejouer = () => { setN((x) => x + 1); setEtat(null); };
   const actif = ONGLETS.find((o) => o.cle === onglet)!;
 
-  if (onglet === 'bonbons' || onglet === 'copie') {
+  if (onglet === 'bonbons' || onglet === 'copie' || onglet === 'course') {
     return (
       <main className="mx-auto max-w-md p-4 pb-24">
         <p className="rounded-xl bg-sand/70 px-3 py-2 text-kid-xs font-bold text-ink">
@@ -167,7 +171,7 @@ export default function Banc() {
           ))}
         </div>
         <p className="mt-2 text-kid-xs text-muted">{actif.note}</p>
-        {actif.cle === 'copie' ? <CopieDEssai /> : <PlateauDEssai />}
+        {actif.cle === 'copie' ? <CopieDEssai /> : actif.cle === 'course' ? <CourseDEssai /> : <PlateauDEssai />}
       </main>
     );
   }

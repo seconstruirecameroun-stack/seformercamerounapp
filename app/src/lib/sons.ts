@@ -11,7 +11,7 @@
  * par ne plus l'ouvrir du tout.
  */
 
-type Son = 'juste' | 'faux' | 'fete' | 'coffre' | 'etape';
+type Son = 'juste' | 'faux' | 'fete' | 'coffre' | 'etape' | 'piece' | 'choc' | 'turbo' | 'bouclier';
 
 let contexte: AudioContext | null = null;
 
@@ -58,12 +58,18 @@ const MELODIES: Record<Son, Array<[number, number, number]>> = {
   etape: [[523, 0, 0.12], [659, 0.1, 0.12], [784, 0.2, 0.22]],
   fete: [[523, 0, 0.1], [659, 0.08, 0.1], [784, 0.16, 0.1], [1046, 0.24, 0.3]],
   coffre: [[392, 0, 0.3], [330, 0.18, 0.35]],
+  // La course : une pièce tinte, très court, car il y en a beaucoup ; un
+  // choc fait « bong », sans rien de grondeur ; le turbo monte vite.
+  piece: [[1318, 0, 0.06], [1760, 0.04, 0.08]],
+  choc: [[220, 0, 0.12], [165, 0.07, 0.18]],
+  turbo: [[392, 0, 0.08], [523, 0.05, 0.08], [659, 0.1, 0.08], [880, 0.15, 0.2]],
+  bouclier: [[784, 0, 0.1], [1046, 0.07, 0.18]],
 };
 
 export function jouerSon(son: Son) {
   const ctx = obtenirContexte();
   if (!ctx) return;
-  const volume = son === 'faux' ? 0.05 : 0.07;
+  const volume = son === 'faux' || son === 'piece' ? 0.05 : 0.07;
   for (const [frequence, depart, duree] of MELODIES[son]) {
     note(ctx, frequence, depart, duree, volume);
   }
