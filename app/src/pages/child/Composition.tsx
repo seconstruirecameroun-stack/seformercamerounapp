@@ -12,7 +12,18 @@ import type { Reponse } from '../../components/items/ItemPlayer';
 import PlateauJouable from '../../components/jeu/PlateauJouable';
 import CourseJouable from '../../components/jeu/CourseJouable';
 import { COMPTEURS_VIDES, apresReponse, jeuDeLaClasse } from '../../lib/jeuDeLEnfant';
-import { Bulletin, EnTeteDeCopie, SituationProbleme } from '../../components/epreuve/Copie';
+import { EnTeteDeCopie, SituationProbleme } from '../../components/epreuve/Copie';
+import Ceremonie from '../../components/epreuve/Ceremonie';
+import Medaille from '../../components/epreuve/Medaille';
+import DialogueJeu, { momentFort, type Dialogue } from '../../components/jeu/DialogueJeu';
+import {
+  PALIERS_DE_SERIE,
+  mentionAssuree,
+  multiplicateur,
+  palierAtteint,
+  prochaineMention,
+  prochainPalier,
+} from '../../lib/recompenses';
 import {
   commencerComposition,
   epreuveDeLaComposition,
@@ -41,6 +52,13 @@ import type { ItemRow } from '../../types/db';
  * voiture roule en haut de l'épreuve, et chaque réponse agit sur elle — un
  * turbo si elle est juste, un choc si elle est fausse. Il n'y a rien à jouer
  * entre deux questions : l'épreuve s'enchaîne, et l'attention reste sur elle.
+ *
+ * LES RÉCOMPENSES, pour les grands. Une série de bonnes réponses fait
+ * compter double, triple, quadruple les points du plateau ; un exercice sans
+ * faute donne un coup bonus ; une mention qu'on ne peut plus perdre est
+ * annoncée. Niba le lionceau surgit à ces moments forts, et l'enfant voit
+ * toujours ce qu'il gagnera à la prochaine bonne réponse. À la fin, le
+ * bulletin se remet en cérémonie, avec sa médaille.
  *
  * Le jeu ne corrige rien et ne juge rien. La note est le compte des bonnes
  * réponses, et elle ne dépend pas du score du plateau : un enfant qui répond
@@ -146,6 +164,15 @@ export default function Composition() {
   const [erreur, setErreur] = useState<unknown>(null);
   const [dernierGain, setDernierGain] = useState(0);
   const [course, setCourse] = useState(COMPTEURS_VIDES);
+  /** La série de bonnes réponses d'affilée, et ce qu'elle rapporte au plateau. */
+  const serie = useRef(0);
+  const multiplicateurDuCoup = useRef(1);
+  /** Les coups en plus, gagnés par un exercice sans faute. */
+  const coupsBonus = useRef(0);
+  const [enBonus, setEnBonus] = useState(false);
+  /** Le moment fort que Niba annoncera quand l'écran remontera vers le plateau. */
+  const momentEnAttente = useRef<Dialogue | null>(null);
+  const [moment, setMoment] = useState<Dialogue | null>(null);
   /** La route faite pendant l'épreuve : la distance au départ, puis le gain. */
   const routeAuDepart = useRef<number | null>(null);
   const routeFaite = useRef(0);
@@ -231,6 +258,7 @@ export default function Composition() {
       }
     }
     jouerSon(reponse.correct ? 'juste' : 'faux');
+    const avant = points.current.oral + points.current.ecrit;
     if (reponse.correct) {
       if (etape.genre === 'oral') {
         points.current.oral += 1;
@@ -239,8 +267,35 @@ export default function Composition() {
         const n = etape.exercice.numero;
         points.current.parExercice.set(n, (points.current.parExercice.get(n) ?? 0) + 1);
       }
-      redessiner((x) => x + 1);
     }
+    // Les récompenses. Un seul moment fort par réponse, le plus beau : un
+    // exercice parfait vaut plus qu'une mention, qui vaut plus qu'une série.
+    serie.current = reponse.correct ? serie.current + 1 : 0;
+    multiplicateurDuCoup.current = multiplicateur(serie.current);
+    const apres = points.current.oral + points.current.ecrit;
+    const mentionAvant = mentionAssuree(avant, total);
+    const mentionApres = mentionAssuree(apres, total);
+    const parfait =
+      reponse.correct &&
+      etape.genre === 'ecrit' &&
+      etape.rang === etape.exercice.questions.length &&
+      points.current.parExercice.get(etape.exercice.numero) === etape.exercice.questions.length;
+    if (parfait) coupsBonus.current += 1;
+    const restantes = total - index - 1;
+    const FOIS = ['', '', 'double', 'triple', 'quadruple'];
+    momentEnAttente.current = parfait
+      ? momentFort('parfait', 'EXERCICE PARFAIT !',
+        `${etape.exercice.questions.length} sur ${etape.exercice.questions.length} : un coup bonus pour toi !`)
+      : mentionApres && mentionApres !== mentionAvant
+        ? momentFort('mention', `${mentionApres === 'C' ? 'LA MOYENNE' : mentionApres} ASSURÉ${mentionApres === 'C' ? 'E' : ''} !`,
+          'Personne ne peut plus te l’enlever. Vise plus haut !')
+        : reponse.correct && palierAtteint(serie.current)
+          ? momentFort('serie', `SÉRIE DE ${serie.current} !`,
+            `Tes points du plateau comptent ${FOIS[multiplicateurDuCoup.current] ?? 'quatre fois'} !`)
+          : restantes === 3
+            ? momentFort('fin', 'PLUS QUE 3 !', 'Dernière ligne droite : garde ta série !')
+            : null;
+    redessiner((x) => x + 1);
   }
 
   /**
@@ -255,6 +310,8 @@ export default function Composition() {
     // La course reçoit la réponse maintenant, quand l'écran remonte vers elle :
     // au moment du corrigé, l'enfant est en bas, et il ne verrait rien.
     if (jeu === 'course') setCourse((c) => apresReponse(c, justeALaDerniere.current));
+    if (jeu === 'bonbons' && momentEnAttente.current) setMoment(momentEnAttente.current);
+    momentEnAttente.current = null;
     if (justeALaDerniere.current && jeu === 'bonbons') setPhase('plateau');
     else suivante();
   }
@@ -266,8 +323,17 @@ export default function Composition() {
    * le mesure pas.
    */
   function coupJoue(gain: number) {
-    setScore((s) => s + gain);
-    setDernierGain(gain);
+    const vrai = gain * multiplicateurDuCoup.current;
+    setScore((s) => s + vrai);
+    setDernierGain(vrai);
+    if (coupsBonus.current > 0) {
+      // Un exercice parfait : on rejoue, sans question, tout de suite.
+      coupsBonus.current -= 1;
+      setEnBonus(true);
+      jouerSon('serie');
+      return;
+    }
+    setEnBonus(false);
     suivante();
   }
 
@@ -316,6 +382,28 @@ export default function Composition() {
           <SituationProbleme texte={situation.texte} oral={nbOral} ecrit={nbEcrit} />
         </div>
 
+        {jeu === 'bonbons' ? (
+          // Ce qu'il y a à gagner, dit AVANT de commencer : on ne vise bien
+          // que ce qu'on connaît.
+          <section className="mt-4 rounded-[var(--radius-card)] border-2 border-gold bg-white-warm p-4">
+            <h2 className="text-kid-sm font-black">Ce que tu peux gagner</h2>
+            <div className="mt-3 flex items-end justify-around">
+              {(['or', 'argent', 'bronze'] as const).map((m, i) => (
+                <div key={m} className="flex flex-col items-center">
+                  <Medaille metal={m} taille={i === 0 ? 54 : 44} />
+                  <span className="mt-1 text-kid-xs font-black">{['A+', 'A', 'B'][i]}</span>
+                </div>
+              ))}
+            </div>
+            <ul className="mt-3 grid grid-cols-1 gap-1 text-kid-xs font-bold text-ink-2">
+              {PALIERS_DE_SERIE.map((p) => (
+                <li key={p.serie}>🔥 {p.serie} bonnes réponses de suite : points du plateau ×{p.multiplicateur}</li>
+              ))}
+              <li>⭐ Un exercice sans faute : un coup bonus</li>
+            </ul>
+          </section>
+        ) : null}
+
         <div className="fixed inset-x-0 bottom-0 border-t border-line bg-paper/95 p-3 backdrop-blur">
           <button
             type="button"
@@ -345,11 +433,11 @@ export default function Composition() {
         <div className="mt-4">{enTete}</div>
 
         <div className="mt-4">
-          <Bulletin
+          <Ceremonie
             oral={points.current.oral}
             surOral={nbOral}
-            ecrit={points.current.ecrit}
-            surEcrit={nbEcrit}
+            points={points.current.oral + points.current.ecrit}
+            total={total}
             exercices={epreuve.exercices.map((ex) => ({
               numero: ex.numero,
               titre: ex.lecon.title,
@@ -420,6 +508,51 @@ export default function Composition() {
           <span className="shrink-0 text-kid-xs font-black tabular-nums">{score}</span>
         </div>
 
+        {/* Ce que rapporte la prochaine bonne réponse : la série, et la
+            mention qu'on peut encore aller chercher. */}
+        {(() => {
+          const pts = points.current.oral + points.current.ecrit;
+          const restantes = total - index - (phase === 'question' ? 0 : 1);
+          const palier = prochainPalier(serie.current);
+          const m = multiplicateur(serie.current);
+          const assuree = mentionAssuree(pts, total);
+          const visee = prochaineMention(pts, total, restantes);
+          return (
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div
+                key={'serie-' + serie.current}
+                className={
+                  'recompense-palpite rounded-2xl border-2 px-3 py-1.5 ' +
+                  (m > 1 ? 'border-clay bg-clay/10' : 'border-line bg-white-warm')
+                }
+              >
+                <p className="text-kid-xs font-black">
+                  🔥 Série {serie.current}
+                  {m > 1 ? <span className="text-clay-dark"> · ×{m}</span> : null}
+                </p>
+                <p className="text-[0.72rem] font-bold leading-tight text-ink-2">
+                  {palier
+                    ? `Encore ${palier.dans} → points ×${palier.multiplicateur}`
+                    : 'Série maximale !'}
+                </p>
+              </div>
+              <div
+                key={'mention-' + (assuree ?? '-')}
+                className="recompense-palpite rounded-2xl border-2 border-lilac bg-white-warm px-3 py-1.5"
+              >
+                <p className="text-kid-xs font-black">🏅 Assuré : {assuree ?? '—'}</p>
+                <p className="text-[0.72rem] font-bold leading-tight text-ink-2">
+                  {visee
+                    ? `Encore ${visee.manque} point${visee.manque > 1 ? 's' : ''} → ${visee.lettre}`
+                    : assuree === 'A+'
+                      ? 'L’or est à toi !'
+                      : 'Donne tout jusqu’au bout !'}
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Pendant la question, la consigne se range À CÔTÉ du petit plateau,
             dans la place qu'il laisse vide. Quand le coup est gagné, le plateau
             reprend toute la largeur et la consigne repasse dessous, centrée. */}
@@ -441,7 +574,11 @@ export default function Composition() {
             }
           >
             {phase === 'plateau'
-              ? 'À toi de jouer : touche deux bonbons voisins.'
+              ? enBonus
+                ? 'COUP BONUS ! Rejoue, c’est cadeau.'
+                : multiplicateurDuCoup.current > 1
+                  ? `À toi de jouer : ce coup compte ×${multiplicateurDuCoup.current} !`
+                  : 'À toi de jouer : touche deux bonbons voisins.'
               : dernierGain > 0
                 ? `+${dernierGain} points`
                 : 'Réponds juste, et tu gagnes un coup.'}
@@ -449,6 +586,8 @@ export default function Composition() {
         </div>
         </>
       )}
+
+      <DialogueJeu dernier={moment} />
 
       {erreur ? <ErrorNote error={erreur} /> : null}
 

@@ -1,3 +1,6 @@
+import Palmares from '../../components/epreuve/Palmares';
+import Medaille from '../../components/epreuve/Medaille';
+import { medailleDe } from '../../lib/recompenses';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
@@ -470,14 +473,20 @@ export default function ChildHome() {
               <p className="text-kid-xs font-black tracking-wide text-muted">COMPOSITION FINIE</p>
               <p className="truncate text-kid-sm font-extrabold">{c.titre}</p>
             </div>
-            <span className="shrink-0 text-right text-kid-lg font-black tabular-nums">
+            <span className="flex shrink-0 items-center gap-2 text-right text-kid-lg font-black tabular-nums">
               {note(c.justes ?? 0, totalDe(c))}
-              <span className="ml-2 text-kid-sm text-clay-dark">
+              <span className="text-kid-sm text-clay-dark">
                 {mention(c.justes ?? 0, totalDe(c))}
               </span>
+              {(() => {
+                const m = medailleDe(c.justes ?? 0, totalDe(c));
+                return m ? <Medaille metal={m} taille={28} /> : null;
+              })()}
             </span>
           </section>
         ))}
+
+        {compositions.data ? <Palmares compositions={compositions.data} /> : null}
 
         {/* L'objectif et la semaine dans la même carte : ce sont deux façons de
             regarder la même habitude, aujourd'hui et sur sept jours. */}

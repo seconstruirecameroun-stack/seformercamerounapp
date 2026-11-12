@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Pango, { type Humeur } from './Pango';
+import Mascotte, { type Humeur as HumeurNiba } from './Mascotte';
 
 /**
- * Les dialogues de la course : Pango surgit, parle, et repart.
+ * Les dialogues des jeux : un personnage surgit, parle, et repart.
+ *
+ * Pango le pangolin accompagne la course des petits ; Niba le lionceau, la
+ * mascotte de l'app, accompagne les compositions des grands — ses séries,
+ * ses exercices parfaits, ses mentions assurées.
  *
  * Une case de bande dessinée posée sur tout l'écran : un soleil de couleur
  * qui tourne, Pango qui entre d'un bond, une bulle qui éclate, des étoiles
@@ -25,23 +30,36 @@ import Pango, { type Humeur } from './Pango';
  * réponse ne serait plus entendue à la cinquième.
  */
 
-export type GenreDialogue = 'turbo' | 'bouclier' | 'choc' | 'ville';
+export type GenreDialogue =
+  | 'turbo' | 'bouclier' | 'choc' | 'ville'
+  | 'serie' | 'parfait' | 'mention' | 'fin';
+
+export type Personnage = 'pango' | 'niba';
 
 export type Dialogue = {
   cle: number;
   genre: GenreDialogue;
   titre: string;
   phrase: string;
+  personnage: Personnage;
 };
 
-const STYLE: Record<GenreDialogue, { soleil: string; titre: string; humeur: Humeur; duree: number }> = {
-  turbo: { soleil: '#f5b335', titre: '#c2410c', humeur: 'boule', duree: 1500 },
-  bouclier: { soleil: '#7fd3f7', titre: '#0e6a96', humeur: 'fier', duree: 1900 },
-  choc: { soleil: '#f3a5a0', titre: '#b42318', humeur: 'surpris', duree: 1700 },
-  ville: { soleil: '#9ad48a', titre: '#2f7d32', humeur: 'joie', duree: 2100 },
+const STYLE: Record<
+  GenreDialogue,
+  { soleil: string; titre: string; humeur: Humeur; niba: HumeurNiba; duree: number }
+> = {
+  turbo: { soleil: '#f5b335', titre: '#c2410c', humeur: 'boule', niba: 'fete', duree: 1500 },
+  bouclier: { soleil: '#7fd3f7', titre: '#0e6a96', humeur: 'fier', niba: 'fete', duree: 1900 },
+  choc: { soleil: '#f3a5a0', titre: '#b42318', humeur: 'surpris', niba: 'encourage', duree: 1700 },
+  ville: { soleil: '#9ad48a', titre: '#2f7d32', humeur: 'joie', niba: 'fete', duree: 2100 },
+  // Les moments forts d'une composition.
+  serie: { soleil: '#ff8a3d', titre: '#b93c0a', humeur: 'fier', niba: 'fete', duree: 1800 },
+  parfait: { soleil: '#ffd84d', titre: '#9a6700', humeur: 'joie', niba: 'fete', duree: 2100 },
+  mention: { soleil: '#b69cf2', titre: '#5b2bb5', humeur: 'fier', niba: 'fete', duree: 2000 },
+  fin: { soleil: '#7fd3f7', titre: '#0e6a96', humeur: 'joie', niba: 'encourage', duree: 1700 },
 };
 
-const PHRASES: Record<GenreDialogue, string[]> = {
+const PHRASES: Partial<Record<GenreDialogue, string[]>> = {
   turbo: ['Accroche-toi !', 'On décolle !', 'Trop rapide !', 'Bonne réponse, plein gaz !', 'Fiiiiiouuu !'],
   bouclier: ['Trois de suite : tu es protégé !', 'Rien ne peut nous arrêter !', 'La carapace d’or est à toi !'],
   choc: ['Pas grave, on repart !', 'On se relève et on fonce !', 'La prochaine, on l’aura !'],
@@ -59,7 +77,7 @@ let compteur = 0;
 
 /** Fabrique un dialogue, avec une phrase tirée au sort. */
 export function dialogue(genre: GenreDialogue, detail?: string): Dialogue {
-  const phrases = PHRASES[genre];
+  const phrases = PHRASES[genre] ?? [''];
   const titre =
     genre === 'turbo' ? 'TURBO !'
       : genre === 'bouclier' ? 'BOUCLIER !'
@@ -74,6 +92,23 @@ export function dialogue(genre: GenreDialogue, detail?: string): Dialogue {
     genre,
     titre: insecable(titre),
     phrase: insecable(phrases[Math.floor(Math.random() * phrases.length)]),
+    personnage: 'pango',
+  };
+}
+
+/**
+ * Un moment fort d'une composition, dit par Niba : le titre et la phrase
+ * viennent de la salle, qui sait ce qui vient d'être gagné.
+ */
+export function momentFort(genre: GenreDialogue, titre: string, phrase: string): Dialogue {
+  compteur += 1;
+  const insecable = (t: string) => t.replace(/ ([!?:])/g, '\u00a0$1');
+  return {
+    cle: Date.now() * 10 + (compteur % 10),
+    genre,
+    titre: insecable(titre),
+    phrase: insecable(phrase),
+    personnage: 'niba',
   };
 }
 
@@ -160,10 +195,16 @@ export default function DialogueJeu({ dernier }: { dernier: Dialogue | null }) {
         <div className="dialogue-perso relative h-32 w-32 shrink-0">
           <Soleil couleur={s.soleil} />
           <Etoiles couleur={s.titre} />
-          <Pango
-            humeur={s.humeur}
-            className={'absolute inset-2 h-28 w-28 drop-shadow-lg ' + (s.humeur === 'boule' ? 'dialogue-roule' : 'dialogue-sautille')}
-          />
+          {actuel.personnage === 'niba' ? (
+            <span className="dialogue-sautille absolute inset-2 flex items-center justify-center drop-shadow-lg">
+              <Mascotte humeur={s.niba} taille={104} />
+            </span>
+          ) : (
+            <Pango
+              humeur={s.humeur}
+              className={'absolute inset-2 h-28 w-28 drop-shadow-lg ' + (s.humeur === 'boule' ? 'dialogue-roule' : 'dialogue-sautille')}
+            />
+          )}
         </div>
 
         <div className="dialogue-bulle relative min-w-0 flex-1 rounded-[26px] border-[3px] border-ink bg-white-warm px-4 py-3 shadow-[0_8px_0_rgb(30_20_10/0.25)]">

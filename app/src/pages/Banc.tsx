@@ -3,6 +3,7 @@ import { useState } from 'react';
 import ItemPlayer from '../components/items/ItemPlayer';
 import PlateauDEssai from '../components/jeu/PlateauDEssai';
 import CourseDEssai from '../components/jeu/CourseDEssai';
+import RecompensesDEssai from '../components/epreuve/RecompensesDEssai';
 import CopieDEssai from '../components/epreuve/CopieDEssai';
 import { supabase } from '../lib/supabase';
 import type { ItemRow } from '../types/db';
@@ -93,6 +94,8 @@ const ONGLETS = [
     note: 'Les schémas lus en base : les numéros doivent se lire, et chaque nom trouver sa place.' },
   { cle: 'course', titre: 'La voiture de KLEIN',
     note: 'La voiture roule seule : l’enfant ne touche à rien. Ses réponses décident — turbo, choc ou bouclier. Les trois boutons les jouent ici.' },
+  { cle: 'recompenses', titre: 'Récompenses de BRAYNE',
+    note: 'Niba et ses moments forts, la remise du bulletin avec sa médaille, et la vitrine de médailles. Rien n’est lu ni écrit en base.' },
   { cle: 'bonbons', titre: 'Plateau de bonbons',
     note: 'Le plateau de la salle de composition, libre : ici chaque coup est gratuit. Dans une composition, il faut une bonne réponse pour en gagner un.' },
   { cle: 'copie', titre: 'Copie de composition',
@@ -105,7 +108,8 @@ const ONGLETS = [
 
 export default function Banc() {
   const [onglet, setOnglet] = useState(() =>
-    typeof window !== 'undefined' && window.location.hash === '#course' ? 'course' : 'probleme');
+    typeof window !== 'undefined' && window.location.hash === '#course' ? 'course'
+      : window.location.hash === '#recompenses' ? 'recompenses' : 'probleme');
   const [avecCle, setAvecCle] = useState(true);
   const [n, setN] = useState(0);
   const [etat, setEtat] = useState<{ correct: boolean } | null>(null);
@@ -147,7 +151,7 @@ export default function Banc() {
   const rejouer = () => { setN((x) => x + 1); setEtat(null); };
   const actif = ONGLETS.find((o) => o.cle === onglet)!;
 
-  if (onglet === 'bonbons' || onglet === 'copie' || onglet === 'course') {
+  if (onglet === 'bonbons' || onglet === 'copie' || onglet === 'course' || onglet === 'recompenses') {
     return (
       <main className="mx-auto max-w-md p-4 pb-24">
         <p className="rounded-xl bg-sand/70 px-3 py-2 text-kid-xs font-bold text-ink">
@@ -171,7 +175,7 @@ export default function Banc() {
           ))}
         </div>
         <p className="mt-2 text-kid-xs text-muted">{actif.note}</p>
-        {actif.cle === 'copie' ? <CopieDEssai /> : actif.cle === 'course' ? <CourseDEssai /> : <PlateauDEssai />}
+        {actif.cle === 'copie' ? <CopieDEssai /> : actif.cle === 'course' ? <CourseDEssai /> : actif.cle === 'recompenses' ? <RecompensesDEssai /> : <PlateauDEssai />}
       </main>
     );
   }

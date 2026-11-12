@@ -11,7 +11,9 @@
  * par ne plus l'ouvrir du tout.
  */
 
-type Son = 'juste' | 'faux' | 'fete' | 'coffre' | 'etape' | 'piece' | 'choc' | 'turbo' | 'bouclier';
+type Son =
+  | 'juste' | 'faux' | 'fete' | 'coffre' | 'etape'
+  | 'piece' | 'choc' | 'turbo' | 'bouclier' | 'tambour' | 'tampon' | 'serie';
 
 let contexte: AudioContext | null = null;
 
@@ -64,6 +66,11 @@ const MELODIES: Record<Son, Array<[number, number, number]>> = {
   choc: [[220, 0, 0.12], [165, 0.07, 0.18]],
   turbo: [[392, 0, 0.08], [523, 0.05, 0.08], [659, 0.1, 0.08], [880, 0.15, 0.2]],
   bouclier: [[784, 0, 0.1], [1046, 0.07, 0.18]],
+  // La remise du bulletin : un roulement grave, puis le coup sec du tampon.
+  tambour: [[110, 0, 0.06], [110, 0.09, 0.06], [117, 0.18, 0.06], [117, 0.27, 0.06], [123, 0.36, 0.06], [131, 0.45, 0.06], [165, 0.56, 0.22]],
+  tampon: [[196, 0, 0.12], [98, 0.03, 0.2]],
+  // Une série : trois notes qui grimpent, plus vite que l'étape.
+  serie: [[659, 0, 0.08], [880, 0.06, 0.08], [1175, 0.12, 0.16]],
 };
 
 export function jouerSon(son: Son) {
