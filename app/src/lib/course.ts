@@ -27,13 +27,13 @@
 export const VOIES = 3;
 
 /** En mètres par seconde. */
-export const VITESSE_NORMALE = 8;
-export const VITESSE_TURBO = 28;
+export const VITESSE_NORMALE = 6;
+export const VITESSE_TURBO = 30;
 export const VITESSE_CHOC = 3;
 /** La vitesse revient à la normale à ce rythme, en m/s chaque seconde. */
 const REPRISE = 9;
 
-export const DUREE_TURBO = 3.5;
+export const DUREE_TURBO = 4;
 export const DUREE_CHOC = 1;
 /** Après un choc, la voiture ne peut pas être touchée de nouveau tout de suite. */
 const DUREE_INVULNERABLE = 1.4;

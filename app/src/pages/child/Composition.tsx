@@ -10,6 +10,8 @@ import { ErrorNote, Loading } from '../../components/ui';
 import ItemPlayer from '../../components/items/ItemPlayer';
 import type { Reponse } from '../../components/items/ItemPlayer';
 import PlateauJouable from '../../components/jeu/PlateauJouable';
+import CourseJouable from '../../components/jeu/CourseJouable';
+import { COMPTEURS_VIDES, apresReponse, jeuDeLaClasse } from '../../lib/jeuDeLEnfant';
 import { Bulletin, EnTeteDeCopie, SituationProbleme } from '../../components/epreuve/Copie';
 import {
   commencerComposition,
@@ -34,6 +36,11 @@ import type { ItemRow } from '../../types/db';
  * Le plateau reste ce qu'il était : CHAQUE BONNE RÉPONSE DONNE UN COUP. Une
  * épreuve de trente points est longue ; le plateau lui donne, question après
  * question, une conséquence visible et une raison de continuer.
+ *
+ * Les petits (jusqu'au CE1) n'ont pas de plateau mais la COURSE : leur
+ * voiture roule en haut de l'épreuve, et chaque réponse agit sur elle — un
+ * turbo si elle est juste, un choc si elle est fausse. Il n'y a rien à jouer
+ * entre deux questions : l'épreuve s'enchaîne, et l'attention reste sur elle.
  *
  * Le jeu ne corrige rien et ne juge rien. La note est le compte des bonnes
  * réponses, et elle ne dépend pas du score du plateau : un enfant qui répond
@@ -138,6 +145,10 @@ export default function Composition() {
   const [score, setScore] = useState(0);
   const [erreur, setErreur] = useState<unknown>(null);
   const [dernierGain, setDernierGain] = useState(0);
+  const [course, setCourse] = useState(COMPTEURS_VIDES);
+  /** La route faite pendant l'épreuve : la distance au départ, puis le gain. */
+  const routeAuDepart = useRef<number | null>(null);
+  const routeFaite = useRef(0);
   /**
    * Les points, tenus dans une référence.
    *
@@ -164,6 +175,7 @@ export default function Composition() {
 
   const total = etapes.length;
   const objectif = objectifDuPlateau(total);
+  const jeu = jeuDeLaClasse(rangDeLaClasse(enfant.data?.classes));
 
   // La composition est marquée commencée au premier affichage, et une seule
   // fois : la requête ne touche la ligne que si la date est encore vide.
@@ -199,6 +211,7 @@ export default function Composition() {
     dejaRepondu.current = true;
     justeALaDerniere.current = reponse.correct;
     setPhase('corrige');
+    if (jeu === 'course') setCourse((c) => apresReponse(c, reponse.correct));
     setErreur(null);
     if (etape.genre === 'ecrit') {
       try {
@@ -230,13 +243,16 @@ export default function Composition() {
     }
   }
 
-  /** Une bonne réponse ouvre le plateau ; une faute passe à la suite. */
+  /**
+   * Une bonne réponse ouvre le plateau ; une faute passe à la suite. La
+   * course, elle, a déjà reçu la réponse : on enchaîne toujours.
+   */
   function apresCorrection() {
     if (phase !== 'corrige') return;
     // L'enfant a fait défiler pour répondre : le plateau, comme la question
     // suivante, est en haut. On l'y ramène plutôt que de le laisser chercher.
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (justeALaDerniere.current) setPhase('plateau');
+    if (justeALaDerniere.current && jeu === 'bonbons') setPhase('plateau');
     else suivante();
   }
 
@@ -341,7 +357,9 @@ export default function Composition() {
         </div>
 
         <p className="mt-4 text-center text-kid-sm font-bold">
-          Plateau : {score} points {gagne ? '— objectif atteint !' : `sur ${objectif}`}
+          {jeu === 'course'
+            ? `Pendant l’épreuve, ta voiture a roulé ${Math.round(routeFaite.current)} mètres.`
+            : `Plateau : ${score} points ${gagne ? '— objectif atteint !' : `sur ${objectif}`}`}
         </p>
 
         <button
@@ -371,43 +389,63 @@ export default function Composition() {
         </span>
       </header>
 
-      <div className="mt-2 flex items-center gap-2">
-        <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-line">
-          <div
-            className="h-full rounded-full bg-gold transition-[width] duration-500"
-            style={{ width: `${Math.min(100, Math.round((score / objectif) * 100))}%` }}
+      {jeu === 'course' ? (
+        // La voiture roule pendant toute l'épreuve ; c'est le seul jeu de la
+        // salle, et il ne demande rien à l'enfant.
+        <div className="mt-2">
+          <CourseJouable
+            compact
+            cle={childId ? 'course-' + childId : undefined}
+            turbos={course.turbos}
+            erreurs={course.erreurs}
+            boucliers={course.boucliers}
+            onResume={(r) => {
+              if (routeAuDepart.current === null) routeAuDepart.current = r.distance;
+              routeFaite.current = r.distance - routeAuDepart.current;
+            }}
           />
         </div>
-        <span className="shrink-0 text-kid-xs font-black tabular-nums">{score}</span>
-      </div>
+      ) : (
+        <>
+        <div className="mt-2 flex items-center gap-2">
+          <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-line">
+            <div
+              className="h-full rounded-full bg-gold transition-[width] duration-500"
+              style={{ width: `${Math.min(100, Math.round((score / objectif) * 100))}%` }}
+            />
+          </div>
+          <span className="shrink-0 text-kid-xs font-black tabular-nums">{score}</span>
+        </div>
 
-      {/* Pendant la question, la consigne se range À CÔTÉ du petit plateau,
-          dans la place qu'il laisse vide. Quand le coup est gagné, le plateau
-          reprend toute la largeur et la consigne repasse dessous, centrée. */}
-      <div className="mt-2 flex flex-wrap items-center gap-x-3">
-        <div
-          className="shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none"
-          style={{ width: phase === 'plateau' ? '100%' : '44%' }}
-        >
-          <PlateauJouable
-            actif={phase === 'plateau'}
-            bordABord={phase === 'plateau'}
-            onCoupJoue={(g) => coupJoue(g.points)}
-          />
+        {/* Pendant la question, la consigne se range À CÔTÉ du petit plateau,
+            dans la place qu'il laisse vide. Quand le coup est gagné, le plateau
+            reprend toute la largeur et la consigne repasse dessous, centrée. */}
+        <div className="mt-2 flex flex-wrap items-center gap-x-3">
+          <div
+            className="shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+            style={{ width: phase === 'plateau' ? '100%' : '44%' }}
+          >
+            <PlateauJouable
+              actif={phase === 'plateau'}
+              bordABord={phase === 'plateau'}
+              onCoupJoue={(g) => coupJoue(g.points)}
+            />
+          </div>
+          <p
+            className={
+              'min-w-[40%] flex-1 text-kid-xs font-bold text-muted ' +
+              (phase === 'plateau' ? 'mt-2 text-center' : 'text-left')
+            }
+          >
+            {phase === 'plateau'
+              ? 'À toi de jouer : touche deux bonbons voisins.'
+              : dernierGain > 0
+                ? `+${dernierGain} points`
+                : 'Réponds juste, et tu gagnes un coup.'}
+          </p>
         </div>
-        <p
-          className={
-            'min-w-[40%] flex-1 text-kid-xs font-bold text-muted ' +
-            (phase === 'plateau' ? 'mt-2 text-center' : 'text-left')
-          }
-        >
-          {phase === 'plateau'
-            ? 'À toi de jouer : touche deux bonbons voisins.'
-            : dernierGain > 0
-              ? `+${dernierGain} points`
-              : 'Réponds juste, et tu gagnes un coup.'}
-        </p>
-      </div>
+        </>
+      )}
 
       {erreur ? <ErrorNote error={erreur} /> : null}
 
@@ -447,7 +485,7 @@ export default function Composition() {
               onClick={apresCorrection}
               className="sticky bottom-3 z-10 mt-4 min-h-12 w-full rounded-full bg-ink px-4 py-3 text-kid-sm font-black text-white-warm shadow-lg"
             >
-              {justeALaDerniere.current ? 'Jouer mon coup' : 'Question suivante'}
+              {justeALaDerniere.current && jeu === 'bonbons' ? 'Jouer mon coup' : 'Question suivante'}
             </button>
           ) : null}
         </section>

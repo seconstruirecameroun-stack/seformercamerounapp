@@ -56,6 +56,42 @@ const DECOR: Record<Paysage, { herbe: string; herbe2: string; nom: string }> = {
 
 const FONTE = "800 %spx Fredoka, system-ui, sans-serif";
 
+/**
+ * Le voyage se garde sur l'appareil : d'une leçon à l'autre, la voiture
+ * repart de la ville où elle s'était arrêtée.
+ *
+ * C'est un confort, pas un relevé : rien de ce que la course garde n'entre
+ * dans la note ni dans le journal. Si le navigateur l'efface, le voyage
+ * recommence à Yaoundé et rien d'autre ne bouge.
+ */
+type Voyage = { distance: number; pieces: number };
+
+function lireVoyage(cle: string | undefined): Voyage | null {
+  if (!cle) return null;
+  try {
+    const v = JSON.parse(localStorage.getItem(cle) ?? 'null') as Voyage | null;
+    return v && Number.isFinite(v.distance) && Number.isFinite(v.pieces) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+function garderVoyage(cle: string | undefined, e: Etat) {
+  if (!cle) return;
+  try {
+    localStorage.setItem(cle, JSON.stringify({ distance: Math.floor(e.distance), pieces: e.pieces }));
+  } catch {
+    // Un navigateur privé refuse : le voyage repartira de Yaoundé.
+  }
+}
+
+function etatDeDepart(cle: string | undefined): Etat {
+  const e = nouvelEtat();
+  const v = lireVoyage(cle);
+  if (!v) return e;
+  return { ...e, distance: v.distance, pieces: v.pieces, prochaineRangee: v.distance + 30 };
+}
+
 export default function CourseJouable(props: {
   /** Chaque fois que ce nombre monte — une bonne réponse —, un turbo est donné. */
   turbos?: number;
@@ -64,17 +100,26 @@ export default function CourseJouable(props: {
   /** Chaque fois que ce nombre monte, un bouclier est donné. */
   boucliers?: number;
   onResume?: (r: Resume) => void;
+  /** Une petite route, au-dessus d'une question, au lieu d'une grande. */
+  compact?: boolean;
+  /** Où garder le voyage sur l'appareil ; sans clé, il repart de Yaoundé. */
+  cle?: string;
 }) {
+  const compact = props.compact ?? false;
+  const compactRef = useRef(compact);
+  compactRef.current = compact;
+  const cle = props.cle;
   const toile = useRef<HTMLCanvasElement | null>(null);
   const boite = useRef<HTMLDivElement | null>(null);
-  const etat = useRef<Etat>(nouvelEtat());
+  const etat = useRef<Etat>(etatDeDepart(cle));
   const particules = useRef<Particule[]>([]);
   const textes = useRef<Texte[]>([]);
   const onResume = useRef(props.onResume);
   onResume.current = props.onResume;
 
   const [hud, setHud] = useState(() => ({
-    pieces: 0, distance: 0, bouclier: false, turbo: false,
+    pieces: etat.current.pieces, distance: Math.floor(etat.current.distance),
+    bouclier: false, turbo: false,
   }));
   const [banniere, setBanniere] = useState<{ cle: number; texte: string; sous?: string } | null>(null);
 
@@ -123,7 +168,9 @@ export default function CourseJouable(props: {
     const dimensionner = () => {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       L = conteneur.clientWidth;
-      H = Math.round(Math.min(560, Math.max(380, L * 1.3)));
+      H = compactRef.current
+        ? Math.round(Math.min(230, Math.max(170, L * 0.5)))
+        : Math.round(Math.min(560, Math.max(380, L * 1.3)));
       canvas.width = Math.round(L * dpr);
       canvas.height = Math.round(H * dpr);
       canvas.style.height = H + 'px';
@@ -135,6 +182,7 @@ export default function CourseJouable(props: {
 
     let avant = performance.now();
     let dernierHud = 0;
+    let derniereGarde = 0;
     let temps = 0;
     let id = 0;
 
@@ -162,6 +210,10 @@ export default function CourseJouable(props: {
           pieces: e.pieces, distance: e.distance, chocs: e.chocs, esquives: e.esquives,
           bouclier: e.bouclier, turbo: e.turbo > 0,
         });
+      }
+      if (maintenant - derniereGarde > 2000) {
+        derniereGarde = maintenant;
+        garderVoyage(cle, etat.current);
       }
       id = requestAnimationFrame(boucle);
     };
@@ -200,15 +252,16 @@ export default function CourseJouable(props: {
     return () => {
       cancelAnimationFrame(id);
       observateur.disconnect();
+      garderVoyage(cle, etat.current);
     };
-  }, []);
+  }, [cle]);
 
   const voyage = etape(hud.distance);
 
   return (
     <div className="select-none">
       {/* Le voyage : la ville quittée, la suivante, et combien il reste. */}
-      <div className="mb-2 flex items-center gap-2">
+      <div className={(compact ? 'mb-1.5' : 'mb-2') + ' flex items-center gap-2'}>
         <span className="shrink-0 rounded-full bg-gold px-2.5 py-1 text-kid-sm font-black tabular-nums text-ink shadow-[inset_0_-2px_0_rgb(0_0_0/0.12)]">
           ● {hud.pieces}
         </span>
@@ -284,7 +337,9 @@ function xDeVoie(L: number, v: number) {
 }
 
 /** Combien de pixels pour un mètre de route. */
-const pxParMetre = (H: number) => H / 34;
+// Sur une petite route on voit moins loin ; sans cela la voiture semblerait
+// se traîner.
+const pxParMetre = (H: number) => (H < 300 ? H / 20 : H / 34);
 
 function gerbe(liste: Particule[], x: number, y: number, couleur: string, n: number) {
   for (let i = 0; i < n; i++) {

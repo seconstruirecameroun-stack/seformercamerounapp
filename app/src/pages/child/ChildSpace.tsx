@@ -28,6 +28,8 @@ import {
   type MancheRow,
 } from '../../lib/manche';
 import { rangDeLaClasse } from '../../lib/saisie';
+import CourseJouable from '../../components/jeu/CourseJouable';
+import { COMPTEURS_VIDES, apresReponse, jeuDeLaClasse } from '../../lib/jeuDeLEnfant';
 import { stopper } from '../../lib/voix';
 import type { Palier } from '../../lib/paliers';
 import ItemPlayer from '../../components/items/ItemPlayer';
@@ -350,6 +352,12 @@ function Etape({
    */
   const verrou = useRef(false);
   const [file, setFile] = useState<Fenetre[]>([]);
+  /**
+   * La course des petits : chaque réponse agit sur la voiture qui roule en
+   * haut de la question. Elle ne se joue pas — elle se regarde.
+   */
+  const jeu = jeuDeLaClasse(rang);
+  const [course, setCourse] = useState(COMPTEURS_VIDES);
   /** La réponse en cours vient de franchir l'étape : la dernière fenêtre
       rendra la main au bilan, et non à la question suivante. */
   const [franchieMaintenant, setFranchieMaintenant] = useState(false);
@@ -706,6 +714,7 @@ function Etape({
     verrou.current = true;
     setVerrouille(true);
     setErreur(null);
+    if (jeu === 'course') setCourse((c) => apresReponse(c, reponse.correct));
     try {
       // La notion tombe pour cette étape : c'est ce qui fait avancer la barre.
       // Une question d'appui réussie ne valide pas l'étape : voir avanceLEtape.
@@ -949,6 +958,16 @@ function Etape({
       ) : (
         <BarreEtape palier={s.palier} reussies={reussies} total={s.total} termine={s.termine} />
       )}
+
+      {jeu === 'course' ? (
+        <CourseJouable
+          compact
+          cle={'course-' + childId}
+          turbos={course.turbos}
+          erreurs={course.erreurs}
+          boucliers={course.boucliers}
+        />
+      ) : null}
 
       <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-5 shadow-[var(--shadow-card)] sm:p-6">
         <div className="flex items-center justify-between gap-3">

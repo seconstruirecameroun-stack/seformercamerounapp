@@ -30,6 +30,7 @@ import {
   type Etat,
   type Evenement,
 } from './course';
+import { COMPTEURS_VIDES, apresReponse, jeuDeLaClasse } from './jeuDeLEnfant';
 
 let echecs = 0;
 function verifie(nom: string, condition: boolean) {
@@ -83,12 +84,13 @@ verifie('sans erreur : huit routes d’une minute et demie, aucun choc', jamais)
 verifie('sans erreur : le pilote ramasse des pièces', pieces);
 
 // ── Les réponses font la course ─────────────────────────────────────────────
-const lente = rouler(nouvelEtat(), 30, alea(2)).e;
+// Une question dure huit secondes : six questions, quarante-huit secondes.
+const lente = rouler(nouvelEtat(), 48, alea(2)).e;
 let e = nouvelEtat();
 const ar = alea(2);
 for (let i = 0; i < 6; i++) {
   e = donnerTurbo(e);
-  e = rouler(e, 5, ar).e;
+  e = rouler(e, 8, ar).e;
 }
 verifie('réponses : six bonnes réponses font bien plus de route que rien',
   e.distance > lente.distance * 1.8);
@@ -96,7 +98,7 @@ let f = nouvelEtat();
 const af = alea(2);
 for (let i = 0; i < 6; i++) {
   f = donnerErreur(f);
-  f = rouler(f, 5, af).e;
+  f = rouler(f, 8, af).e;
 }
 verifie('réponses : six erreurs font moins de route que rien', f.distance < lente.distance);
 verifie('réponses : six erreurs, six chocs', f.chocs === 6);
@@ -160,5 +162,17 @@ const arrivee = rouler({ ...nouvelEtat(), distance: VILLES[1].d - 3 }, 1, alea(4
 verifie('voyage : arriver dans une ville est un événement',
   arrivee.evenements.some((v) => v.type === 'ville' && v.nom === 'Mbalmayo'));
 verifie('décor : il change en route', paysage(0) !== paysage(500));
+
+// ── Le jeu de chaque enfant, et ce qu'une réponse lui fait ─────────────────
+verifie('jeu : le CE1 a la course', jeuDeLaClasse(3) === 'course');
+verifie('jeu : le CM1 garde les bonbons', jeuDeLaClasse(5) === 'bonbons');
+verifie('jeu : une classe inconnue garde les bonbons', jeuDeLaClasse(null) === 'bonbons');
+let c = COMPTEURS_VIDES;
+for (const juste of [true, true, true]) c = apresReponse(c, juste);
+verifie('réponses : trois justes, trois turbos et un bouclier', c.turbos === 3 && c.boucliers === 1);
+c = apresReponse(c, false);
+verifie('réponses : une faute, un choc, la série retombe', c.erreurs === 1 && c.serie === 0);
+c = apresReponse(apresReponse(c, true), true);
+verifie('réponses : deux justes après la faute, pas encore de bouclier', c.boucliers === 1);
 
 console.log(echecs === 0 ? '\nTout passe.' : '\n' + echecs + ' échec(s).');
