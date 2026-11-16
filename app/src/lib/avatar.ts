@@ -95,7 +95,7 @@ export const OBJETS: Objet[] = [
   // ── Les accessoires ──
   { id: 'porte-cles', nom: 'Porte-clés peluche', emplacement: 'accessoire', rarete: 'commun', temporaire: false,
     condition: 'Gagne 10 images', progres: (b) => p(b.images, 10) },
-  { id: 'bretelles', nom: 'Bretelles et cravate', emplacement: 'accessoire', rarete: 'rare', temporaire: false,
+  { id: 'bretelles', nom: 'Harnais et écouteurs', emplacement: 'accessoire', rarete: 'rare', temporaire: false,
     condition: 'Franchis 10 étapes', progres: (b) => p(b.etapesFranchies, 10) },
   { id: 'bandouliere', nom: 'Bandoulière à boucle', emplacement: 'accessoire', rarete: 'epique', temporaire: false,
     condition: 'Gravis 5 leçons jusqu’en haut', progres: (b) => p(b.leconsTerminees, 5) },

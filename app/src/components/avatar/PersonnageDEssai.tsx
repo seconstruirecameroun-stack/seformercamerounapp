@@ -1,7 +1,7 @@
 import { Suspense, lazy, useState } from 'react';
 import { energie, equipement, joursSansJouer, niveauDe, objetsDe, type Bilan, type Emplacement } from '../../lib/avatar';
 import { JaugeEnergie, JaugeNiveau } from './Jauges';
-import { APPARENCE_DEFAUT, fondDuStudio } from './apparence';
+import { APPARENCE_DEFAUT, fondDuStudio, type Apparence } from './apparence';
 
 const Avatar3D = lazy(() => import('./Avatar3D'));
 
@@ -20,7 +20,7 @@ const BASE: Bilan = {
   dernierJour: JOUR, joursRecents: 1,
 };
 
-const PROFILS: Array<{ nom: string; bilan: Bilan; choix?: Partial<Record<Emplacement, string | null>> }> = [
+const PROFILS: Array<{ nom: string; bilan: Bilan; choix?: Partial<Record<Emplacement, string | null>>; apparence?: Partial<Apparence> }> = [
   { nom: 'Débutant', bilan: { ...BASE, etapesFranchies: 1, images: 2, joursJoues: 2, serieJours: 2 } },
   { nom: 'Travailleur', bilan: {
     ...BASE, etapesFranchies: 30, leconsTerminees: 12, leconsValidees: 5, images: 60, joursJoues: 20,
@@ -37,7 +37,13 @@ const PROFILS: Array<{ nom: string; bilan: Bilan; choix?: Partial<Record<Emplace
   { nom: 'Tenue de rue', bilan: {
     ...BASE, etapesFranchies: 30, leconsTerminees: 12, leconsValidees: 5, images: 60, joursJoues: 20,
     serieJours: 4, serieManches: 1, argent: 2, bronze: 1, joursRecents: 5,
-  }, choix: { tete: 'capuche', visage: 'cache-cou', accessoire: 'bandouliere', corps: null, dos: null, main: null, compagnon: null, aura: null } },
+  }, choix: { tete: null, visage: 'lunettes', accessoire: 'bretelles', corps: null, dos: null, main: null, compagnon: null, aura: null },
+  apparence: { peau: '#e0ac69' } },
+  { nom: 'Capuche', bilan: {
+    ...BASE, etapesFranchies: 30, leconsTerminees: 12, leconsValidees: 5, images: 60, joursJoues: 20,
+    serieJours: 4, serieManches: 1, argent: 2, bronze: 1, joursRecents: 5,
+  }, choix: { tete: 'capuche', visage: 'cache-cou', accessoire: null, corps: null, dos: null, main: null, compagnon: null, aura: null },
+  apparence: { peau: '#e0ac69', haut: '#141416', cheveux: '#e8e8ec' } },
 ];
 
 export default function PersonnageDEssai() {
@@ -65,7 +71,7 @@ export default function PersonnageDEssai() {
       </div>
       <div className="overflow-hidden rounded-[var(--radius-card)] border-2 border-ink" style={{ background: fondDuStudio(APPARENCE_DEFAUT.fond) }}>
         <Suspense fallback={<div style={{ height: 360 }} />}>
-          <Avatar3D equipement={porte} energie={e} hauteur={360} />
+          <Avatar3D equipement={porte} energie={e} hauteur={360} apparence={{ ...APPARENCE_DEFAUT, ...PROFILS[choix].apparence }} />
         </Suspense>
       </div>
       <div className="grid gap-3 rounded-[var(--radius-card)] border border-line bg-white-warm p-4">

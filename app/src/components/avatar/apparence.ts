@@ -22,9 +22,9 @@ export type Apparence = {
 };
 
 export const PEAUX = ['#8d5524', '#6b3e1e', '#c68642', '#e0ac69'];
-export const HAUTS = ['#f8fafc', '#2f7d32', '#d7443a', '#2f6db5', '#f5b335', '#1f2937'];
-export const BAS = ['#111827', '#1f3a5f', '#4b5563', '#6b4f33'];
-export const CHEVEUX = ['#14100d', '#3b2314', '#7a4a21', '#c9962b'];
+export const HAUTS = ['#f8fafc', '#2f7d32', '#d7443a', '#2f6db5', '#f5b335', '#141416'];
+export const BAS = ['#141416', '#1f3a5f', '#4b5563', '#6b4f33'];
+export const CHEVEUX = ['#14100d', '#3b2314', '#7a4a21', '#c9962b', '#e8e8ec'];
 export const COIFFURES: Array<{ cle: Coiffure; nom: string }> = [
   { cle: 'meches', nom: 'Mèches' },
   { cle: 'boucles', nom: 'Boucles' },
@@ -43,7 +43,7 @@ export const FONDS: Array<{ cle: Fond; nom: string }> = [
 export const APPARENCE_DEFAUT: Apparence = {
   peau: '#8d5524',
   haut: '#f8fafc',
-  bas: '#111827',
+  bas: '#141416',
   coiffure: 'meches',
   cheveux: '#14100d',
   expression: 'sourire',
