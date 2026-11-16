@@ -12,6 +12,7 @@ import ChildSpace from './pages/child/ChildSpace';
 import ChildHome from './pages/child/ChildHome';
 import Matiere from './pages/child/Matiere';
 import Composition from './pages/child/Composition';
+import Personnage from './pages/child/Personnage';
 import NouvelleComposition from './pages/parent/NouvelleComposition';
 
 /**
@@ -83,6 +84,14 @@ export default function App() {
           element={
             <RequireParent>
               <ChildSpace />
+            </RequireParent>
+          }
+        />
+        <Route
+          path="/enfant/:childId/personnage"
+          element={
+            <RequireParent>
+              <Personnage />
             </RequireParent>
           }
         />

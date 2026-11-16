@@ -1,3 +1,4 @@
+import CartePersonnage from '../../components/avatar/CartePersonnage';
 import Palmares from '../../components/epreuve/Palmares';
 import Medaille from '../../components/epreuve/Medaille';
 import { medailleDe } from '../../lib/recompenses';
@@ -376,6 +377,10 @@ export default function ChildHome() {
             </span>
           </div>
         </header>
+
+        {/* Son personnage, la première chose qu'il voit : son niveau, son
+            énergie, et le prochain objet que sa séance peut lui rapporter. */}
+        {childId ? <CartePersonnage childId={childId} /> : null}
 
         {/* Niba parle en premier : c'est lui qui donne la raison de jouer
             aujourd'hui, avant même de montrer quelle leçon. */}
