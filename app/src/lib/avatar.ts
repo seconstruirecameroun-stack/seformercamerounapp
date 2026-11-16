@@ -28,7 +28,8 @@
  * Tout ce fichier est pur, et vérifié par avatar.verif.ts.
  */
 
-export type Emplacement = 'tete' | 'corps' | 'dos' | 'main' | 'pieds' | 'compagnon' | 'aura';
+export type Emplacement =
+  | 'tete' | 'visage' | 'corps' | 'accessoire' | 'dos' | 'main' | 'pieds' | 'compagnon' | 'aura';
 export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire';
 
 /** Le travail de l'enfant, tel que le tableau de bord le connaît. */
@@ -80,6 +81,20 @@ export const OBJETS: Objet[] = [
     condition: 'Gravis 10 leçons jusqu’en haut', progres: (b) => p(b.leconsTerminees, 10) },
   { id: 'couronne', nom: 'Couronne', emplacement: 'tete', rarete: 'legendaire', temporaire: false,
     condition: 'Valide 15 leçons', progres: (b) => p(b.leconsValidees, 15) },
+
+  // ── Le visage ──
+  { id: 'lunettes', nom: 'Lunettes rondes', emplacement: 'visage', rarete: 'rare', temporaire: false,
+    condition: 'Gravis 3 leçons jusqu’en haut', progres: (b) => p(b.leconsTerminees, 3) },
+  { id: 'lunettes-soleil', nom: 'Lunettes de soleil', emplacement: 'visage', rarete: 'epique', temporaire: false,
+    condition: 'Joue 20 jours', progres: (b) => p(b.joursJoues, 20) },
+
+  // ── Les accessoires ──
+  { id: 'porte-cles', nom: 'Porte-clés peluche', emplacement: 'accessoire', rarete: 'commun', temporaire: false,
+    condition: 'Gagne 10 images', progres: (b) => p(b.images, 10) },
+  { id: 'bretelles', nom: 'Bretelles et cravate', emplacement: 'accessoire', rarete: 'rare', temporaire: false,
+    condition: 'Franchis 10 étapes', progres: (b) => p(b.etapesFranchies, 10) },
+  { id: 'chaine-or', nom: 'Chaîne en or', emplacement: 'accessoire', rarete: 'legendaire', temporaire: false,
+    condition: 'Gagne 3 médailles d’or', progres: (b) => p(b.or, 3) },
 
   // ── Le corps ──
   { id: 'maillot', nom: 'Maillot des Lions', emplacement: 'corps', rarete: 'rare', temporaire: false,

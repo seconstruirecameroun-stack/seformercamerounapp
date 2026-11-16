@@ -62,6 +62,11 @@ const a = (id: string, l = aujourdhui) => l.find((o) => o.id === id)!;
 verifie('travail : la casquette, le bandeau, la cape sont gagnés',
   a('casquette').gagne && a('bandeau').gagne && a('cape').gagne);
 verifie('travail : les ailes demandent 10 leçons validées', !a('ailes').gagne && a('ailes').fait === 4 && a('ailes').but === 10);
+verifie('travail : lunettes, bretelles et porte-clés gagnés',
+  a('lunettes').gagne && a('bretelles').gagne && a('porte-cles').gagne);
+verifie('travail : la chaîne en or demande 3 médailles d’or', !a('chaine-or').gagne && a('chaine-or').fait === 1);
+verifie('équipement : un emplacement par objet, sans mélange',
+  equipement(aujourdhui).visage?.emplacement === 'visage' && equipement(aujourdhui).accessoire?.emplacement === 'accessoire');
 verifie('travail : les pouvoirs du moment sont là', a('flammes').gagne && a('eclairs').gagne && a('arc-en-ciel').gagne);
 
 const absent8 = objetsDe({ ...travailleur, dernierJour: ilYA(8) }, JOUR);

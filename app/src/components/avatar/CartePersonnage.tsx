@@ -4,6 +4,7 @@ import { joursSansJouer, OBJETS } from '../../lib/avatar';
 import DialogueJeu, { momentFort, type Dialogue } from '../jeu/DialogueJeu';
 import { JaugeEnergie, JaugeNiveau } from './Jauges';
 import { jourUTC, usePersonnage } from './personnage';
+import { fondDuStudio } from './apparence';
 
 const Avatar3D = lazy(() => import('./Avatar3D'));
 
@@ -58,7 +59,8 @@ export default function CartePersonnage({ childId }: { childId: string }) {
   return (
     <Link
       to={`/enfant/${childId}/personnage`}
-      className="tuile relative block overflow-hidden rounded-[var(--radius-card)] border-2 border-ink bg-[radial-gradient(circle_at_50%_30%,#fff8e6_0%,#ffe2b0_55%,#f6c27a_100%)] shadow-[var(--shadow-card)]"
+      className="tuile relative block overflow-hidden rounded-[var(--radius-card)] border-2 border-ink shadow-[var(--shadow-card)]"
+      style={{ background: fondDuStudio(reglages.apparence.fond) }}
     >
       <DialogueJeu dernier={moment} />
       <div className="grid grid-cols-[minmax(0,44%)_minmax(0,1fr)] items-center gap-2">
@@ -71,7 +73,7 @@ export default function CartePersonnage({ childId }: { childId: string }) {
             compact
           />
         </Suspense>
-        <div className="grid gap-2 py-3 pr-3">
+        <div className="my-2 mr-2 grid gap-2 rounded-2xl bg-white-warm/90 p-2.5">
           <JaugeNiveau niveau={calcul.niveau} />
           <JaugeEnergie energie={calcul.energie} joursSans={Number.isFinite(sans) ? sans : 0} />
           {prochain ? (

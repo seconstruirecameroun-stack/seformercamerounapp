@@ -3,7 +3,17 @@ import { Link, useParams } from 'react-router-dom';
 import { ErrorNote, Loading } from '../../components/ui';
 import { usePersonnage, jourUTC } from '../../components/avatar/personnage';
 import { JaugeEnergie, JaugeNiveau } from '../../components/avatar/Jauges';
-import { HAUTS, PEAUX } from '../../components/avatar/apparence';
+import {
+  BAS,
+  CHEVEUX,
+  COIFFURES,
+  EXPRESSIONS,
+  FONDS,
+  HAUTS,
+  PEAUX,
+  fondDuStudio,
+  type Apparence,
+} from '../../components/avatar/apparence';
 import { NIVEAUX, joursSansJouer, type Emplacement, type ObjetPossede, type Rarete } from '../../lib/avatar';
 
 const Avatar3D = lazy(() => import('../../components/avatar/Avatar3D'));
@@ -19,7 +29,9 @@ const Avatar3D = lazy(() => import('../../components/avatar/Avatar3D'));
 
 const PLACES: Array<{ cle: Emplacement; nom: string }> = [
   { cle: 'tete', nom: 'Tête' },
+  { cle: 'visage', nom: 'Visage' },
   { cle: 'corps', nom: 'Tenue' },
+  { cle: 'accessoire', nom: 'Accessoires' },
   { cle: 'dos', nom: 'Dos' },
   { cle: 'main', nom: 'Main' },
   { cle: 'pieds', nom: 'Pieds' },
@@ -107,11 +119,11 @@ export default function Personnage() {
           ← Ma page
         </Link>
 
-        <section className="overflow-hidden rounded-[var(--radius-card)] border-2 border-ink bg-[radial-gradient(circle_at_50%_35%,#fff8e6_0%,#ffe2b0_55%,#f6c27a_100%)]">
+        <section className="overflow-hidden rounded-[var(--radius-card)] border-2 border-ink" style={{ background: fondDuStudio(reglages.apparence.fond) }}>
           <Suspense fallback={<div style={{ height: 360 }} />}>
             <Avatar3D equipement={calcul.porte} energie={calcul.energie} apparence={reglages.apparence} hauteur={360} />
           </Suspense>
-          <p className="pb-2 text-center text-[0.75rem] font-bold text-ink-2">
+          <p className={'pb-2 text-center text-[0.75rem] font-bold ' + (reglages.apparence.fond === 'sombre' ? 'text-white/80' : 'text-ink-2')}>
             Fais-le tourner du doigt · touche-le pour qu’il saute, salue ou tourne
           </p>
         </section>
@@ -123,32 +135,61 @@ export default function Personnage() {
 
         <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-4">
           <h2 className="text-kid-sm font-black">Son allure</h2>
-          <p className="mt-2 text-[0.75rem] font-black text-muted">PEAU</p>
-          <div className="mt-1 flex gap-2">
-            {PEAUX.map((c) => (
-              <button
-                key={c}
-                type="button"
-                aria-label="Couleur de peau"
-                onClick={() => setReglages({ ...reglages, apparence: { ...reglages.apparence, peau: c } })}
-                className={'h-9 w-9 rounded-full border-4 ' + (reglages.apparence.peau === c ? 'border-ink' : 'border-white')}
-                style={{ background: c }}
-              />
-            ))}
-          </div>
-          <p className="mt-2 text-[0.75rem] font-black text-muted">HAUT (quand il ne porte pas de tenue gagnée)</p>
-          <div className="mt-1 flex flex-wrap gap-2">
-            {HAUTS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                aria-label="Couleur du haut"
-                onClick={() => setReglages({ ...reglages, apparence: { ...reglages.apparence, haut: c } })}
-                className={'h-9 w-9 rounded-xl border-4 ' + (reglages.apparence.haut === c ? 'border-ink' : 'border-white')}
-                style={{ background: c }}
-              />
-            ))}
-          </div>
+          {(() => {
+            const changer = (morceau: Partial<Apparence>) =>
+              setReglages({ ...reglages, apparence: { ...reglages.apparence, ...morceau } });
+            const ap = reglages.apparence;
+            const Pastilles = ({ titre, couleurs, valeur, cle }: { titre: string; couleurs: string[]; valeur: string; cle: keyof Apparence }) => (
+              <>
+                <p className="mt-3 text-[0.75rem] font-black text-muted">{titre}</p>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {couleurs.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      aria-label={titre}
+                      onClick={() => changer({ [cle]: c } as Partial<Apparence>)}
+                      className={'h-9 w-9 rounded-full border-4 ' + (valeur === c ? 'border-ink' : 'border-white shadow')}
+                      style={{ background: c }}
+                    />
+                  ))}
+                </div>
+              </>
+            );
+            const Choix = <T extends string>({ titre, options, valeur, onChoix }: {
+              titre: string; options: Array<{ cle: T; nom: string }>; valeur: T; onChoix: (v: T) => void;
+            }) => (
+              <>
+                <p className="mt-3 text-[0.75rem] font-black text-muted">{titre}</p>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {options.map((o) => (
+                    <button
+                      key={o.cle}
+                      type="button"
+                      onClick={() => onChoix(o.cle)}
+                      className={
+                        'rounded-full border-2 px-3 py-1 text-kid-xs font-black ' +
+                        (valeur === o.cle ? 'border-ink bg-ink text-white-warm' : 'border-line bg-white-warm')
+                      }
+                    >
+                      {o.nom}
+                    </button>
+                  ))}
+                </div>
+              </>
+            );
+            return (
+              <>
+                <Choix titre="COIFFURE" options={COIFFURES} valeur={ap.coiffure} onChoix={(v) => changer({ coiffure: v })} />
+                <Pastilles titre="CHEVEUX" couleurs={CHEVEUX} valeur={ap.cheveux} cle="cheveux" />
+                <Pastilles titre="PEAU" couleurs={PEAUX} valeur={ap.peau} cle="peau" />
+                <Pastilles titre="CHEMISE (sans tenue gagnée)" couleurs={HAUTS} valeur={ap.haut} cle="haut" />
+                <Pastilles titre="PANTALON" couleurs={BAS} valeur={ap.bas} cle="bas" />
+                <Choix titre="EXPRESSION" options={EXPRESSIONS} valeur={ap.expression} onChoix={(v) => changer({ expression: v })} />
+                <Choix titre="STUDIO" options={FONDS} valeur={ap.fond} onChoix={(v) => changer({ fond: v })} />
+              </>
+            );
+          })()}
         </section>
 
         <section className="rounded-[var(--radius-card)] border border-line bg-white-warm p-4">

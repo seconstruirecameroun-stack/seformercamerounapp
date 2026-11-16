@@ -1,6 +1,7 @@
 import { Suspense, lazy, useState } from 'react';
 import { energie, equipement, joursSansJouer, niveauDe, objetsDe, type Bilan } from '../../lib/avatar';
 import { JaugeEnergie, JaugeNiveau } from './Jauges';
+import { APPARENCE_DEFAUT, fondDuStudio } from './apparence';
 
 const Avatar3D = lazy(() => import('./Avatar3D'));
 
@@ -58,7 +59,7 @@ export default function PersonnageDEssai() {
           </button>
         ))}
       </div>
-      <div className="overflow-hidden rounded-[var(--radius-card)] border-2 border-ink bg-[radial-gradient(circle_at_50%_35%,#fff8e6_0%,#ffe2b0_55%,#f6c27a_100%)]">
+      <div className="overflow-hidden rounded-[var(--radius-card)] border-2 border-ink" style={{ background: fondDuStudio(APPARENCE_DEFAUT.fond) }}>
         <Suspense fallback={<div style={{ height: 360 }} />}>
           <Avatar3D equipement={equipement(objets)} energie={e} hauteur={360} />
         </Suspense>
