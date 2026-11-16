@@ -308,86 +308,97 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       semelle.position.set(x, 0.035, 0.06);
       corps.add(chaussure, semelle);
     }
-    // Le pantalon large : chaque jambe s'évase vers le bas.
+    // Le pantalon large : deux jambes en blocs droits, l'ourlet retroussé.
     for (const x of [-0.2, 0.2]) {
-      const jambe = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.16, 0.21, 0.88, 20)), bas);
-      jambe.position.set(x, 0.66, 0);
-      corps.add(jambe);
-      const ourlet = new THREE.Mesh(garde(new THREE.TorusGeometry(0.2, 0.03, 8, 24)), bas);
-      ourlet.rotation.x = Math.PI / 2;
-      ourlet.position.set(x, 0.24, 0);
-      corps.add(ourlet);
+      const jambe = new THREE.Mesh(arrondi(0.37, 0.86, 0.43, 0.08), bas);
+      jambe.position.set(x, 0.64, 0);
+      const ourlet = new THREE.Mesh(arrondi(0.4, 0.09, 0.46, 0.035), bas);
+      ourlet.position.set(x, 0.25, 0);
+      corps.add(jambe, ourlet);
     }
-    const bassin = new THREE.Mesh(arrondi(0.8, 0.32, 0.5, 0.13), bas);
+    const bassin = new THREE.Mesh(arrondi(0.82, 0.3, 0.46, 0.08), bas);
     bassin.position.y = 1.16;
     corps.add(bassin);
 
-    // Le torse et le col de chemise.
-    const torse = new THREE.Mesh(arrondi(0.84, 0.78, 0.5, 0.18), haut);
+    // Le torse : un bloc carré aux angles arrondis, large aux épaules.
+    const torse = new THREE.Mesh(arrondi(0.9, 0.82, 0.46, 0.1), haut);
     torse.position.y = 1.62;
     corps.add(torse);
     if (!corpsObjet) {
+      // Le col de chemise, la patte de boutonnage et ses boutons.
       for (const s of [-1, 1]) {
-        const pan = new THREE.Mesh(arrondi(0.2, 0.12, 0.04, 0.02), haut);
-        pan.position.set(s * 0.1, 1.96, 0.24);
+        const pan = new THREE.Mesh(arrondi(0.2, 0.13, 0.04, 0.02), haut);
+        pan.position.set(s * 0.1, 1.98, 0.22);
         pan.rotation.z = s * 0.55;
         corps.add(pan);
       }
-      // Une couture de boutons.
-      for (let i = 0; i < 3; i++) {
-        const bouton = new THREE.Mesh(sphere(0.022), mat('#cbd5e1'));
-        bouton.position.set(0, 1.84 - i * 0.18, 0.255);
+      const patte = new THREE.Mesh(arrondi(0.07, 0.7, 0.02, 0.008), mat('#e5e7eb'));
+      patte.position.set(0, 1.62, 0.232);
+      corps.add(patte);
+      for (let i = 0; i < 4; i++) {
+        const bouton = new THREE.Mesh(sphere(0.02), mat('#9ca3af', { clearcoat: 1 }));
+        bouton.position.set(0, 1.88 - i * 0.17, 0.245);
         corps.add(bouton);
       }
     } else if (corpsObjet === 'maillot') {
-      const jaune = new THREE.Mesh(arrondi(0.86, 0.1, 0.52, 0.05), mat('#ffc93c'));
+      const jaune = new THREE.Mesh(arrondi(0.92, 0.1, 0.48, 0.04), mat('#ffc93c'));
       jaune.position.y = 1.7;
-      const rouge = new THREE.Mesh(arrondi(0.86, 0.07, 0.52, 0.035), mat('#e63946'));
+      const rouge = new THREE.Mesh(arrondi(0.92, 0.07, 0.48, 0.03), mat('#e63946'));
       rouge.position.y = 1.6;
       corps.add(jaune, rouge);
     } else if (corpsObjet === 'armure') {
-      const plastron = new THREE.Mesh(arrondi(0.6, 0.5, 0.12, 0.08), mat('#e2e8f0', { metalness: 0.9, roughness: 0.2, clearcoat: 1 }));
+      const plastron = new THREE.Mesh(arrondi(0.62, 0.52, 0.1, 0.06), mat('#e2e8f0', { metalness: 0.9, roughness: 0.2, clearcoat: 1 }));
       plastron.position.set(0, 1.64, 0.24);
       const embleme = new THREE.Mesh(garde(new THREE.ExtrudeGeometry(etoileForme(0.11), { depth: 0.03, bevelEnabled: false })), or());
-      embleme.position.set(0, 1.64, 0.3);
+      embleme.position.set(0, 1.64, 0.29);
       corps.add(plastron, embleme);
     }
 
-    // Les bras : une manche courte, puis le bras nu.
+    // Les bras en blocs : une manche courte, le bras, et une main en pince,
+    // ouverte vers l'avant, comme celle d'un jouet.
     const bras: THREE.Group[] = [];
+    const geoMain = garde(new THREE.TorusGeometry(0.11, 0.06, 14, 32, Math.PI * 1.45));
     for (const cote of [-1, 1]) {
       const epaule = new THREE.Group();
-      epaule.position.set(cote * 0.52, 1.92, 0);
-      const manche = new THREE.Mesh(capsule(0.15, 0.12), haut);
-      manche.position.y = -0.12;
-      const avantBras = new THREE.Mesh(capsule(0.11, 0.34), corpsObjet ? haut : peau);
-      avantBras.position.y = -0.4;
+      epaule.position.set(cote * 0.6, 1.94, 0);
+      const manche = new THREE.Mesh(arrondi(0.3, 0.34, 0.4, 0.08), haut);
+      manche.position.y = -0.13;
+      const avantBras = new THREE.Mesh(arrondi(0.27, 0.5, 0.3, 0.07), corpsObjet ? haut : peau);
+      avantBras.position.y = -0.5;
       if (corpsObjet === 'armure') {
-        const epauliere = new THREE.Mesh(sphere(0.18), mat('#e2e8f0', { metalness: 0.9, roughness: 0.2 }));
-        epauliere.scale.set(1, 0.7, 1);
+        const epauliere = new THREE.Mesh(arrondi(0.36, 0.14, 0.44, 0.06), mat('#e2e8f0', { metalness: 0.9, roughness: 0.2 }));
+        epauliere.position.y = 0.04;
         epaule.add(epauliere);
       }
-      const main = new THREE.Mesh(sphere(0.12), peau);
-      main.position.y = -0.68;
-      epaule.add(manche, avantBras, main);
+      const poignet = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.09, 0.09, 0.08, 16)), peau);
+      poignet.position.y = -0.79;
+      // La pince : un anneau ouvert, debout face à nous, l'ouverture vers le
+      // bas — couché, il ne se voyait que par la tranche.
+      const pince = new THREE.Group();
+      pince.position.set(0, -0.95, 0.02);
+      pince.rotation.y = cote * 0.35;
+      const anneau = new THREE.Mesh(geoMain, peau);
+      anneau.rotation.z = Math.PI * 1.5 - Math.PI * 1.725;
+      pince.add(anneau);
+      epaule.add(manche, avantBras, poignet, pince);
       corps.add(epaule);
       bras.push(epaule);
     }
 
     // La tête.
     const tete = new THREE.Group();
-    tete.position.y = 2.01;
+    tete.position.y = 2.02;
     corps.add(tete);
-    const cou = new THREE.Mesh(capsule(0.12, 0.05), peau);
-    cou.position.y = 0.0;
+    const cou = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.15, 0.15, 0.12, 20)), peau);
+    cou.position.y = 0.02;
     tete.add(cou);
-    const crane = new THREE.Mesh(arrondi(0.84, 0.8, 0.76, 0.26), peau);
+    const crane = new THREE.Mesh(arrondi(0.86, 0.8, 0.78, 0.22), peau);
     crane.position.y = 0.42;
     tete.add(crane);
     for (const cote of [-1, 1]) {
       const oreille = new THREE.Mesh(sphere(0.1), peau);
       oreille.scale.set(0.6, 1, 0.9);
-      oreille.position.set(cote * 0.42, 0.42, 0);
+      oreille.position.set(cote * 0.44, 0.42, 0);
       tete.add(oreille);
     }
     const toile = document.createElement('canvas');
@@ -400,7 +411,7 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       garde(new THREE.PlaneGeometry(0.74, 0.68)),
       garde(new THREE.MeshStandardMaterial({ map: texture, transparent: true, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2 })),
     );
-    visage.position.set(0, 0.4, 0.382);
+    visage.position.set(0, 0.4, 0.392);
     tete.add(visage);
     const humeur: Humeur = fatigue ? 'sommeil' : a.expression === 'cool' ? 'cool' : vif >= 0.8 ? 'joie' : 'calme';
     const ouvertureRepos = fatigue ? 0.35 : humeur === 'cool' ? 0.68 : 1;
@@ -430,9 +441,14 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
         coiffure.add(m);
       };
       // La frange : des touffes qui tombent sur le front, de travers.
+      // Sous une casquette ou un chapeau, elle passe sous la visière, plus courte.
       for (let i = 0; i < 6; i++) {
         const x = -0.3 + i * 0.12;
-        ajouter(x, 0.68, 0.3, -0.55, (graine(i) - 0.5) * 0.9 + (x > 0 ? -0.25 : 0.25), 1.05 + graine(i + 9) * 0.25, 2.2);
+        ajouter(
+          x, couvreChef ? 0.56 : 0.68, couvreChef ? 0.34 : 0.3, -0.55,
+          (graine(i) - 0.5) * 0.9 + (x > 0 ? -0.25 : 0.25),
+          (couvreChef ? 0.75 : 1.05) + graine(i + 9) * 0.2, couvreChef ? 1.6 : 2.2,
+        );
       }
       // Les côtés et la nuque : elles tombent, à peine écartées.
       for (let i = 0; i < 10; i++) {
@@ -542,7 +558,7 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       const monture = mat(soleil ? '#111827' : '#1f1f1f', { metalness: 0.6, roughness: 0.3 });
       for (const s of [-1, 1]) {
         const cercle = new THREE.Mesh(garde(new THREE.TorusGeometry(0.1, 0.014, 10, 32)), monture);
-        cercle.position.set(s * 0.13, 0.43, 0.4);
+        cercle.position.set(s * 0.13, 0.43, 0.41);
         tete.add(cercle);
         const verre = new THREE.Mesh(
           garde(new THREE.CircleGeometry(0.1, 32)),
@@ -550,14 +566,14 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
             ? mat('#0b1220', { metalness: 0.3, roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.92 })
             : mat('#ffffff', { roughness: 0.02, transparent: true, opacity: 0.12, clearcoat: 1 }),
         );
-        verre.position.set(s * 0.13, 0.43, 0.402);
+        verre.position.set(s * 0.13, 0.43, 0.412);
         tete.add(verre);
         const branche = new THREE.Mesh(arrondi(0.02, 0.02, 0.36, 0.008), monture);
         branche.position.set(s * 0.235, 0.44, 0.22);
         tete.add(branche);
       }
       const pont = new THREE.Mesh(arrondi(0.06, 0.015, 0.015, 0.006), monture);
-      pont.position.set(0, 0.45, 0.405);
+      pont.position.set(0, 0.45, 0.415);
       tete.add(pont);
     }
 
@@ -703,14 +719,14 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       const etoile = new THREE.Mesh(garde(new THREE.ExtrudeGeometry(etoileForme(0.07), { depth: 0.01, bevelEnabled: false })), or());
       etoile.position.set(0, 0, 0.05);
       livre.add(pages, couverture, etoile);
-      livre.position.set(0, -0.78, 0.18);
+      livre.position.set(0, -0.95, 0.2);
       bras[1].add(livre);
     } else if (tenu === 'trophee') {
       const profil = [
         [0, 0], [0.12, 0], [0.12, 0.03], [0.05, 0.06], [0.04, 0.15], [0.08, 0.19], [0.16, 0.27], [0.19, 0.43], [0.18, 0.44], [0, 0.29],
       ].map(([x, y]) => new THREE.Vector2(x, y));
       const coupe = new THREE.Mesh(garde(new THREE.LatheGeometry(profil, 32)), or());
-      coupe.position.set(0, -0.95, 0.2);
+      coupe.position.set(0, -1.08, 0.18);
       bras[1].add(coupe);
     }
 
