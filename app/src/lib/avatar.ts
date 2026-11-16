@@ -79,12 +79,16 @@ export const OBJETS: Objet[] = [
     condition: 'Franchis 15 étapes', progres: (b) => p(b.etapesFranchies, 15) },
   { id: 'chapeau', nom: 'Chapeau d’explorateur', emplacement: 'tete', rarete: 'epique', temporaire: false,
     condition: 'Gravis 10 leçons jusqu’en haut', progres: (b) => p(b.leconsTerminees, 10) },
+  { id: 'capuche', nom: 'Capuche à oreilles', emplacement: 'tete', rarete: 'epique', temporaire: false,
+    condition: 'Valide 5 leçons', progres: (b) => p(b.leconsValidees, 5) },
   { id: 'couronne', nom: 'Couronne', emplacement: 'tete', rarete: 'legendaire', temporaire: false,
     condition: 'Valide 15 leçons', progres: (b) => p(b.leconsValidees, 15) },
 
   // ── Le visage ──
   { id: 'lunettes', nom: 'Lunettes rondes', emplacement: 'visage', rarete: 'rare', temporaire: false,
     condition: 'Gravis 3 leçons jusqu’en haut', progres: (b) => p(b.leconsTerminees, 3) },
+  { id: 'cache-cou', nom: 'Cache-cou', emplacement: 'visage', rarete: 'rare', temporaire: false,
+    condition: 'Franchis 20 étapes', progres: (b) => p(b.etapesFranchies, 20) },
   { id: 'lunettes-soleil', nom: 'Lunettes de soleil', emplacement: 'visage', rarete: 'epique', temporaire: false,
     condition: 'Joue 20 jours', progres: (b) => p(b.joursJoues, 20) },
 
@@ -93,6 +97,8 @@ export const OBJETS: Objet[] = [
     condition: 'Gagne 10 images', progres: (b) => p(b.images, 10) },
   { id: 'bretelles', nom: 'Bretelles et cravate', emplacement: 'accessoire', rarete: 'rare', temporaire: false,
     condition: 'Franchis 10 étapes', progres: (b) => p(b.etapesFranchies, 10) },
+  { id: 'bandouliere', nom: 'Bandoulière à boucle', emplacement: 'accessoire', rarete: 'epique', temporaire: false,
+    condition: 'Gravis 5 leçons jusqu’en haut', progres: (b) => p(b.leconsTerminees, 5) },
   { id: 'chaine-or', nom: 'Chaîne en or', emplacement: 'accessoire', rarete: 'legendaire', temporaire: false,
     condition: 'Gagne 3 médailles d’or', progres: (b) => p(b.or, 3) },
 

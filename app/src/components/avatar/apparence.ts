@@ -9,7 +9,7 @@
  */
 export type Coiffure = 'meches' | 'boucles' | 'court';
 export type Expression = 'sourire' | 'cool';
-export type Fond = 'sombre' | 'clair';
+export type Fond = 'gris' | 'sombre' | 'clair';
 
 export type Apparence = {
   peau: string;
@@ -35,6 +35,7 @@ export const EXPRESSIONS: Array<{ cle: Expression; nom: string }> = [
   { cle: 'cool', nom: 'Cool' },
 ];
 export const FONDS: Array<{ cle: Fond; nom: string }> = [
+  { cle: 'gris', nom: 'Studio gris' },
   { cle: 'sombre', nom: 'Studio sombre' },
   { cle: 'clair', nom: 'Studio clair' },
 ];
@@ -46,11 +47,12 @@ export const APPARENCE_DEFAUT: Apparence = {
   coiffure: 'meches',
   cheveux: '#14100d',
   expression: 'sourire',
-  fond: 'sombre',
+  fond: 'gris',
 };
 
 /** Le fond du studio, derrière le personnage. */
 export function fondDuStudio(f: Fond): string {
+  if (f === 'gris') return 'radial-gradient(circle at 50% 35%, #6a6d73 0%, #4f5258 55%, #3a3c41 100%)';
   return f === 'sombre'
     ? 'radial-gradient(circle at 50% 30%, #4a4e57 0%, #2b2d33 55%, #17181c 100%)'
     : 'radial-gradient(circle at 50% 30%, #fff8e6 0%, #ffe2b0 55%, #f6c27a 100%)';

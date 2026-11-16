@@ -1,5 +1,5 @@
 import { Suspense, lazy, useState } from 'react';
-import { energie, equipement, joursSansJouer, niveauDe, objetsDe, type Bilan } from '../../lib/avatar';
+import { energie, equipement, joursSansJouer, niveauDe, objetsDe, type Bilan, type Emplacement } from '../../lib/avatar';
 import { JaugeEnergie, JaugeNiveau } from './Jauges';
 import { APPARENCE_DEFAUT, fondDuStudio } from './apparence';
 
@@ -20,7 +20,7 @@ const BASE: Bilan = {
   dernierJour: JOUR, joursRecents: 1,
 };
 
-const PROFILS: Array<{ nom: string; bilan: Bilan }> = [
+const PROFILS: Array<{ nom: string; bilan: Bilan; choix?: Partial<Record<Emplacement, string | null>> }> = [
   { nom: 'Débutant', bilan: { ...BASE, etapesFranchies: 1, images: 2, joursJoues: 2, serieJours: 2 } },
   { nom: 'Travailleur', bilan: {
     ...BASE, etapesFranchies: 30, leconsTerminees: 12, leconsValidees: 5, images: 60, joursJoues: 20,
@@ -34,12 +34,16 @@ const PROFILS: Array<{ nom: string; bilan: Bilan }> = [
     ...BASE, etapesFranchies: 400, leconsTerminees: 90, leconsValidees: 60, images: 260, joursJoues: 120,
     serieJours: 30, serieManches: 4, or: 6, argent: 4, bronze: 2, matieresCompletes: 2, joursRecents: 7,
   } },
+  { nom: 'Tenue de rue', bilan: {
+    ...BASE, etapesFranchies: 30, leconsTerminees: 12, leconsValidees: 5, images: 60, joursJoues: 20,
+    serieJours: 4, serieManches: 1, argent: 2, bronze: 1, joursRecents: 5,
+  }, choix: { tete: 'capuche', visage: 'cache-cou', accessoire: 'bandouliere', corps: null, dos: null, main: null, compagnon: null, aura: null } },
 ];
 
 export default function PersonnageDEssai() {
   const [choix, setChoix] = useState(1);
   const b = PROFILS[choix].bilan;
-  const objets = objetsDe(b, JOUR);
+  const porte = equipement(objetsDe(b, JOUR), PROFILS[choix].choix);
   const e = energie(b.dernierJour, JOUR);
   const sans = joursSansJouer(b.dernierJour, JOUR);
   return (
@@ -61,14 +65,14 @@ export default function PersonnageDEssai() {
       </div>
       <div className="overflow-hidden rounded-[var(--radius-card)] border-2 border-ink" style={{ background: fondDuStudio(APPARENCE_DEFAUT.fond) }}>
         <Suspense fallback={<div style={{ height: 360 }} />}>
-          <Avatar3D equipement={equipement(objets)} energie={e} hauteur={360} />
+          <Avatar3D equipement={porte} energie={e} hauteur={360} />
         </Suspense>
       </div>
       <div className="grid gap-3 rounded-[var(--radius-card)] border border-line bg-white-warm p-4">
         <JaugeNiveau niveau={niveauDe(b)} />
         <JaugeEnergie energie={e} joursSans={Number.isFinite(sans) ? sans : 0} />
         <p className="text-kid-xs font-bold text-ink-2">
-          Porte : {Object.values(equipement(objets)).map((o) => o?.nom).join(', ') || 'rien encore'}
+          Porte : {Object.values(porte).map((o) => o?.nom).join(', ') || 'rien encore'}
         </p>
       </div>
     </section>

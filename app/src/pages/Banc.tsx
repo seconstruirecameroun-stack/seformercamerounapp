@@ -96,7 +96,7 @@ const ONGLETS = [
   { cle: 'course', titre: 'La voiture de KLEIN',
     note: 'La voiture roule seule : l’enfant ne touche à rien. Ses réponses décident — turbo, choc ou bouclier. Les trois boutons les jouent ici.' },
   { cle: 'personnage', titre: 'Personnage 3D',
-    note: 'Quatre enfants inventés : touche le personnage pour qu’il saute, salue ou tourne ; fais-le tourner du doigt.' },
+    note: 'Cinq enfants inventés : touche le personnage pour qu’il saute, salue ou tourne ; fais-le tourner du doigt.' },
   { cle: 'recompenses', titre: 'Récompenses de BRAYNE',
     note: 'Niba et ses moments forts, la remise du bulletin avec sa médaille, et la vitrine de médailles. Rien n’est lu ni écrit en base.' },
   { cle: 'bonbons', titre: 'Plateau de bonbons',

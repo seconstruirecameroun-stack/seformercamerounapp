@@ -123,7 +123,7 @@ export default function Personnage() {
           <Suspense fallback={<div style={{ height: 360 }} />}>
             <Avatar3D equipement={calcul.porte} energie={calcul.energie} apparence={reglages.apparence} hauteur={360} />
           </Suspense>
-          <p className={'pb-2 text-center text-[0.75rem] font-bold ' + (reglages.apparence.fond === 'sombre' ? 'text-white/80' : 'text-ink-2')}>
+          <p className={'pb-2 text-center text-[0.75rem] font-bold ' + (reglages.apparence.fond !== 'clair' ? 'text-white/80' : 'text-ink-2')}>
             Fais-le tourner du doigt · touche-le pour qu’il saute, salue ou tourne
           </p>
         </section>
