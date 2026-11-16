@@ -60,6 +60,13 @@ function dessinerVisage(ctx: CanvasRenderingContext2D, peau: string, ouverture: 
   const t = ctx.canvas.width;
   ctx.clearRect(0, 0, t, t);
 
+  // L'ombre douce des cheveux sur le front.
+  const ombre = ctx.createLinearGradient(0, 0, 0, t * 0.42);
+  ombre.addColorStop(0, 'rgba(20,12,8,0.32)');
+  ombre.addColorStop(1, 'rgba(20,12,8,0)');
+  ctx.fillStyle = ombre;
+  ctx.fillRect(0, 0, t, t * 0.42);
+
   for (const x of [0.24, 0.76]) {
     const g = ctx.createRadialGradient(t * x, t * 0.64, 0, t * x, t * 0.64, t * 0.09);
     g.addColorStop(0, 'rgba(255,120,110,0.28)');
@@ -303,31 +310,44 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       corps.add(chaussure, semelle);
     }
 
-    // Le pantalon très large : la cuisse, une poche cargo sur le côté, puis
-    // le tissu qui s'entasse en gros plis jusque sur les baskets.
+    // Le pantalon très large, en tissu souple : chaque jambe est un tube
+    // presque carré qui s'évase vers le bas, où le tissu s'entasse en plis
+    // doux sur les baskets ; une poche cargo sur le côté.
+    const jambeGeo = (cote: number) => {
+      const H = 1.2;
+      const g = new THREE.CylinderGeometry(0.225, 0.29, H, 32, 30);
+      const pos = g.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const z = pos.getZ(i);
+        const r = Math.hypot(x, z);
+        if (r < 1e-4) continue;
+        const th = Math.atan2(z, x);
+        const t = (H / 2 - y) / H; // 0 en haut, 1 en bas
+        // Une section de carré arrondi, comme le reste du personnage.
+        const n = 3.2;
+        const carre = 1 / Math.pow(Math.pow(Math.abs(Math.cos(th)), n) + Math.pow(Math.abs(Math.sin(th)), n), 1 / n);
+        // Des plis qui ondulent en biais, de plus en plus marqués vers le bas,
+        // et le tissu qui bouffe juste au-dessus de la chaussure.
+        const plis = Math.pow(t, 1.4) * 0.075 * Math.sin(y * 21 + 2.2 * Math.sin(th * 2 + cote) + th * cote);
+        const bouffe = 0.09 * Math.exp(-Math.pow((t - 0.86) / 0.09, 2));
+        const k = (carre * (1 + plis + bouffe) * r) / r;
+        pos.setX(i, x * k);
+        pos.setZ(i, z * k * 1.06);
+      }
+      g.computeVertexNormals();
+      return garde(g);
+    };
     for (const cote of [-1, 1]) {
       const x = cote * 0.235;
-      const cuisse = new THREE.Mesh(arrondi(0.45, 0.5, 0.48, 0.1), bas);
-      cuisse.position.set(x, 1.08, 0);
-      corps.add(cuisse);
-      // Le bas de jambe, plus large que la cuisse, et des plis en biais.
-      const jambe = new THREE.Mesh(arrondi(0.5, 0.66, 0.55, 0.12), bas);
-      jambe.position.set(x + cote * 0.015, 0.52, 0.01);
+      const jambe = new THREE.Mesh(jambeGeo(cote), bas);
+      jambe.position.set(x, 0.72, 0);
       corps.add(jambe);
-      [0.74, 0.55, 0.36].forEach((y, i) => {
-        const pli = new THREE.Mesh(arrondi(0.52, 0.06, 0.57, 0.03), bas);
-        pli.position.set(x + cote * 0.015, y, 0.01);
-        pli.rotation.set((graine(i + cote * 5 + 10) - 0.5) * 0.2, 0, (i % 2 ? 1 : -1) * cote * (0.1 + graine(i + 40) * 0.08));
-        corps.add(pli);
-      });
-      // L'ourlet, qui retombe sur la chaussure.
-      const ourlet = new THREE.Mesh(arrondi(0.53, 0.12, 0.58, 0.05), bas);
-      ourlet.position.set(x + cote * 0.03, 0.17, 0.03);
-      corps.add(ourlet);
       const poche = new THREE.Mesh(arrondi(0.06, 0.26, 0.28, 0.025), bas);
-      poche.position.set(x + cote * 0.245, 0.95, 0);
+      poche.position.set(x + cote * 0.26, 0.95, 0);
       const rabat = new THREE.Mesh(arrondi(0.07, 0.06, 0.3, 0.02), bas);
-      rabat.position.set(x + cote * 0.25, 1.09, 0);
+      rabat.position.set(x + cote * 0.265, 1.09, 0);
       corps.add(poche, rabat);
     }
     const bassin = new THREE.Mesh(arrondi(0.88, 0.26, 0.48, 0.08), bas);
@@ -470,7 +490,7 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
         const courbe = new THREE.CatmullRomCurve3(gabarits[nom].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
         const seg = 12;
         const rad = 6;
-        const g = new THREE.TubeGeometry(courbe, seg, 0.055, rad, false);
+        const g = new THREE.TubeGeometry(courbe, seg, 0.062, rad, false);
         const pos = g.attributes.position;
         const c = new THREE.Vector3();
         for (let i = 0; i <= seg; i++) {
@@ -479,7 +499,7 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
           for (let j = 0; j <= rad; j++) {
             const n = i * (rad + 1) + j;
             // Aplatie en ruban : large sur le côté, fine dans l'autre sens.
-            pos.setXYZ(n, c.x + (pos.getX(n) - c.x) * k * 1.9, c.y + (pos.getY(n) - c.y) * k, c.z + (pos.getZ(n) - c.z) * k);
+            pos.setXYZ(n, c.x + (pos.getX(n) - c.x) * k * 2.4, c.y + (pos.getY(n) - c.y) * k, c.z + (pos.getZ(n) - c.z) * k);
           }
         }
         g.computeVertexNormals();
@@ -511,22 +531,29 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
         calotte.position.set(0, CY, CZ);
         coiffure.add(calotte);
         // Le volume : des mèches tout autour, qui se dressent puis retombent.
-        for (let i = 0; i < 30; i++) {
-          const az = (i / 30) * Math.PI * 2 + graine(i) * 0.2;
+        for (let i = 0; i < 46; i++) {
+          const az = (i / 46) * Math.PI * 2 + graine(i) * 0.2;
           if (versLAvant(az)) continue;
-          const el = 0.3 + graine(i + 30) * 0.55;
+          const el = 0.25 + graine(i + 30) * 0.6;
           const [x, y, z] = surCalotte(az, el);
           meche('retombe', x, y, z, az, el * 0.5, 1.05 + graine(i + 60) * 0.45, (graine(i + 90) - 0.5) * 0.6);
         }
         // Le dessus : des mèches qui se soulèvent et retombent en boucle, et
         // quelques épis en bataille.
-        for (let i = 0; i < 16; i++) {
-          const az = graine(i + 120) * Math.PI * 2;
-          const el = 0.85 + graine(i + 150) * 0.6;
+        for (let i = 0; i < 26; i++) {
+          const az = (i / 26) * Math.PI * 2 + graine(i + 120) * 0.4;
+          const el = 0.8 + graine(i + 150) * 0.6;
           const [x, y, z] = surCalotte(az, el);
-          meche('retombe', x, y, z, az, 0.55 + graine(i + 170) * 0.3, 0.85 + graine(i + 180) * 0.35, (graine(i + 210) - 0.5) * 0.8);
+          meche('retombe', x, y, z, az, 0.35 + graine(i + 170) * 0.3, 0.85 + graine(i + 180) * 0.35, (graine(i + 210) - 0.5) * 0.8);
         }
-        for (let i = 0; i < 7; i++) {
+        // Un second rang, plus bas, qui donne sa rondeur à la tignasse.
+        for (let i = 0; i < 20; i++) {
+          const az = (i / 20) * Math.PI * 2 + 0.15;
+          if (versLAvant(az)) continue;
+          const [x, y, z] = surCalotte(az, 0.05 + graine(i + 260) * 0.2);
+          meche('retombe', x, y, z, az, -0.05, 0.9 + graine(i + 280) * 0.3, (graine(i + 290) - 0.5) * 0.5);
+        }
+        for (let i = 0; i < 4; i++) {
           const az = graine(i + 220) * Math.PI * 2;
           const [x, y, z] = surCalotte(az, 1.1 + graine(i + 230) * 0.3);
           meche('dresse', x, y, z, az, 0.1, 0.7 + graine(i + 235) * 0.3, (graine(i + 238) - 0.5) * 0.8);
@@ -534,17 +561,17 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       }
       // Les côtés et la nuque : des mèches qui tombent sur les oreilles.
       if (chapeau !== 'capuche') {
-        for (let i = 0; i < 18; i++) {
-          const az = 1.0 + (i / 17) * (Math.PI * 2 - 2.0);
+        for (let i = 0; i < 24; i++) {
+          const az = 1.0 + (i / 23) * (Math.PI * 2 - 2.0);
           const [x, y, z] = surCalotte(az, couvreChef ? 0 : 0.12 + graine(i + 240) * 0.15);
           meche('tombe', x, couvreChef ? 0.62 : y, z, az, -0.1, (couvreChef ? 0.85 : 1.15) + graine(i + 270) * 0.3, (graine(i + 300) - 0.5) * 0.5);
         }
       }
       // La frange : de longues mèches qui tombent sur le front jusqu'aux
       // yeux, de travers, une plus longue d'un côté.
-      for (let i = 0; i < 9; i++) {
-        const az = -0.85 + (i / 8) * 1.7;
-        const longue = i === 6;
+      for (let i = 0; i < 11; i++) {
+        const az = -0.9 + (i / 10) * 1.8;
+        const longue = i === 7;
         const [x, y, z] = couvreChef ? [Math.sin(az) * 0.4, 0.66, 0.34] : surCalotte(az, 0.62);
         meche(
           'tombe', x, y, z, az * 0.5, -0.2,
