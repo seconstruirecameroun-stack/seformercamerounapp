@@ -1,29 +1,37 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import type { Emplacement, ObjetPossede } from '../../lib/avatar';
 import { APPARENCE_DEFAUT, type Apparence } from './apparence';
 
 /**
- * Le personnage en 3D : un héros en blocs, construit dans le code.
+ * Le personnage en 3D.
  *
- * Aucun modèle n'est téléchargé : chaque partie est une boîte, un cylindre
- * ou une sphère, colorée. Le moteur 3D (three.js) n'est chargé que là où le
- * personnage s'affiche, pour ne pas alourdir le reste de l'app sur un
- * téléphone modeste.
+ * Un héros aux proportions de jeu d'enfant — une grande tête, un petit corps
+ * arrondi — construit dans le code : aucun modèle n'est téléchargé. Le moteur
+ * 3D ne se charge que là où il s'affiche.
  *
- * Il vit : il respire, cligne des yeux, balance les bras, et on le fait
- * tourner du doigt. Un toucher le fait sauter, le suivant le fait saluer, le
- * troisième tourner sur lui-même. Ses objets ont chacun leur petite vie —
- * la cape flotte, les ailes battent, le compagnon sautille, l'aura monte.
+ * CE QUI LUI DONNE SA QUALITÉ :
  *
- * L'ÉNERGIE SE VOIT. Pleine, il est vif et lumineux ; basse, il respire
- * lentement, baisse la tête, ses yeux se ferment à moitié et des « Z »
- * s'envolent. L'aura pâlit avec elle.
+ *   des formes arrondies, jamais de cube brut ; un visage dessiné — grands
+ *   yeux à double reflet, sourcils, joues, sourire — posé sur la tête comme
+ *   un décalque, avec des paupières qui se ferment pour cligner ;
  *
- * Son allure est à lui : un personnage en blocs, aux couleurs du pays, qui
- * n'est celui d'aucun autre jeu.
+ *   un éclairage de studio : une lumière principale qui porte une ombre
+ *   douce au sol, un contre-jour qui détache la silhouette, et un
+ *   environnement qui donne de vrais reflets à l'or et au métal ;
+ *
+ *   des animations qui ont du poids : il arrive en rebondissant, respire en
+ *   s'écrasant un peu, regarde autour de lui, s'accroupit avant de sauter et
+ *   s'écrase en retombant.
+ *
+ * L'ÉNERGIE SE VOIT. Pleine, il est vif, saute de joie de temps en temps et
+ * son podium s'allume ; basse, il respire lentement, baisse la tête, ses
+ * paupières tombent et des « Z » s'envolent.
+ *
+ * Son allure est à lui : il n'est le personnage d'aucun autre jeu.
  */
-
 
 type Props = {
   equipement: Partial<Record<Emplacement, ObjetPossede>>;
@@ -31,94 +39,146 @@ type Props = {
   apparence?: Apparence;
   /** Hauteur en pixels ; la largeur suit le conteneur. */
   hauteur?: number;
-  /** Sur la page d'accueil, il est plus petit, et ne se fait pas tourner. */
+  /** Sur la page d'accueil : plus petit, et il ne se fait pas tourner. */
   compact?: boolean;
 };
 
-const OR = '#f5c542';
+const OR = '#ffc93c';
+const CHEVEUX = '#1e130c';
 
-function mat(couleur: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) {
-  return new THREE.MeshStandardMaterial({ color: couleur, roughness: 0.65, metalness: 0.05, ...extra });
-}
+// ── Le visage ───────────────────────────────────────────────────────────────
 
-function boite(l: number, h: number, p: number, m: THREE.Material) {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), m);
-  return mesh;
-}
-
-/** Le visage, dessiné sur une toile et collé sur la face avant de la tête. */
-function dessinerVisage(ctx: CanvasRenderingContext2D, peau: string, ouverture: number, content: boolean) {
+/**
+ * Le visage, sur une toile transparente : seuls les traits sont peints, la
+ * peau est celle de la tête. `ouverture` va de 0 (fermé) à 1 (grand ouvert).
+ */
+function dessinerVisage(ctx: CanvasRenderingContext2D, peau: string, ouverture: number, humeur: 'joie' | 'calme' | 'sommeil') {
   const t = ctx.canvas.width;
-  ctx.fillStyle = peau;
-  ctx.fillRect(0, 0, t, t);
-  // Les joues.
-  ctx.fillStyle = 'rgba(240,120,110,0.35)';
-  ctx.beginPath();
-  ctx.arc(t * 0.22, t * 0.66, t * 0.08, 0, Math.PI * 2);
-  ctx.arc(t * 0.78, t * 0.66, t * 0.08, 0, Math.PI * 2);
-  ctx.fill();
-  // Les yeux : ouverture 1 = grands ouverts, 0 = fermés.
+  ctx.clearRect(0, 0, t, t);
+
+  // Les joues, en dégradé doux.
+  for (const x of [0.2, 0.8]) {
+    const g = ctx.createRadialGradient(t * x, t * 0.64, 0, t * x, t * 0.64, t * 0.12);
+    g.addColorStop(0, 'rgba(255,120,110,0.55)');
+    g.addColorStop(1, 'rgba(255,120,110,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, t, t);
+  }
+
+  // Les sourcils.
+  ctx.strokeStyle = '#2a1a10';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = t * 0.028;
+  for (const x of [0.32, 0.68]) {
+    ctx.beginPath();
+    const haut = humeur === 'sommeil' ? 0.33 : 0.27;
+    ctx.moveTo(t * (x - 0.07), t * (haut + 0.015));
+    ctx.quadraticCurveTo(t * x, t * (haut - 0.025), t * (x + 0.07), t * (haut + 0.015));
+    ctx.stroke();
+  }
+
+  // Les yeux : grands, sombres, avec deux reflets.
   for (const x of [0.32, 0.68]) {
     const cx = t * x;
     const cy = t * 0.45;
+    const rx = t * 0.075;
+    const ry = t * 0.1;
+    if (ouverture < 0.12) {
+      // Fermés : un arc.
+      ctx.strokeStyle = '#1b120c';
+      ctx.lineWidth = t * 0.03;
+      ctx.beginPath();
+      ctx.arc(cx, cy - ry * 0.2, rx, 0.15 * Math.PI, 0.85 * Math.PI);
+      ctx.stroke();
+      continue;
+    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const iris = ctx.createRadialGradient(cx, cy + ry * 0.3, ry * 0.1, cx, cy, ry * 1.1);
+    iris.addColorStop(0, '#6b3d1f');
+    iris.addColorStop(0.55, '#2a160b');
+    iris.addColorStop(1, '#0b0603');
+    ctx.fillStyle = iris;
+    ctx.fillRect(cx - rx, cy - ry, rx * 2, ry * 2);
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.ellipse(cx, cy, t * 0.09, t * 0.11 * Math.max(0.08, ouverture), 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + rx * 0.3, cy - ry * 0.4, rx * 0.34, ry * 0.28, 0, 0, Math.PI * 2);
     ctx.fill();
-    if (ouverture > 0.2) {
-      ctx.fillStyle = '#1b1b1b';
+    ctx.beginPath();
+    ctx.arc(cx - rx * 0.35, cy + ry * 0.35, rx * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+    // La paupière qui descend, couleur de peau.
+    if (ouverture < 1) {
+      ctx.fillStyle = peau;
+      ctx.fillRect(cx - rx, cy - ry, rx * 2, ry * 2 * (1 - ouverture));
+      ctx.strokeStyle = '#1b120c';
+      ctx.lineWidth = t * 0.018;
       ctx.beginPath();
-      ctx.arc(cx, cy + t * 0.01, t * 0.055 * Math.min(1, ouverture + 0.2), 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(cx + t * 0.02, cy - t * 0.02, t * 0.018, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      ctx.strokeStyle = '#1b1b1b';
-      ctx.lineWidth = t * 0.025;
-      ctx.beginPath();
-      ctx.moveTo(cx - t * 0.07, cy);
-      ctx.lineTo(cx + t * 0.07, cy);
+      ctx.moveTo(cx - rx, cy - ry + ry * 2 * (1 - ouverture));
+      ctx.lineTo(cx + rx, cy - ry + ry * 2 * (1 - ouverture));
       ctx.stroke();
     }
+    ctx.restore();
   }
+
   // La bouche.
-  ctx.strokeStyle = '#3b1a12';
-  ctx.lineWidth = t * 0.03;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  if (content) ctx.arc(t * 0.5, t * 0.66, t * 0.12, 0.15 * Math.PI, 0.85 * Math.PI);
-  else {
-    ctx.moveTo(t * 0.42, t * 0.74);
-    ctx.lineTo(t * 0.58, t * 0.74);
+  if (humeur === 'joie') {
+    ctx.fillStyle = '#5a1a14';
+    ctx.beginPath();
+    ctx.moveTo(t * 0.4, t * 0.66);
+    ctx.quadraticCurveTo(t * 0.5, t * 0.8, t * 0.6, t * 0.66);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#f07a7a';
+    ctx.beginPath();
+    ctx.ellipse(t * 0.5, t * 0.735, t * 0.045, t * 0.025, 0, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = '#4a1a12';
+    ctx.lineWidth = t * 0.025;
+    ctx.beginPath();
+    if (humeur === 'sommeil') ctx.ellipse(t * 0.5, t * 0.7, t * 0.025, t * 0.03, 0, 0, Math.PI * 2);
+    else ctx.arc(t * 0.5, t * 0.63, t * 0.07, 0.2 * Math.PI, 0.8 * Math.PI);
+    ctx.stroke();
   }
-  ctx.stroke();
 }
 
-/** Une petite étoile en volume, pour la couronne, le compagnon, l'aura. */
-function etoile(rayon: number, epaisseur: number, m: THREE.Material) {
-  const forme = new THREE.Shape();
-  for (let i = 0; i < 10; i++) {
-    const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
-    const r = i % 2 ? rayon * 0.45 : rayon;
-    const x = Math.cos(a) * r;
-    const y = Math.sin(a) * r;
-    if (i === 0) forme.moveTo(x, y);
-    else forme.lineTo(x, y);
-  }
-  return new THREE.Mesh(new THREE.ExtrudeGeometry(forme, { depth: epaisseur, bevelEnabled: false }), m);
+/** Une texture ronde et douce, pour les particules : jamais de carrés. */
+function texturePoint(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const x = c.getContext('2d')!;
+  const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.8)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g;
+  x.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
 }
+
+function etoileForme(rayon: number): THREE.Shape {
+  const s = new THREE.Shape();
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2 + Math.PI / 2;
+    const r = i % 2 ? rayon * 0.45 : rayon;
+    if (i === 0) s.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+    else s.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+  }
+  return s;
+}
+
+const doux = (x: number) => x * x * (3 - 2 * x);
 
 export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DEFAUT, hauteur = 320, compact = false }: Props) {
   const boiteRef = useRef<HTMLDivElement | null>(null);
   const [sansWebGL, setSansWebGL] = useState(false);
   const geste = useRef<{ genre: 'saut' | 'salut' | 'tour'; debut: number } | null>(null);
   const prochainGeste = useRef(0);
-  const angle = useRef({ cible: -0.35, actuel: -0.35, glisse: null as number | null });
+  const angle = useRef({ cible: -0.3, actuel: -0.3 });
 
-  // Les objets portés se lisent par identifiant : la scène se reconstruit
-  // quand l'enfant change de tenue, pas à chaque rendu.
   const cle = JSON.stringify([
     Object.values(equipement).map((o) => o && o.id + (o.eteint ? '-eteint' : '')),
     apparence,
@@ -130,36 +190,85 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
     if (!conteneur) return;
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch {
       setSansWebGL(true);
       return;
     }
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     conteneur.appendChild(renderer.domElement);
     renderer.domElement.style.display = 'block';
     renderer.domElement.style.touchAction = compact ? 'auto' : 'none';
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-    camera.position.set(0, 2.0, compact ? 7.0 : 7.6);
-    camera.lookAt(0, 1.5, 0);
+    // L'environnement de studio : de vrais reflets sur l'or et le métal.
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const studio = new RoomEnvironment();
+    const envTex = pmrem.fromScene(studio, 0.04).texture;
+    scene.environment = envTex;
+
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+    camera.position.set(0, compact ? 1.55 : 1.6, compact ? 6.0 : 6.6);
+    camera.lookAt(0, 1.2, 0);
 
     const vif = energie / 100;
-    scene.add(new THREE.HemisphereLight('#fff6e8', '#5a4632', 0.9 + 0.5 * vif));
-    const soleil = new THREE.DirectionalLight('#ffffff', 1.2 + 0.8 * vif);
-    soleil.position.set(3, 6, 5);
-    scene.add(soleil);
-    const contre = new THREE.DirectionalLight('#9fd3ff', 0.5);
-    contre.position.set(-4, 3, -3);
-    scene.add(contre);
+    const fatigue = energie <= 40;
 
-    const jetables: Array<{ dispose: () => void }> = [];
+    scene.add(new THREE.HemisphereLight('#fff4e0', '#6b4a2a', 0.55 + 0.35 * vif));
+    const principale = new THREE.DirectionalLight('#fff3e0', 1.7 + 0.8 * vif);
+    principale.position.set(1.2, 6, 2.5);
+    principale.castShadow = true;
+    principale.shadow.mapSize.set(512, 512);
+    principale.shadow.camera.left = -2;
+    principale.shadow.camera.right = 2;
+    principale.shadow.camera.top = 3;
+    principale.shadow.camera.bottom = -1;
+    principale.shadow.radius = 4;
+    principale.shadow.bias = -0.0015;
+    scene.add(principale);
+    const contreJour = new THREE.DirectionalLight('#9fd8ff', 1.4);
+    contreJour.position.set(-3, 3, -4);
+    scene.add(contreJour);
+
+    const jetables: Array<{ dispose: () => void }> = [envTex, pmrem];
     const garde = <T extends { dispose: () => void }>(x: T) => {
       jetables.push(x);
       return x;
     };
+    const mat = (couleur: string, extra: Partial<THREE.MeshPhysicalMaterialParameters> = {}) =>
+      garde(new THREE.MeshPhysicalMaterial({ color: couleur, roughness: 0.6, metalness: 0, ...extra }));
+    const arrondi = (l: number, h: number, p: number, r: number) =>
+      garde(new RoundedBoxGeometry(l, h, p, 4, r));
+    const sphere = (r: number) => garde(new THREE.SphereGeometry(r, 28, 20));
+    const capsule = (r: number, l: number) => garde(new THREE.CapsuleGeometry(r, l, 8, 16));
+    const or = (brille = true) =>
+      mat(OR, { metalness: 0.9, roughness: 0.22, emissive: '#6b4a00', emissiveIntensity: brille ? 0.35 : 0, clearcoat: 0.6 });
+
+    // ── Le podium ───────────────────────────────────────────────────────────
+    // L'ombre ne tombe que sur le podium : au-delà, elle flotterait dans le vide.
+    const sol = new THREE.Mesh(garde(new THREE.CircleGeometry(1.05, 48)), garde(new THREE.ShadowMaterial({ opacity: 0.22 })));
+    sol.rotation.x = -Math.PI / 2;
+    sol.position.y = 0.002;
+    sol.receiveShadow = true;
+    scene.add(sol);
+    const podium = new THREE.Mesh(garde(new THREE.CylinderGeometry(1.05, 1.15, 0.14, 48)), mat('#fff3dc', { roughness: 0.4, clearcoat: 0.4 }));
+    podium.position.y = -0.07;
+    podium.receiveShadow = true;
+    scene.add(podium);
+    const halo = new THREE.Mesh(
+      garde(new THREE.TorusGeometry(1.1, 0.035, 12, 64)),
+      mat(energie >= 60 ? '#ffd166' : energie > 0 ? '#ff9f43' : '#9aa3ad', {
+        emissive: energie >= 60 ? '#ffb000' : '#ff7a00', emissiveIntensity: 1.2 * vif,
+      }),
+    );
+    halo.rotation.x = Math.PI / 2;
+    halo.position.y = 0.005;
+    scene.add(halo);
 
     // ── Le personnage ─────────────────────────────────────────────────────
     const heros = new THREE.Group();
@@ -167,277 +276,427 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
     const corps = new THREE.Group();
     heros.add(corps);
 
-    const peau = garde(mat(apparence.peau));
+    const peau = mat(apparence.peau, { roughness: 0.55, sheen: 0.3, sheenColor: new THREE.Color('#ffd9c0') });
     const corpsObjet = equipement.corps?.id;
-    const haut = garde(
-      corpsObjet === 'armure'
-        ? mat('#b8c0ca', { metalness: 0.45, roughness: 0.3 })
-        : corpsObjet === 'tenue-or'
-          ? mat(OR, { metalness: 0.3, roughness: 0.3, emissive: '#5a4300', emissiveIntensity: equipement.corps?.eteint ? 0 : 0.35 })
-          : corpsObjet === 'maillot'
-            ? mat('#2f7d32')
-            : mat(apparence.haut),
-    );
-    const bas = garde(mat(apparence.bas));
+    const haut =
+      corpsObjet === 'armure' ? mat('#c9d1db', { metalness: 0.85, roughness: 0.28, clearcoat: 0.5 })
+        : corpsObjet === 'tenue-or' ? or(!equipement.corps?.eteint)
+          : corpsObjet === 'maillot' ? mat('#17803d', { roughness: 0.7 })
+            : mat(apparence.haut, { roughness: 0.75, sheen: 0.5 });
+    const bas = mat(apparence.bas, { roughness: 0.8, sheen: 0.4 });
 
-    // Les jambes.
-    const jambes: THREE.Mesh[] = [];
-    for (const x of [-0.24, 0.24]) {
-      const j = boite(0.4, 0.95, 0.42, bas);
-      j.position.set(x, 0.48, 0);
-      corps.add(j);
-      jambes.push(j);
-      const chaussure = boite(
-        0.44, 0.22, 0.56,
-        garde(equipement.pieds?.id === 'bottes'
-          ? mat('#38bdf8', { emissive: '#0ea5e9', emissiveIntensity: 0.4 * vif })
-          : equipement.pieds?.id === 'baskets'
-            ? mat('#f8fafc')
-            : mat('#3b2a1a')),
+    // Les chaussures.
+    const pieds = equipement.pieds?.id;
+    for (const x of [-0.19, 0.19]) {
+      const chaussure = new THREE.Mesh(
+        arrondi(0.32, pieds === 'bottes' ? 0.36 : 0.2, 0.46, 0.09),
+        pieds === 'bottes'
+          ? mat('#1d9bf0', { emissive: '#38bdf8', emissiveIntensity: 0.5 * vif, clearcoat: 0.8 })
+          : pieds === 'baskets' ? mat('#f8fafc', { clearcoat: 0.5 }) : mat('#4a3020'),
       );
-      chaussure.position.set(x, 0.08, 0.05);
+      chaussure.position.set(x, pieds === 'bottes' ? 0.18 : 0.1, 0.05);
       corps.add(chaussure);
+      if (pieds === 'baskets') {
+        const semelle = new THREE.Mesh(arrondi(0.34, 0.06, 0.48, 0.03), mat('#e63946'));
+        semelle.position.set(x, 0.03, 0.05);
+        corps.add(semelle);
+      }
     }
-    // Le torse.
-    const torse = boite(1.05, 1.05, 0.55, haut);
-    torse.position.y = 1.5;
+    // Les jambes.
+    for (const x of [-0.19, 0.19]) {
+      const jambe = new THREE.Mesh(capsule(0.14, 0.32), bas);
+      jambe.position.set(x, 0.42, 0);
+      corps.add(jambe);
+    }
+    // Le bassin, puis le torse.
+    const bassin = new THREE.Mesh(arrondi(0.78, 0.3, 0.5, 0.13), bas);
+    bassin.position.y = 0.7;
+    corps.add(bassin);
+    const torse = new THREE.Mesh(arrondi(0.88, 0.72, 0.56, 0.2), haut);
+    torse.position.y = 1.08;
     corps.add(torse);
     if (corpsObjet === 'maillot') {
-      // Une bande jaune et rouge : le maillot des Lions.
-      const bande = boite(1.07, 0.16, 0.57, garde(mat('#f5c542')));
-      bande.position.y = 1.62;
-      corps.add(bande);
-      const bande2 = boite(1.07, 0.1, 0.57, garde(mat('#d7443a')));
-      bande2.position.y = 1.46;
-      corps.add(bande2);
+      // Le maillot des Lions : une bande jaune, une rouge.
+      const jaune = new THREE.Mesh(arrondi(0.9, 0.1, 0.58, 0.05), mat('#ffc93c'));
+      jaune.position.y = 1.16;
+      const rouge = new THREE.Mesh(arrondi(0.9, 0.07, 0.58, 0.035), mat('#e63946'));
+      rouge.position.y = 1.05;
+      corps.add(jaune, rouge);
+    } else if (corpsObjet === 'armure') {
+      const plastron = new THREE.Mesh(arrondi(0.6, 0.48, 0.12, 0.08), mat('#e2e8f0', { metalness: 0.9, roughness: 0.2, clearcoat: 1 }));
+      plastron.position.set(0, 1.1, 0.27);
+      const embleme = new THREE.Mesh(garde(new THREE.ExtrudeGeometry(etoileForme(0.11), { depth: 0.03, bevelEnabled: false })), or());
+      embleme.position.set(0, 1.1, 0.33);
+      corps.add(plastron, embleme);
     }
-    // Les bras, accrochés à l'épaule pour pouvoir tourner.
+    // Le col.
+    const col = new THREE.Mesh(garde(new THREE.TorusGeometry(0.2, 0.05, 10, 24)), haut);
+    col.rotation.x = Math.PI / 2;
+    col.position.y = 1.44;
+    corps.add(col);
+
+    // Les bras, accrochés à l'épaule.
     const bras: THREE.Group[] = [];
     for (const cote of [-1, 1]) {
       const epaule = new THREE.Group();
-      epaule.position.set(cote * 0.7, 1.98, 0);
-      const manche = boite(0.34, 0.5, 0.4, haut);
+      epaule.position.set(cote * 0.52, 1.32, 0);
+      const manche = new THREE.Mesh(capsule(0.12, 0.3), haut);
       manche.position.y = -0.22;
-      const main = boite(0.32, 0.5, 0.36, peau);
-      main.position.y = -0.7;
+      if (corpsObjet === 'armure') {
+        const epauliere = new THREE.Mesh(sphere(0.17), mat('#e2e8f0', { metalness: 0.9, roughness: 0.2 }));
+        epauliere.scale.set(1, 0.7, 1);
+        epauliere.position.y = 0.02;
+        epaule.add(epauliere);
+      }
+      const main = new THREE.Mesh(sphere(0.13), peau);
+      main.position.y = -0.5;
       epaule.add(manche, main);
       corps.add(epaule);
       bras.push(epaule);
     }
 
-    // La tête et son visage.
-    // La tête se pose sur les épaules : le haut du torse est à 2,025.
+    // La tête.
     const tete = new THREE.Group();
-    tete.position.y = 2.03;
+    tete.position.y = 1.47;
     corps.add(tete);
+    const crane = new THREE.Mesh(arrondi(1.0, 0.9, 0.86, 0.3), peau);
+    crane.position.y = 0.45;
+    tete.add(crane);
+    for (const cote of [-1, 1]) {
+      const oreille = new THREE.Mesh(sphere(0.12), peau);
+      oreille.scale.set(0.6, 1, 0.9);
+      oreille.position.set(cote * 0.5, 0.45, 0);
+      tete.add(oreille);
+    }
     const toile = document.createElement('canvas');
-    toile.width = toile.height = 128;
+    toile.width = toile.height = 256;
     const ctx = toile.getContext('2d')!;
     const texture = garde(new THREE.CanvasTexture(toile));
     texture.colorSpace = THREE.SRGBColorSpace;
-    const visage = garde(new THREE.MeshStandardMaterial({ map: texture, roughness: 0.7 }));
-    const crane = new THREE.Mesh(
-      garde(new THREE.BoxGeometry(0.9, 0.9, 0.9)),
-      [peau, peau, peau, peau, visage, peau],
+    texture.anisotropy = 4;
+    const visage = new THREE.Mesh(
+      garde(new THREE.PlaneGeometry(0.86, 0.78)),
+      garde(new THREE.MeshStandardMaterial({ map: texture, transparent: true, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2 })),
     );
-    crane.position.y = 0.45;
-    tete.add(crane);
-    const fatigue = energie <= 40;
-    let ouverture = fatigue ? 0.35 : 1;
-    dessinerVisage(ctx, apparence.peau, ouverture, !fatigue);
+    visage.position.set(0, 0.42, 0.432);
+    tete.add(visage);
+    const humeur = fatigue ? 'sommeil' : vif >= 0.8 ? 'joie' : 'calme';
+    const ouvertureRepos = fatigue ? 0.35 : 1;
+    dessinerVisage(ctx, apparence.peau, ouvertureRepos, humeur);
     texture.needsUpdate = true;
+
+    // Les cheveux : une coupe courte et bouclée, faite de petites sphères.
+    const chapeau = equipement.tete?.id;
+    const couvreChef = chapeau === 'casquette' || chapeau === 'chapeau';
+    const cheveux = mat(CHEVEUX, { roughness: 0.95, sheen: 0.6, sheenColor: new THREE.Color('#5a3a22') });
+    const boucles = new THREE.Group();
+    const graine = (i: number) => {
+      const s = Math.sin(i * 12.9898) * 43758.5453;
+      return s - Math.floor(s);
+    };
+    let n = 0;
+    for (let ix = -2; ix <= 2; ix++) {
+      for (let iz = -2; iz <= 1; iz++) {
+        // Sous un chapeau, le dessus de la tête est caché : pas de boucles.
+        if (couvreChef) continue;
+        const b = new THREE.Mesh(sphere(0.19 + graine(n++) * 0.04), cheveux);
+        b.position.set(ix * 0.2, 0.86 + graine(n++) * 0.05 - Math.abs(ix) * 0.025, iz * 0.2 - 0.02);
+        boucles.add(b);
+      }
+    }
+    // Le bord des cheveux : sur le front (sans chapeau), et toujours sur la
+    // nuque et aux tempes, là où il dépasse d'un chapeau.
+    for (let ix = -2; ix <= 2; ix++) {
+      if (!couvreChef) {
+        const f = new THREE.Mesh(sphere(0.13), cheveux);
+        f.position.set(ix * 0.2, 0.82, 0.3);
+        boucles.add(f);
+      }
+      const nuque = new THREE.Mesh(sphere(0.16), cheveux);
+      nuque.position.set(ix * 0.2, couvreChef ? 0.68 : 0.62, -0.36);
+      boucles.add(nuque);
+    }
+    for (const cote of [-1, 1]) {
+      const tempe = new THREE.Mesh(sphere(0.13), cheveux);
+      tempe.position.set(cote * 0.44, 0.74, -0.12);
+      boucles.add(tempe);
+    }
+    tete.add(boucles);
 
     // ── Les objets ────────────────────────────────────────────────────────
     const enMouvement: Array<(t: number) => void> = [];
 
-    const chapeau = equipement.tete?.id;
     if (chapeau === 'casquette') {
-      const c = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.47, 0.47, 0.25, 24)), garde(mat('#d7443a')));
-      c.position.y = 0.98;
-      const visiere = boite(0.7, 0.06, 0.45, garde(mat('#b8352d')));
-      visiere.position.set(0, 0.88, 0.55);
-      tete.add(c, visiere);
+      const dome = new THREE.Mesh(garde(new THREE.SphereGeometry(0.54, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2)), mat('#e63946', { roughness: 0.6 }));
+      dome.scale.set(1, 0.72, 1);
+      dome.position.y = 0.66;
+      const visiere = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.36, 0.36, 0.05, 32)), mat('#c1121f'));
+      visiere.scale.set(1.15, 1, 0.9);
+      visiere.position.set(0, 0.7, 0.46);
+      visiere.rotation.x = 0.12;
+      const bouton = new THREE.Mesh(sphere(0.05), mat('#c1121f'));
+      bouton.position.y = 1.05;
+      tete.add(dome, visiere, bouton);
     } else if (chapeau === 'bandeau') {
-      const b = boite(0.94, 0.16, 0.94, garde(mat('#d7443a')));
-      b.position.y = 0.78;
-      const noeud = boite(0.08, 0.3, 0.3, garde(mat('#d7443a')));
-      noeud.position.set(0, 0.7, -0.52);
-      tete.add(b, noeud);
+      const b = new THREE.Mesh(garde(new THREE.TorusGeometry(0.5, 0.06, 12, 40)), mat('#e63946'));
+      b.rotation.x = Math.PI / 2;
+      b.scale.set(1, 0.92, 1);
+      b.position.y = 0.74;
+      tete.add(b);
+      for (const s of [-1, 1]) {
+        const pan = new THREE.Mesh(arrondi(0.08, 0.3, 0.05, 0.02), mat('#e63946'));
+        pan.position.set(s * 0.08, 0.6, -0.48);
+        pan.rotation.z = s * 0.4;
+        tete.add(pan);
+        enMouvement.push((t) => {
+          pan.rotation.x = 0.3 + Math.sin(t * 4 + s) * 0.15;
+        });
+      }
     } else if (chapeau === 'chapeau') {
-      const bord = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.85, 0.85, 0.06, 28)), garde(mat('#b08a4a')));
-      bord.position.y = 0.92;
-      const calotte = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.42, 0.5, 0.38, 24)), garde(mat('#c9a35c')));
-      calotte.position.y = 1.12;
-      const ruban = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.505, 0.505, 0.09, 24)), garde(mat('#5a3b1c')));
-      ruban.position.y = 0.99;
+      const bord = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.85, 0.88, 0.05, 48)), mat('#b88a4a', { roughness: 0.85 }));
+      bord.position.y = 0.8;
+      const calotte = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.42, 0.5, 0.36, 40)), mat('#cfa463', { roughness: 0.85 }));
+      calotte.position.y = 1.0;
+      const ruban = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.505, 0.505, 0.09, 40)), mat('#5a3b1c'));
+      ruban.position.y = 0.87;
       tete.add(bord, calotte, ruban);
     } else if (chapeau === 'couronne') {
       const brille = !equipement.tete?.eteint;
-      const m = garde(mat(OR, { metalness: 0.3, roughness: 0.3, emissive: '#7a5a00', emissiveIntensity: brille ? 0.6 : 0 }));
-      const anneau = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.47, 0.47, 0.2, 24, 1, true)), m);
-      anneau.position.y = 0.98;
+      const m = or(brille);
+      const anneau = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.42, 0.44, 0.18, 40, 1, true)), m);
+      // Elle se pose SUR les boucles, pas dedans.
+      anneau.position.y = 1.06;
       tete.add(anneau);
-      for (let i = 0; i < 6; i++) {
-        const a = (i / 6) * Math.PI * 2;
-        const pointe = new THREE.Mesh(garde(new THREE.ConeGeometry(0.09, 0.26, 8)), m);
-        pointe.position.set(Math.cos(a) * 0.44, 1.2, Math.sin(a) * 0.44);
-        tete.add(pointe);
+      const gemmes = ['#e63946', '#3a86ff', '#2ec4b6', '#e63946', '#8338ec'];
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2 + Math.PI / 2;
+        const pointe = new THREE.Mesh(garde(new THREE.ConeGeometry(0.085, 0.24, 12)), m);
+        pointe.position.set(Math.cos(a) * 0.42, 1.26, Math.sin(a) * 0.42);
+        const gemme = new THREE.Mesh(sphere(0.055), mat(gemmes[i], {
+          roughness: 0.05, clearcoat: 1, emissive: gemmes[i], emissiveIntensity: brille ? 0.6 : 0,
+        }));
+        gemme.position.set(Math.cos(a) * 0.42, 1.39, Math.sin(a) * 0.42);
+        tete.add(pointe, gemme);
       }
-      const joyau = new THREE.Mesh(garde(new THREE.OctahedronGeometry(0.1)), garde(mat('#d7443a', { emissive: '#d7443a', emissiveIntensity: brille ? 0.6 : 0 })));
-      joyau.position.set(0, 1.0, 0.48);
-      tete.add(joyau);
     }
 
     const dos = equipement.dos?.id;
     if (dos === 'sac') {
-      const sac = boite(0.8, 0.85, 0.35, garde(mat('#8b5a2b')));
-      sac.position.set(0, 1.5, -0.45);
-      corps.add(sac);
+      const sac = new THREE.Mesh(arrondi(0.66, 0.66, 0.3, 0.12), mat('#a0642e', { roughness: 0.8 }));
+      sac.position.set(0, 1.05, -0.42);
+      const poche = new THREE.Mesh(arrondi(0.44, 0.24, 0.1, 0.05), mat('#8b5524'));
+      poche.position.set(0, 0.9, -0.6);
+      corps.add(sac, poche);
+      for (const s of [-1, 1]) {
+        const bretelle = new THREE.Mesh(arrondi(0.08, 0.6, 0.06, 0.02), mat('#8b5524'));
+        bretelle.position.set(s * 0.26, 1.12, 0.29);
+        corps.add(bretelle);
+      }
     } else if (dos === 'cape') {
-      const cape = new THREE.Mesh(garde(new THREE.PlaneGeometry(1.1, 1.6, 1, 6)), garde(mat('#b91c1c', { side: THREE.DoubleSide })));
-      cape.position.set(0, 1.25, -0.32);
+      const geo = garde(new THREE.PlaneGeometry(0.95, 1.25, 8, 10));
+      const cape = new THREE.Mesh(geo, mat('#c1121f', { side: THREE.DoubleSide, roughness: 0.65, sheen: 0.8, sheenColor: new THREE.Color('#ff8a8a') }));
+      cape.position.set(0, 0.82, -0.32);
       corps.add(cape);
-      const base = (cape.geometry as THREE.PlaneGeometry).attributes.position.array.slice();
+      for (const s of [-1, 1]) {
+        const agrafe = new THREE.Mesh(sphere(0.06), or());
+        agrafe.position.set(s * 0.2, 1.42, 0.18);
+        corps.add(agrafe);
+      }
+      const base = geo.attributes.position.array.slice();
       enMouvement.push((t) => {
-        const pos = (cape.geometry as THREE.PlaneGeometry).attributes.position;
+        const pos = geo.attributes.position;
         for (let i = 0; i < pos.count; i++) {
+          const x = base[i * 3];
           const y = base[i * 3 + 1];
-          const prof = (0.8 - y) / 1.6;
-          pos.setZ(i, -prof * (0.35 + 0.12 * Math.sin(t * 3 + y * 3)));
+          const versLeBas = (0.625 - y) / 1.25;
+          pos.setZ(i, -versLeBas * (0.28 + 0.1 * Math.sin(t * 2.5 + y * 4 + x * 2)));
         }
         pos.needsUpdate = true;
+        geo.computeVertexNormals();
       });
     } else if (dos === 'ailes' || dos === 'ailes-or') {
       const dorees = dos === 'ailes-or';
       const brille = !equipement.dos?.eteint;
-      const m = garde(mat(dorees ? OR : '#f8fafc', {
-        side: THREE.DoubleSide, transparent: true, opacity: 0.92,
-        metalness: dorees ? 0.3 : 0, emissive: dorees ? '#7a5a00' : '#000000', emissiveIntensity: dorees && brille ? 0.5 : 0,
-      }));
-      const forme = new THREE.Shape();
-      forme.moveTo(0, 0);
-      forme.quadraticCurveTo(0.6, 0.9, 1.5, 0.8);
-      forme.quadraticCurveTo(1.1, 0.4, 1.3, 0.1);
-      forme.quadraticCurveTo(0.8, -0.1, 1.0, -0.45);
-      forme.quadraticCurveTo(0.4, -0.3, 0, 0);
-      const geo = garde(new THREE.ShapeGeometry(forme));
-      const ailes: THREE.Mesh[] = [];
+      const m = dorees
+        ? mat(OR, { metalness: 0.7, roughness: 0.3, side: THREE.DoubleSide, emissive: '#7a5200', emissiveIntensity: brille ? 0.45 : 0 })
+        : mat('#ffffff', { side: THREE.DoubleSide, roughness: 0.5, sheen: 1, sheenColor: new THREE.Color('#cfe8ff') });
+      const plume = new THREE.Shape();
+      plume.absellipse(0, 0, 0.5, 0.14, 0, Math.PI * 2, false, 0);
+      const geoPlume = garde(new THREE.ShapeGeometry(plume, 16));
+      const ailes: THREE.Group[] = [];
       for (const cote of [-1, 1]) {
-        const aile = new THREE.Mesh(geo, m);
-        aile.scale.x = cote;
-        aile.position.set(cote * 0.15, 1.7, -0.32);
+        const aile = new THREE.Group();
+        aile.position.set(cote * 0.18, 1.2, -0.32);
+        for (let i = 0; i < 4; i++) {
+          const p = new THREE.Mesh(geoPlume, m);
+          p.position.set(cote * (0.42 + i * 0.03), 0.15 - i * 0.14, -i * 0.01);
+          p.rotation.z = cote * (0.55 - i * 0.28);
+          p.scale.setScalar(1 - i * 0.12);
+          aile.add(p);
+        }
         corps.add(aile);
         ailes.push(aile);
       }
       enMouvement.push((t) => {
-        const battement = 0.35 + 0.3 * Math.sin(t * (2 + 3 * vif));
-        ailes[0].rotation.y = battement;
-        ailes[1].rotation.y = -battement;
+        const b = 0.25 + 0.3 * Math.sin(t * (1.5 + 3 * vif));
+        ailes[0].rotation.y = b;
+        ailes[1].rotation.y = -b;
       });
     }
 
     const tenu = equipement.main?.id;
     if (tenu === 'livre') {
-      const livre = boite(0.42, 0.55, 0.12, garde(mat('#2f6db5')));
-      livre.position.set(0, -0.85, 0.25);
+      const livre = new THREE.Group();
+      const couverture = new THREE.Mesh(arrondi(0.34, 0.44, 0.1, 0.03), mat('#3a86ff', { clearcoat: 0.6 }));
+      const pages = new THREE.Mesh(arrondi(0.3, 0.4, 0.08, 0.01), mat('#fffaf0'));
+      pages.position.x = 0.025;
+      const etoile = new THREE.Mesh(garde(new THREE.ExtrudeGeometry(etoileForme(0.07), { depth: 0.01, bevelEnabled: false })), or());
+      etoile.position.set(0, 0, 0.055);
+      livre.add(pages, couverture, etoile);
+      livre.position.set(0, -0.6, 0.2);
       bras[1].add(livre);
     } else if (tenu === 'trophee') {
-      const m = garde(mat(OR, { metalness: 0.3, roughness: 0.3, emissive: '#5a4300', emissiveIntensity: 0.3 * vif }));
-      const coupe = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.22, 0.1, 0.3, 16)), m);
-      coupe.position.set(0, -0.72, 0.3);
-      const pied = new THREE.Mesh(garde(new THREE.CylinderGeometry(0.14, 0.14, 0.08, 16)), m);
-      pied.position.set(0, -0.92, 0.3);
-      bras[1].add(coupe, pied);
+      const profil = [
+        [0, 0], [0.13, 0], [0.13, 0.03], [0.05, 0.06], [0.04, 0.16], [0.08, 0.2], [0.17, 0.28], [0.2, 0.45], [0.19, 0.46], [0, 0.3],
+      ].map(([x, y]) => new THREE.Vector2(x, y));
+      const coupe = new THREE.Mesh(garde(new THREE.LatheGeometry(profil, 32)), or());
+      coupe.position.set(0, -0.78, 0.22);
+      bras[1].add(coupe);
     }
 
-    // Le compagnon, à côté de lui.
+    // Le compagnon.
     const compagnon = equipement.compagnon?.id;
     if (compagnon) {
       const ami = new THREE.Group();
-      ami.position.set(1.45, 0.6, 0.3);
+      ami.position.set(1.25, 0.55, 0.3);
       scene.add(ami);
       if (compagnon === 'balle') {
-        ami.add(new THREE.Mesh(garde(new THREE.SphereGeometry(0.28, 20, 16)), garde(mat('#f97316'))));
+        const c = document.createElement('canvas');
+        c.width = 128;
+        c.height = 64;
+        const x = c.getContext('2d')!;
+        ['#e63946', '#ffffff', '#3a86ff', '#ffffff', '#ffc93c', '#ffffff'].forEach((couleur, i) => {
+          x.fillStyle = couleur;
+          x.fillRect(i * (128 / 6), 0, 128 / 6 + 1, 64);
+        });
+        const tex = garde(new THREE.CanvasTexture(c));
+        tex.colorSpace = THREE.SRGBColorSpace;
+        ami.add(new THREE.Mesh(sphere(0.24), garde(new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.3, clearcoat: 0.8 }))));
       } else if (compagnon === 'etoile') {
-        const e = etoile(0.35, 0.12, garde(mat('#facc15', { emissive: '#facc15', emissiveIntensity: 0.4 * vif })));
-        e.position.z = -0.06;
+        const e = new THREE.Mesh(
+          garde(new THREE.ExtrudeGeometry(etoileForme(0.3), { depth: 0.08, bevelEnabled: true, bevelSize: 0.04, bevelThickness: 0.04, bevelSegments: 3 })),
+          mat('#ffd60a', { emissive: '#ffb703', emissiveIntensity: 0.5 * vif, clearcoat: 1, roughness: 0.25 }),
+        );
+        e.position.z = -0.04;
         ami.add(e);
+        for (const s of [-1, 1]) {
+          const oeil = new THREE.Mesh(sphere(0.03), mat('#1b120c'));
+          oeil.position.set(s * 0.06, 0.04, 0.1);
+          ami.add(oeil);
+        }
       } else if (compagnon === 'lionceau') {
         const brille = !equipement.compagnon?.eteint;
-        const fauve = garde(mat('#e0a040'));
-        const criniere = boite(0.62, 0.62, 0.3, garde(mat('#9a5a1c', { emissive: '#7a3a00', emissiveIntensity: brille ? 0.25 : 0 })));
-        criniere.position.set(0, 0.25, -0.05);
-        const tetel = boite(0.44, 0.44, 0.4, fauve);
-        tetel.position.set(0, 0.25, 0.08);
-        const corpsl = boite(0.5, 0.36, 0.7, fauve);
-        corpsl.position.set(0, -0.1, -0.3);
-        ami.add(criniere, tetel, corpsl);
+        const fauve = mat('#e8a33d', { roughness: 0.7, sheen: 0.6 });
+        const criniere = mat('#8a4b14', { roughness: 0.9, emissive: '#7a3a00', emissiveIntensity: brille ? 0.25 : 0 });
+        for (let i = 0; i < 10; i++) {
+          const a = (i / 10) * Math.PI * 2;
+          const touffe = new THREE.Mesh(sphere(0.1), criniere);
+          touffe.position.set(Math.cos(a) * 0.2, 0.3 + Math.sin(a) * 0.2, -0.04);
+          ami.add(touffe);
+        }
+        const tetel = new THREE.Mesh(sphere(0.2), fauve);
+        tetel.position.y = 0.3;
+        const museau = new THREE.Mesh(sphere(0.08), mat('#ffe5b4'));
+        museau.position.set(0, 0.25, 0.17);
+        const nez = new THREE.Mesh(sphere(0.03), mat('#3a1a0a'));
+        nez.position.set(0, 0.29, 0.24);
+        ami.add(tetel, museau, nez);
+        for (const s of [-1, 1]) {
+          const oeil = new THREE.Mesh(sphere(0.03), mat('#120a05', { roughness: 0.1, clearcoat: 1 }));
+          oeil.position.set(s * 0.07, 0.35, 0.17);
+          const oreille = new THREE.Mesh(sphere(0.06), fauve);
+          oreille.position.set(s * 0.14, 0.47, 0);
+          ami.add(oeil, oreille);
+        }
+        const corpsl = new THREE.Mesh(capsule(0.13, 0.22), fauve);
+        corpsl.rotation.x = Math.PI / 2;
+        corpsl.position.set(0, 0.05, -0.18);
+        const queue = new THREE.Mesh(capsule(0.025, 0.25), fauve);
+        queue.position.set(0, 0.12, -0.42);
+        queue.rotation.x = -0.8;
+        const pompon = new THREE.Mesh(sphere(0.05), criniere);
+        pompon.position.set(0, 0.24, -0.52);
+        ami.add(corpsl, queue, pompon);
+        ami.scale.setScalar(1.2);
       }
       enMouvement.push((t) => {
-        ami.position.y = 0.6 + Math.abs(Math.sin(t * (2 + 2 * vif))) * 0.35 * (0.4 + vif);
-        ami.rotation.y = Math.sin(t * 0.8) * 0.6;
+        ami.position.y = 0.45 + Math.abs(Math.sin(t * (2 + 2 * vif))) * 0.3 * (0.4 + vif);
+        ami.rotation.y = -0.5 + Math.sin(t * 0.8) * 0.4;
+      });
+      ami.traverse((o) => {
+        if ((o as THREE.Mesh).isMesh) o.castShadow = true;
       });
     }
 
-    // L'aura : des particules qui montent autour de lui, plus vives avec l'énergie.
+    // L'aura : des points de lumière ronds qui montent en tournant.
     const aura = equipement.aura?.id;
     if (aura) {
-      const n = 60;
-      const positions = new Float32Array(n * 3);
+      const nb = 70;
+      const positions = new Float32Array(nb * 3);
       const vitesses: number[] = [];
-      for (let i = 0; i < n; i++) {
+      const angles: number[] = [];
+      for (let i = 0; i < nb; i++) {
         const a = Math.random() * Math.PI * 2;
-        const r = 0.8 + Math.random() * 0.5;
-        positions.set([Math.cos(a) * r, Math.random() * 3, Math.sin(a) * r], i * 3);
-        vitesses.push(0.4 + Math.random() * 0.8);
+        angles.push(a);
+        const r = 0.75 + Math.random() * 0.35;
+        positions.set([Math.cos(a) * r, Math.random() * 2.6, Math.sin(a) * r], i * 3);
+        vitesses.push(0.5 + Math.random() * 0.9);
       }
       const geo = garde(new THREE.BufferGeometry());
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const couleur = aura === 'flammes' ? '#ff7a1a' : aura === 'eclairs' ? '#67e8f9' : '#ff4fd8';
+      const couleur = aura === 'flammes' ? '#ff8c1a' : aura === 'eclairs' ? '#7df9ff' : '#ff5ce1';
       const pm = garde(new THREE.PointsMaterial({
-        color: couleur, size: 0.13, transparent: true, opacity: 0.25 + 0.65 * vif,
-        blending: THREE.AdditiveBlending, depthWrite: false,
+        color: couleur, size: 0.2, map: garde(texturePoint()), transparent: true,
+        opacity: 0.3 + 0.65 * vif, blending: THREE.AdditiveBlending, depthWrite: false,
       }));
       const points = new THREE.Points(geo, pm);
       heros.add(points);
       enMouvement.push((t) => {
         const pos = geo.attributes.position;
-        for (let i = 0; i < n; i++) {
-          let y = pos.getY(i) + vitesses[i] * 0.016 * (0.5 + vif);
-          if (y > 3.2) y = 0;
+        for (let i = 0; i < nb; i++) {
+          let y = pos.getY(i) + vitesses[i] * 0.014 * (0.5 + vif);
+          if (y > 2.7) y = 0;
           pos.setY(i, y);
+          // Elles se resserrent en montant, comme une flamme.
+          const r = (0.8 + 0.3 * Math.sin(i)) * (1 - y / 4.5);
+          pos.setX(i, Math.cos(angles[i] + t * 0.6) * r);
+          pos.setZ(i, Math.sin(angles[i] + t * 0.6) * r);
         }
         pos.needsUpdate = true;
-        if (aura === 'arc-en-ciel') pm.color.setHSL((t * 0.15) % 1, 0.9, 0.6);
-        if (aura === 'eclairs') pm.opacity = (0.25 + 0.65 * vif) * (0.6 + 0.4 * Math.random());
+        if (aura === 'arc-en-ciel') pm.color.setHSL((t * 0.12) % 1, 0.95, 0.62);
+        if (aura === 'eclairs') pm.opacity = (0.3 + 0.65 * vif) * (0.55 + 0.45 * Math.random());
       });
     }
 
-    // L'ombre au sol.
-    const ombre = new THREE.Mesh(
-      garde(new THREE.CircleGeometry(0.95, 32)),
-      garde(new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.18 })),
-    );
-    ombre.rotation.x = -Math.PI / 2;
-    ombre.position.y = 0.01;
-    scene.add(ombre);
+    heros.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh && o !== visage) o.castShadow = true;
+    });
 
-    // Les « Z » d'un personnage fatigué.
+    // Les « Z » d'un personnage endormi.
     const zzz: THREE.Sprite[] = [];
     if (fatigue) {
       const zt = document.createElement('canvas');
       zt.width = zt.height = 64;
       const zc = zt.getContext('2d')!;
-      zc.font = 'bold 48px sans-serif';
-      zc.fillStyle = '#ffffff';
+      zc.font = '900 50px Fredoka, sans-serif';
+      zc.lineWidth = 7;
       zc.strokeStyle = '#334155';
-      zc.lineWidth = 6;
-      zc.strokeText('Z', 14, 50);
-      zc.fillText('Z', 14, 50);
-      const zm = garde(new THREE.SpriteMaterial({ map: garde(new THREE.CanvasTexture(zt)), transparent: true }));
+      zc.fillStyle = '#ffffff';
+      zc.strokeText('Z', 14, 52);
+      zc.fillText('Z', 14, 52);
+      const zm = garde(new THREE.SpriteMaterial({ map: garde(new THREE.CanvasTexture(zt)), transparent: true, depthWrite: false }));
       for (let i = 0; i < 3; i++) {
         const s = new THREE.Sprite(zm);
-        s.scale.setScalar(0.35);
         scene.add(s);
         zzz.push(s);
       }
@@ -468,7 +727,6 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       const bouge = Math.abs(e.clientX - depart.x);
       const court = performance.now() - depart.t < 350;
       depart = null;
-      // Un toucher, et non un glissé : un geste du personnage.
       if (bouge < 8 && court && !geste.current) {
         const genres = ['saut', 'salut', 'tour'] as const;
         geste.current = { genre: genres[prochainGeste.current % 3], debut: performance.now() };
@@ -480,69 +738,110 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
     window.addEventListener('pointerup', lache);
 
     let id = 0;
-    let prochainClin = performance.now() + 2500;
+    let prochainClin = performance.now() + 1800;
+    let finClin = 0;
+    let regard = 0;
+    let regardCible = 0;
+    let prochainRegard = performance.now() + 2500;
+    let prochainHop = performance.now() + 4000;
     const debut = performance.now();
+
     const boucle = (maintenant: number) => {
       const t = (maintenant - debut) / 1000;
       const lent = 0.45 + 0.55 * vif;
 
-      // Respirer, se balancer, regarder.
-      corps.position.y = Math.sin(t * 2 * lent) * 0.03;
-      torse.scale.y = 1 + Math.sin(t * 2 * lent) * 0.015;
-      bras[0].rotation.x = Math.sin(t * 1.6 * lent) * 0.12;
-      bras[1].rotation.x = -Math.sin(t * 1.6 * lent) * 0.12;
-      bras[0].rotation.z = -0.05;
-      bras[1].rotation.z = 0.05;
-      tete.rotation.y = Math.sin(t * 0.7) * 0.15;
-      tete.rotation.x = fatigue ? 0.22 : Math.sin(t * 0.9) * 0.04;
-      heros.position.y = 0;
+      // L'arrivée : il surgit en rebondissant.
+      const entree = Math.min(1, t / 0.7);
+      const rebond = entree < 1 ? 1 + Math.sin(entree * Math.PI * 2.2) * (1 - entree) * 0.35 : 1;
+      const echelle = Math.max(0.001, doux(entree) * rebond);
 
-      // Un geste demandé par un toucher.
-      const g = geste.current;
+      // Respirer : s'étirer un peu, s'écraser un peu.
+      const souffle = Math.sin(t * 2.2 * lent);
+      let sx = 1 - souffle * 0.012;
+      let sy = 1 + souffle * 0.022;
+      let y = 0;
+      bras[0].rotation.set(Math.sin(t * 1.6 * lent) * 0.1, 0, -0.12);
+      bras[1].rotation.set(-Math.sin(t * 1.6 * lent) * 0.1, 0, 0.12);
+
+      // Regarder autour de lui.
+      if (maintenant > prochainRegard) {
+        regardCible = (Math.random() - 0.5) * 0.7;
+        prochainRegard = maintenant + 2000 + Math.random() * 3000;
+      }
+      regard += (regardCible - regard) * 0.05;
+      tete.rotation.y = regard;
+      tete.rotation.x = fatigue ? 0.25 + Math.sin(t * 0.8) * 0.04 : Math.sin(t * 1.1) * 0.03;
+      tete.rotation.z = Math.sin(t * 0.9 * lent) * 0.03;
+
+      // De temps en temps, un petit saut de joie quand il est en forme.
+      let g = geste.current;
+      if (!g && vif >= 0.8 && maintenant > prochainHop) {
+        geste.current = { genre: 'saut', debut: maintenant };
+        g = geste.current;
+        prochainHop = maintenant + 6000 + Math.random() * 5000;
+      }
+
       if (g) {
         const d = (maintenant - g.debut) / 1000;
         if (g.genre === 'saut') {
-          const duree = 0.7;
-          heros.position.y = Math.sin(Math.min(1, d / duree) * Math.PI) * 0.9;
-          bras[0].rotation.z = -2.6 * Math.sin(Math.min(1, d / duree) * Math.PI);
-          bras[1].rotation.z = 2.6 * Math.sin(Math.min(1, d / duree) * Math.PI);
-          if (d > duree) geste.current = null;
+          // S'accroupir, s'envoler, retomber en s'écrasant.
+          if (d < 0.14) {
+            const k = d / 0.14;
+            sy *= 1 - 0.18 * k;
+            sx *= 1 + 0.1 * k;
+          } else if (d < 0.66) {
+            const k = (d - 0.14) / 0.52;
+            y = Math.sin(k * Math.PI) * 0.85;
+            sy *= 1 + 0.08 * Math.sin(k * Math.PI);
+            bras[0].rotation.z = -2.4 * Math.sin(k * Math.PI);
+            bras[1].rotation.z = 2.4 * Math.sin(k * Math.PI);
+          } else if (d < 0.86) {
+            const k = (d - 0.66) / 0.2;
+            const ecrase = Math.sin(k * Math.PI);
+            sy *= 1 - 0.16 * ecrase;
+            sx *= 1 + 0.1 * ecrase;
+          } else geste.current = null;
         } else if (g.genre === 'salut') {
-          const duree = 1.4;
-          bras[1].rotation.z = 2.7;
+          bras[1].rotation.z = 2.6;
           bras[1].rotation.x = Math.sin(d * 14) * 0.35;
-          if (d > duree) geste.current = null;
+          tete.rotation.z = 0.12;
+          if (d > 1.5) geste.current = null;
         } else {
-          const duree = 0.9;
-          heros.rotation.y = angle.current.actuel + Math.min(1, d / duree) * Math.PI * 2;
-          if (d > duree) geste.current = null;
+          const k = Math.min(1, d / 0.85);
+          heros.rotation.y = angle.current.actuel + doux(k) * Math.PI * 2;
+          y = Math.sin(k * Math.PI) * 0.25;
+          if (d > 0.85) geste.current = null;
         }
       }
       if (!g || g.genre !== 'tour') {
-        // Sans glissé, il se tourne doucement d'un côté puis de l'autre.
-        if (!depart && !compact) angle.current.cible += 0;
-        const cible = compact ? -0.35 + Math.sin(t * 0.4) * 0.35 : angle.current.cible;
-        angle.current.actuel += (cible - angle.current.actuel) * 0.12;
+        const cible = compact ? -0.3 + Math.sin(t * 0.35) * 0.3 : angle.current.cible;
+        angle.current.actuel += (cible - angle.current.actuel) * 0.1;
         heros.rotation.y = angle.current.actuel;
       }
 
+      heros.scale.set(echelle * sx, echelle * sy, echelle * sx);
+      heros.position.y = y;
+      // Le halo se resserre quand il est en l'air : c'est lui qui fait sentir le saut.
+      halo.scale.setScalar(1 - y * 0.15);
+
       // Cligner des yeux.
-      if (maintenant > prochainClin) {
-        dessinerVisage(ctx, apparence.peau, 0, !fatigue);
+      if (maintenant > prochainClin && finClin === 0) {
+        dessinerVisage(ctx, apparence.peau, 0, humeur);
         texture.needsUpdate = true;
-        if (maintenant > prochainClin + 140) {
-          ouverture = fatigue ? 0.35 : 1;
-          dessinerVisage(ctx, apparence.peau, ouverture, !fatigue);
-          texture.needsUpdate = true;
-          prochainClin = maintenant + 2200 + Math.random() * 2800;
-        }
+        finClin = maintenant + 130;
+      } else if (finClin && maintenant > finClin) {
+        dessinerVisage(ctx, apparence.peau, ouvertureRepos, humeur);
+        texture.needsUpdate = true;
+        finClin = 0;
+        prochainClin = maintenant + 2000 + Math.random() * 3000;
       }
 
       for (const f of enMouvement) f(t);
       zzz.forEach((s, i) => {
-        const cycle = (t * 0.5 + i / 3) % 1;
-        s.position.set(0.7 + cycle * 0.6, 2.9 + cycle * 1.0, 0);
-        s.material.opacity = 1 - cycle;
+        const cycle = (t * 0.45 + i / 3) % 1;
+        s.position.set(0.55 + cycle * 0.5, 2.55 + cycle * 0.9, 0.2);
+        s.scale.setScalar(0.18 + cycle * 0.2);
+        s.material.opacity = Math.sin(cycle * Math.PI);
       });
 
       renderer.render(scene, camera);
@@ -556,12 +855,15 @@ export default function Avatar3D({ equipement, energie, apparence = APPARENCE_DE
       toile3d.removeEventListener('pointerdown', appui);
       window.removeEventListener('pointermove', deplace);
       window.removeEventListener('pointerup', lache);
-      scene.traverse((o) => {
-        const m = o as THREE.Mesh;
-        if (m.geometry) m.geometry.dispose();
-        const mats = Array.isArray(m.material) ? m.material : m.material ? [m.material] : [];
-        mats.forEach((x) => x.dispose());
-      });
+      const vider = (racine: THREE.Object3D) =>
+        racine.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.geometry) m.geometry.dispose();
+          const mats = Array.isArray(m.material) ? m.material : m.material ? [m.material] : [];
+          mats.forEach((x) => x.dispose());
+        });
+      vider(scene);
+      vider(studio);
       jetables.forEach((x) => x.dispose());
       renderer.dispose();
       toile3d.remove();
